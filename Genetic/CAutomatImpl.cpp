@@ -56,6 +56,12 @@ void CAutomatImpl::fillRandom( CStateContainer* states, CActionContainer* action
     size_t stateSize = stSize;
     *buffer = (char)( rand->nextUINT()%statesCount );
     ++buffer;
+    *buffer = (char)( rand->nextUINT()%statesCount );
+    ++buffer;
+    *buffer = (char)( rand->nextUINT()%statesCount );
+    ++buffer;
+    *buffer = (char)( rand->nextUINT()%statesCount );
+    ++buffer;
     for ( size_t i=0; i<statesCount; ++i)
     {
         char * ptrStates = buffer + i*2*stateSize;

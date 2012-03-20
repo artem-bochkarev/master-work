@@ -23,20 +23,20 @@ void CGeneticStrategyCL::initMemory()
 
     bestResults = (float*)malloc( gensToCount*sizeof(float) );
     sumResults = (float*)malloc( gensToCount*sizeof(float) );
-    bestIndivids = (char*)malloc( gensToCount*( 2*statesCount*stateSize + 1 ) );
+    bestIndivids = (char*)malloc( gensToCount*( 2*statesCount*stateSize + 4 ) );
     sizes = (unsigned int*)malloc( 5*4 );
     srands = (unsigned int*)malloc( 5*4 );
 }
 
 void CGeneticStrategyCL::initCLBuffers( cl::CommandQueue& queue, cl::Event& event )
 {
-    size_t bufSize = ( 2*statesCount*stateSize + 1 )*N*M;
+    size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
     buffer = (char*)malloc( bufSize );
 
     CRandomImpl rand;
     for ( int i=0; i < N*M; ++i )
     {
-        char * buf = buffer + i*(2*statesCount*stateSize + 1);
+        char * buf = buffer + i*(2*statesCount*stateSize + 4);
         CAutomatImpl::fillRandom( states, actions, buf, stateSize, &rand );
     }
 
@@ -49,7 +49,7 @@ void CGeneticStrategyCL::initCLBuffers( cl::CommandQueue& queue, cl::Event& even
     sizesBuf = cl::Buffer(context, CL_MEM_READ_ONLY, 5*4);
     bestResult = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*sizeof(float) );
     sumResult = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*sizeof(float) );
-    bestIndivid = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*( 2*statesCount*stateSize + 1 ) );
+    bestIndivid = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*( 2*statesCount*stateSize + 4 ) );
 
    // startStateBufCL1 = cl::Buffer(context, CL_MEM_READ_WRITE, N*N);
    // startStateBufCL2 = cl::Buffer(context, CL_MEM_READ_WRITE, N*N);
@@ -220,7 +220,7 @@ void CGeneticStrategyCL::preStart()
 {
     
     size_t mapSize = (2 + maps[0]->width()*maps[0]->height() );
-    size_t bufSize = ( 2*statesCount*stateSize + 1 )*N*M;
+    size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
     //char * ptr = (char*) malloc( N*N*mapSize );//mapsBuffer ;
     
     /*for ( int i=0; i<N*N; ++i )
@@ -270,7 +270,7 @@ void CGeneticStrategyCL::preStart()
 
 void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 {
-    size_t bufSize = ( 2*statesCount*stateSize + 1)*N*M;
+    size_t bufSize = ( 2*statesCount*stateSize + 4)*N*M;
     size_t stime = rand->nextUINT();
     try
     {
@@ -282,7 +282,7 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
        
         queue.enqueueReadBuffer( bestResult, CL_TRUE, 0, gensToCount*sizeof(float), bestResults );
         queue.enqueueReadBuffer( sumResult, CL_TRUE, 0, gensToCount*sizeof(float), sumResults );
-        queue.enqueueReadBuffer( bestIndivid, CL_TRUE, 0, ( 2*statesCount*stateSize + 1)*gensToCount, bestIndivids );
+        queue.enqueueReadBuffer( bestIndivid, CL_TRUE, 0, ( 2*statesCount*stateSize + 4)*gensToCount, bestIndivids );
     }catch( cl::Error& error )
     {
         OutputDebugStringA( error.what() );
@@ -296,7 +296,7 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
-    size_t autSize = ( 2*statesCount*stateSize + 1);
+    size_t autSize = ( 2*statesCount*stateSize + 4);
     for ( size_t i=0; i<gensToCount; ++i)
     {
         curIndivid = CAutomatPtr( 

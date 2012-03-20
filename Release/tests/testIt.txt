@@ -1,0 +1,14 @@
+test_config_cpu25.txt
+test_config_cpu50.txt
+test_config_cpu80.txt
+test_config_cpu100.txt
+test_config_cpu140.txt
+test_config_cpu180.txt
+test_config_cpu256.txt
+test_config_gpu25.txt
+test_config_gpu50.txt
+test_config_gpu80.txt
+test_config_gpu100.txt
+test_config_gpu140.txt
+test_config_gpu180.txt
+test_config_gpu256.txt

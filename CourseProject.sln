@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Genetic", "Genetic\Genetic.vcproj", "{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
+	ProjectSection(ProjectDependencies) = postProject
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6} = {12B84E62-D3D1-43DE-81ED-9F97B593AEC6}
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6} = {D3A5C576-BFCB-4550-A753-9B52EF7B06E6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticAPI", "GeneticAPI\GeneticAPI.vcproj", "{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxApplication", "wxWidgetsHello\wxWidgetsHello.vcproj", "{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6} = {12B84E62-D3D1-43DE-81ED-9F97B593AEC6}
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6} = {D3A5C576-BFCB-4550-A753-9B52EF7B06E6}
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894} = {494896EB-9A10-4E6B-B966-E4DDCEF9B894}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDKUtil", "SDKUtil\SDKUtil.vcproj", "{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "speedTester", "speedTester\speedTester.vcproj", "{2C17EBEF-001C-40D9-9760-75080207A797}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6} = {D3A5C576-BFCB-4550-A753-9B52EF7B06E6}
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894} = {494896EB-9A10-4E6B-B966-E4DDCEF9B894}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894}.Debug|Win32.ActiveCfg = Debug|Win32
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894}.Debug|Win32.Build.0 = Debug|Win32
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894}.Release|Win32.ActiveCfg = Release|Win32
+		{494896EB-9A10-4E6B-B966-E4DDCEF9B894}.Release|Win32.Build.0 = Release|Win32
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}.Debug|Win32.Build.0 = Debug|Win32
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}.Release|Win32.ActiveCfg = Release|Win32
+		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}.Release|Win32.Build.0 = Release|Win32
+		{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}.Debug|Win32.Build.0 = Debug|Win32
+		{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}.Release|Win32.ActiveCfg = Release|Win32
+		{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}.Release|Win32.Build.0 = Release|Win32
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}.Debug|Win32.Build.0 = Debug|Win32
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}.Release|Win32.ActiveCfg = Release|Win32
+		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}.Release|Win32.Build.0 = Release|Win32
+		{2C17EBEF-001C-40D9-9760-75080207A797}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2C17EBEF-001C-40D9-9760-75080207A797}.Debug|Win32.Build.0 = Debug|Win32
+		{2C17EBEF-001C-40D9-9760-75080207A797}.Release|Win32.ActiveCfg = Release|Win32
+		{2C17EBEF-001C-40D9-9760-75080207A797}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

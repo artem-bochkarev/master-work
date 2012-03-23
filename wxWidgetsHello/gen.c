@@ -106,14 +106,15 @@ uint countIndex( uint4 in, uint stateSize )
 uint2 getNext( uint index, uint curState, const __local uint* ind )
 {
     uint2 next;
-    uint diff = 32*curState;
+    uint diff = 8*curState;
 	uint step = index/4;
-	uint shift = index - step;
-	uint nextState = *(ind + diff + step);
-	uint nextAction = *(ind + diff + step + 4);
+	uint shift = index - step*4;
+	next.x = ind[ diff + step ];
+	next.y = ind[ diff + step + 4 ];
 	diff = shift*8;
-	next.x = (nextState >> diff)&0x000000FF;
-	next.y = (nextAction >> diff)&0x000000FF;
+    next = (next >> diff)&0x000000FF;
+	//next.x = (nextState >> diff)&0x000000FF;
+	//next.y = (nextAction >> diff)&0x000000FF;
     return next;
 }
 
@@ -122,7 +123,7 @@ float run( __local uint* ind, const uint statesCount, const uint stateSize, __gl
     __global int * myMap = map + 2;
     uint x = 0, y = 0;
     uint direction = 2;
-    uint curState = *ind;
+    uint curState = (*ind)&0x000000FF;
     ind++;
     float cnt = 0.0f;
 

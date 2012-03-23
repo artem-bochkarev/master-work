@@ -103,21 +103,27 @@ uint countIndex( uint4 in, uint stateSize )
     return res;//%stateSize;
 }
 
-char2 getNext( uint index, char curState, const __local char* ind )
+uint2 getNext( uint index, uint curState, const __local uint* ind )
 {
-    char2 next;
-    uint diff = 32*(uint)curState;
-    next.x = *(ind + diff + index);
-    next.y = *(ind + diff + index + 16);
+    uint2 next;
+    uint diff = 8*curState;
+	uint step = index/4;
+	uint shift = index - step*4;
+	next.x = ind[ diff + step ];
+	next.y = ind[ diff + step + 4 ];
+	diff = shift*8;
+    next = (next >> diff)&0x000000FF;
+	//next.x = (nextState >> diff)&0x000000FF;
+	//next.y = (nextAction >> diff)&0x000000FF;
     return next;
 }
 
-float run( __local char* ind, const uint statesCount, const uint stateSize, __global int* map )
+float run( __local uint* ind, const uint statesCount, const uint stateSize, __global int* map )
 {
     __global int * myMap = map + 2;
     uint x = 0, y = 0;
     uint direction = 2;
-    char curState = *ind;
+    uint curState = (*ind)&0x000000FF;
     ind++;
     float cnt = 0.0f;
 
@@ -125,8 +131,8 @@ float run( __local char* ind, const uint statesCount, const uint stateSize, __gl
     {
         uint4 input = getInput( x, y, direction, map );
         uint index = countIndex( input, stateSize );
-        char2 nex = getNext( index, curState, ind );
-        char action = nex.y;
+        uint2 nex = getNext( index, curState, ind );
+        uint action = nex.y;
         curState = nex.x;
         
         x = moveXa( x, direction, action );
@@ -138,7 +144,7 @@ float run( __local char* ind, const uint statesCount, const uint stateSize, __gl
     return cnt;
 }
 
-uint mutateHim( uint statesCount, uint stateSize, 
+/*uint mutateHim( uint statesCount, uint stateSize, 
                __local char* automatPtr, uint random_value )
 {
     random_value = nextInt( random_value );
@@ -164,11 +170,11 @@ uint mutateHim( uint statesCount, uint stateSize,
     }
 
     return random_value;
-}
+}*/
 
-void memcpy_from_local( __global char* to, const __local char* from, uint count )
+void memcpy_from_local( __global uint* to, const __local uint* from, uint count )
 {
-    char16 tmp16;
+    uint16 tmp16;
     uint cnt = count / 16;
     for ( uint i=0; i < cnt; ++i )
     {
@@ -176,15 +182,16 @@ void memcpy_from_local( __global char* to, const __local char* from, uint count 
         vstore16( tmp16, i, to );
     }
     count -= cnt*16;
-    __global char* ptrTo = to + cnt*16;
-    const __local char* ptrFrom = from + cnt*16;
+    __global uint* ptrTo = to + cnt*16;
+    const __local uint* ptrFrom = from + cnt*16;
     for ( uint i=0; i<count; ++i )
         ptrTo[i] = ptrFrom[i];
 }
 
-uint crossThem( uint bufSize, uint myBuf, __local char* tempBuffer, 
-              uint hisBuf, __global char* inBuffer, uint random_value )
+uint crossThem( uint bufSize, uint myBuf, __local uint* tempBuffer, 
+              uint hisBuf, __global uint* inBuffer, uint random_value )
 {
+	//difficult
     for ( uint i=0; i < bufSize; ++i )
     {
         random_value = nextInt( random_value );
@@ -194,8 +201,8 @@ uint crossThem( uint bufSize, uint myBuf, __local char* tempBuffer,
     return random_value;
 }
 
-float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __local char* tempBuffer, 
-             float bestResult, __global int* myMaps, __global char* outBuffer, __constant int* maps )
+float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __local uint* tempBuffer, 
+             float bestResult, __global int* myMaps, __global uint* outBuffer, __constant int* maps )
 {
     //make copy of a map
     uint s = 32 * 2;
@@ -223,11 +230,11 @@ float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __loca
 
 //varValues[0] - srand
 //varValues[1] - last buf
-__kernel void genetic_2d( __global char* inBuffer, __global char* outBuffer, 
+__kernel void genetic_2d( __global uint* inBuffer, __global uint* outBuffer, 
                          __global const uint* constSizes, __global uint* varValues,
-                         __global int* mapBuffer, __local char* tempBuffer, 
+                         __global int* mapBuffer, __local uint* tempBuffer, 
                          __constant int* maps, __global float* bestResult,
-                         __global float* sumResult, __global char* bestIndivid )
+                         __global float* sumResult, __global uint* bestIndivid )
 {
     uint N = get_global_size(0);
     uint M = get_global_size(1);
@@ -239,7 +246,8 @@ __kernel void genetic_2d( __global char* inBuffer, __global char* outBuffer,
     uint stateSize = constSizes[1];
     uint mapSize = constSizes[2];
 
-    uint bufSize = 1 + 2 * statesCount * stateSize;
+    uint sizeInBytes = 4 + 2 * statesCount * stateSize;
+	uint bufSize = sizeInBytes / 4;
 
     uint myPos = x*M + y;
     uint myBuf = myPos * bufSize;
@@ -254,15 +262,15 @@ __kernel void genetic_2d( __global char* inBuffer, __global char* outBuffer,
     
 
     //todo: in/out due to the varValues[1]
-    __global char* inputBuffer = inBuffer;// = (1-koeff)*inBuffer + koeff*outBuffer;
-    __global char* outputBuffer = outBuffer;// = (1-koeff)*outBuffer + koeff*inBuffer;
+    __global uint* inputBuffer = inBuffer;// = (1-koeff)*inBuffer + koeff*outBuffer;
+    __global uint* outputBuffer = outBuffer;// = (1-koeff)*outBuffer + koeff*inBuffer;
     
-    uint koeff = varValues[1];
+    /*uint koeff = varValues[1];
     if ( koeff%2 != 0 )
     {
         inputBuffer = outBuffer;
         outputBuffer = inBuffer;
-    }
+    }*/
 
     uint gensNum = constSizes[3];
     //for ( uint i=0; i<bufSize; ++i )
@@ -348,7 +356,7 @@ __kernel void genetic_2d( __global char* inBuffer, __global char* outBuffer,
             varValues[1] = ( varValues[1] + 1 )%2;
         }
         //swap buffers:
-        __global char* tmp = inputBuffer;
+        __global uint* tmp = inputBuffer;
         inputBuffer = outputBuffer;
         outputBuffer = tmp;
         

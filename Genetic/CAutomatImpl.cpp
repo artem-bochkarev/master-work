@@ -245,7 +245,7 @@ CAutomatImpl CAutomatImpl::createFromBuffer( CStateContainer* states,
 {
     CAutomatImpl impl( states, actions, stateSize );
     impl.startState = *buf;
-    ++buf;
+    buf += 4;
     memcpy( impl.buffer, buf, 2*impl.statesCount*impl.stateSize );
     return impl;
 }

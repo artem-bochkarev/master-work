@@ -1,7 +1,0 @@
-states=3;
-N=16;
-M=16;
-strategy=CL;
-device=GPU;
-gensCounter=20;
-flowsCounter=5;

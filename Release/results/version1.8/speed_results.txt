@@ -1,0 +1,14 @@
+OpenCL on CPU, states count: 5,  size: 5x5,  result: 70800
+OpenCL on CPU, states count: 5,  size: 5x10,  result: 35660
+OpenCL on CPU, states count: 5,  size: 8x10,  result: 22420
+OpenCL on CPU, states count: 5,  size: 10x10,  result: 17880
+OpenCL on CPU, states count: 5,  size: 10x14,  result: 12740
+OpenCL on CPU, states count: 5,  size: 10x18,  result: 9860
+OpenCL on CPU, states count: 3,  size: 16x16,  result: 6940
+OpenCL on GPU, states count: 5,  size: 5x5,  result: 21680
+OpenCL on GPU, states count: 5,  size: 5x10,  result: 20760
+OpenCL on GPU, states count: 5,  size: 8x10,  result: 19400
+OpenCL on GPU, states count: 5,  size: 10x10,  result: 20240
+OpenCL on GPU, states count: 5,  size: 10x14,  result: 19820
+OpenCL on GPU, states count: 5,  size: 10x18,  result: 19360
+OpenCL on GPU, states count: 3,  size: 16x16,  result: 18780

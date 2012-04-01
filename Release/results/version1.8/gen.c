@@ -20,6 +20,13 @@ uint nextInt( uint x )
     return ( rand_a*x + rand_c );// % rand_m;
 }
 
+char16 nextUChar16( char16 x )
+{
+    char16 a = (char16)(17);
+    char16 b = (char16)(31);
+    return mad_hi( x, a, b);
+}
+
 uint left( uint direction )
 {
     return ( direction - 1 )&3;
@@ -192,11 +199,24 @@ uint crossThem( uint bufSize, uint myBuf, __local uint* tempBuffer,
               uint hisBuf, __global uint* inBuffer, uint random_value )
 {
 	//difficult
-    for ( uint i=0; i < bufSize; ++i )
+	uint4 rand;
+	random_value = nextInt( random_value );
+	rand.x = random_value;
+	random_value = nextInt( random_value );
+	rand.y = random_value;
+	random_value = nextInt( random_value );
+	rand.z = random_value;
+	random_value = nextInt( random_value );
+	rand.w = random_value;
+	char16 r = as_char16(rand);
+    for ( uint i=0; i < bufSize/4; ++i )
     {
-        random_value = nextInt( random_value );
-        uint res = select( myBuf, hisBuf, (random_value & 512) ); 
-        tempBuffer[ myBuf + i ] = inBuffer[ res + i ];
+        char16 father = as_char16(vload4( i, inBuffer + myBuf));
+		char16 mother = as_char16(vload4( i, inBuffer + hisBuf));
+        char16 res = select( father, mother, r );
+		r = nextUChar16( r );
+		vstore4( as_uint4(res), i, tempBuffer + myBuf );
+        //tempBuffer[ myBuf + i ] = inBuffer[ res + i ];
     }
     return random_value;
 }

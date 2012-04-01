@@ -24,7 +24,7 @@ class CMap
 {
 public:
     virtual std::vector<int> getInput( size_t x, size_t y, EDirection direct ) const = 0;
-    virtual double eatFood( size_t x, size_t y ) = 0;
+    virtual int eatFood( size_t x, size_t y ) = 0;
     virtual int get( int x, int y ) const = 0;
     virtual size_t width() const = 0;
     virtual size_t height() const = 0;

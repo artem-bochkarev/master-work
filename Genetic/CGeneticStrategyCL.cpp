@@ -8,6 +8,7 @@
 #include "CMapImpl.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
+#include <boost/algorithm/string/predicate.hpp>
 
 
 void CGeneticStrategyCL::pushResults()
@@ -155,7 +156,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
-        if ( str.find( "gensCounter" ) != -1 )
+        if ( boost::starts_with( str, "gensCounter" ) )
         {
             int b = str.find( "=" );
             ++b;
@@ -164,7 +165,8 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
             gensToCount = atoi( tmp.c_str() );
             break;
         }
-        if ( str.find( "M" ) != -1 )
+
+        if ( boost::starts_with( str, "M" ) )
         {
             int b = str.find( "=" );
             ++b;
@@ -173,7 +175,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
             M = atoi( tmp.c_str() );
             continue;
         }
-        if ( str.find( "N" ) != -1 )
+        if ( boost::starts_with( str, "N" ) )
         {
             int b = str.find( "=" );
             ++b;
@@ -182,7 +184,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
             N = atoi( tmp.c_str() );
             continue;
         }
-        if ( str.find( "device" ) != -1 )
+        if ( boost::starts_with( str, "device" ) )
         {
             int b = str.find( "=" );
             ++b;

@@ -9,7 +9,8 @@ public:
     CMapImpl( const CMap* map );
     CMapImpl& operator = ( const CMapImpl& map );
     virtual std::vector<int> getInput( size_t x, size_t y, EDirection direct ) const;
-    virtual double eatFood( size_t x, size_t y );
+    void CMapImpl::getInput( size_t x, size_t y, EDirection direct, int* output ) const;
+    virtual int eatFood( size_t x, size_t y );
     virtual int get( int x, int y ) const;
     virtual size_t width() const;
     virtual void getLine( int * buf, size_t n ) const;

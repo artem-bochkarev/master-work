@@ -84,14 +84,14 @@ int CMapImpl::get(int x, int y) const
     return map[y][x];
 }
 
-double CMapImpl::eatFood(size_t x, size_t y)
+int CMapImpl::eatFood(size_t x, size_t y)
 {
     if ( map[y][x] > 0 )
     {
         map[y][x] = 0;
-        return 1.0;
+        return 1;
     }
-    return 0.0;
+    return 0;
 }
 
 size_t CMapImpl::height() const
@@ -250,11 +250,21 @@ std::vector<int> CMapImpl::getInput( size_t x, size_t y, EDirection direct ) con
     int buffer[2 * VISIBLE_CELLS];
     int size = getVisibleCells( x, y, direct, buffer, VISIBLE_CELLS );
     std::vector<int> res;
-    for ( size_t i=0; i<size; ++i )
+    for ( int i=0; i<size; ++i )
     {
         res.push_back( map[ buffer[2*i + 1] ][ buffer[2*i] ] );
     }
     return res;
+}
+
+void CMapImpl::getInput( size_t x, size_t y, EDirection direct, int* output ) const
+{   
+    int buffer[2 * VISIBLE_CELLS];
+    int size = getVisibleCells( x, y, direct, buffer, VISIBLE_CELLS );
+    for ( int i=0; i<size; ++i )
+    {
+        output[i] = map[ buffer[2*i + 1] ][ buffer[2*i] ];
+    }
 }
 
 size_t CMapImpl::toCharBuffer( char* buffer, size_t max_size ) const

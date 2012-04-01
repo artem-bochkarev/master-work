@@ -6,6 +6,7 @@
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/thread_time.hpp>
 #include "CRandomImpl.h"
+#include <boost/algorithm/string/predicate.hpp>
 
 class CLocalInvoker
 {
@@ -136,7 +137,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
-        if ( str.find( "flowsCounter" ) != -1 )
+        if ( boost::starts_with( str, "flowsCounter" ))
         {
             int b = str.find( "=" );
             ++b;
@@ -145,7 +146,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
             flowsCnt = atoi( tmp.c_str() );
             continue;
         }
-        if ( str.find( "M" ) != -1 )
+        if ( boost::starts_with( str, "M" ))
         {
             int b = str.find( "=" );
             ++b;
@@ -154,7 +155,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
             M = atoi( tmp.c_str() );
             continue;
         }
-        if ( str.find( "N" ) != -1 )
+        if ( boost::starts_with( str, "N" ) )
         {
             int b = str.find( "=" );
             ++b;

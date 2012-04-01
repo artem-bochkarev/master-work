@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CAutomatImpl.h"
 #include <cmath>
+#include <boost/assert.hpp>
 
 CAutomatImpl::CAutomatImpl( CStateContainer* states, CActionContainer* actions, size_t stateSize )
 //:CAutomat( states, actions )
@@ -80,21 +81,17 @@ void CAutomatImpl::fillRandom( CStateContainer* states, CActionContainer* action
     }
 }
 
-size_t CAutomatImpl::countIndex( std::vector<int>* input ) const
+size_t CAutomatImpl::countIndex( int* mas ) const
 {
-    size_t index = 0, power = 0;
-    for ( std::vector<int>::const_iterator it = input->begin(); it != input->end(); ++it )
+    size_t index = 0;//, power = 0;
+    for ( int i=0; i<4; ++i)
     {
-        if ( *it ) 
-        {
-            index += (1 << power);
-        }
-        power++;
+        index += (mas[i] << i);
     }
-    return index % stateSize;
+    return index;// % stateSize;
 }
 
-char CAutomatImpl::getNextState( char currentState, std::vector<int>* input )
+char CAutomatImpl::getNextState( char currentState, int* input )
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -102,7 +99,7 @@ char CAutomatImpl::getNextState( char currentState, std::vector<int>* input )
     return state;
 }
 
-char CAutomatImpl::getAction( char currentState, std::vector<int>* input )
+char CAutomatImpl::getAction( char currentState, int* input )
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -110,6 +107,24 @@ char CAutomatImpl::getAction( char currentState, std::vector<int>* input )
     char state = *(ptrStates+index);
     char action = *(ptrActions+index);
     return action;
+}
+
+size_t CAutomatImpl::countIndex( std::vector<int>* input ) const
+{
+    BOOST_ASSERT(0);
+    return 0;// % stateSize;
+}
+
+char CAutomatImpl::getNextState( char currentState, std::vector<int>* input )
+{
+    BOOST_ASSERT(0);
+    return 0;
+}
+
+char CAutomatImpl::getAction( char currentState, std::vector<int>* input )
+{
+    BOOST_ASSERT(0);
+    return 0;
 }
 
 CAutomatImpl::~CAutomatImpl()

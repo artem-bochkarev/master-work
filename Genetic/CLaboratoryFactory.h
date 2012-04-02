@@ -6,7 +6,7 @@
 class CLaboratoryFactory
 {
 public:
-    static CLaboratoryPtr getLaboratory();
+    static CLaboratoryPtr getLaboratory( const char* fileName );
 private:
     static  CLaboratoryPtr noFile();
     static  CActionContainerPtr createActions( const std::vector< std::string >& strings );

@@ -9,9 +9,9 @@
 #include <fstream>
 #include <cstdlib>
 
-CLaboratoryPtr CLaboratoryFactory::getLaboratory()
+CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName )
 {
-    std::ifstream in("config.txt");
+    std::ifstream in(fileName);
     std::vector< std::string > strings;
     if ( !in.is_open() )
         return noFile();

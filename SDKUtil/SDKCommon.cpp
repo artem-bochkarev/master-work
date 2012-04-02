@@ -1,4 +1,5 @@
 #include <SDKCommon.hpp>
+#define CL_CONTEXT_OFFLINE_DEVICES_AMD        0x403F
 
 
 

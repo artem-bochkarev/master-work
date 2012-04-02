@@ -38,6 +38,11 @@ public:
 private:
     int N, M;
     DeviceType deviceType;
+    std::string sProfile;
+    std::string sName;
+    std::string sVendor;
+    std::string sVersion;
+
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
 
     void initCLBuffers( cl::CommandQueue& queue, cl::Event& event ) ;

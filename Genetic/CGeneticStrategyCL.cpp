@@ -9,6 +9,7 @@
 #include "CTest.h"
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
+#include "SDKUtil/SDKPlatform.hpp"
 
 
 void CGeneticStrategyCL::pushResults()
@@ -121,14 +122,32 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         cl::vector< cl::Platform > platformList;
         cl::Platform::get(&platformList);
 
-        cl_context_properties cprops[3] = 
-        {CL_CONTEXT_PLATFORM, 
-        (cl_context_properties)(platformList[0])(), 0};
+        for ( int i=0; i<platformList.size(); ++i )
+        {
+            SDKPlatform platform(platformList[i]);
+            platform.getInfo( CL_PLATFORM_PROFILE, &sProfile );
+            platform.getInfo( CL_PLATFORM_VENDOR, &sVendor );
+            platform.getInfo( CL_PLATFORM_VERSION, &sVersion );
+            platform.getInfo( CL_PLATFORM_NAME, &sName );
 
-        if ( deviceType == GPU )
-            context = cl::Context(CL_DEVICE_TYPE_GPU, cprops);
-        else
-            context = cl::Context(CL_DEVICE_TYPE_CPU, cprops);
+            cl_context_properties cprops[3] = 
+            {CL_CONTEXT_PLATFORM, 
+            (cl_context_properties)(platformList[i])(), 0};
+
+            int n = 0;
+            if ( deviceType == GPU )
+                n = platform.getDevicesCnt( CL_DEVICE_TYPE_GPU );
+            else
+                n = platform.getDevicesCnt( CL_DEVICE_TYPE_CPU );
+            if ( n == 0 )
+                continue;
+
+            if ( deviceType == GPU )
+                context = cl::Context(CL_DEVICE_TYPE_GPU, cprops);
+            else
+                context = cl::Context(CL_DEVICE_TYPE_CPU, cprops);
+            break;
+        }
 
         devices = context.getInfo<CL_CONTEXT_DEVICES>();
         createProgram();
@@ -427,7 +446,7 @@ std::string CGeneticStrategyCL::getDeviceType() const
 {
     if ( deviceType == CPU )
     {
-        return "OpenCL on CPU";
+        return "OpenCL on CPU, on" + sName;
     }
-    return "OpenCL on GPU";
+    return "OpenCL on GPU, on" + sName;
 }

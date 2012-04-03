@@ -1,0 +1,3 @@
+Processor: AMD Phenom II  X4 955 3.20 GHz
+Graphics: AMD Radeon HD 6850
+RAN: 8Gb

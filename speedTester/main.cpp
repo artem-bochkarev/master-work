@@ -35,7 +35,7 @@ int main()
 
             CLaboratoryPtr laboratory;
             std::vector<CMapPtr> maps;
-            laboratory = CLaboratoryFactory::getLaboratory();
+            laboratory = CLaboratoryFactory::getLaboratory("config.txt");
             CMapPtr map1 = CMapFactory::getMap( "map1.txt" );
 
             maps.push_back( map1 );

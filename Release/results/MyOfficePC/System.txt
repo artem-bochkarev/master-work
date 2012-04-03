@@ -1,0 +1,3 @@
+Processor: Intel i7 
+Graphics: NVidia Quadro 2000
+RAM: 4Gb

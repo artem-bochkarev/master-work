@@ -1,6 +1,7 @@
 #include "qapp.h"
 #include "Genetic/CLaboratoryFactory.h"
 #include <QFileDialog>
+#include "Genetic/CMapFactory.h"
 
 QApp::QApp(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags)
@@ -10,11 +11,20 @@ QApp::QApp(QWidget *parent, Qt::WFlags flags)
     QObject::connect( ui.actionOpen, SIGNAL( triggered() ), this, SLOT( openCmd() ) );
     QObject::connect( ui.actionView, SIGNAL( triggered() ), this, SLOT( viewCmd() ) );
     QObject::connect( ui.actionSave, SIGNAL( triggered() ), this, SLOT( saveCmd() ) );
+	QObject::connect( ui.pushButton, SIGNAL( clicked() ), this, SLOT( buttonPressed() ) );
+	QObject::connect( &timer, SIGNAL( timeout() ), this, SLOT( timerEvent() ) );
+
+	CMapPtr map1 = CMapFactory::getMap( "map1.txt" );
+    maps.push_back( map1 );
+	mode = DISABLED;
+	timer.setInterval(50);
+	lastNumber = 0;
+	maxFitness = 10;
 }
 
 QApp::~QApp()
 {
-
+	freeLaboratory();
 }
 
 
@@ -23,6 +33,8 @@ bool QApp::openCmd()
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open config file"), "", tr("Text config file (*.txt)"));
     laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii() );
+	if ( laboratory.get() != 0 )
+		mode = STOPPED;
     return true;
 }
 bool QApp::saveCmd()
@@ -36,4 +48,83 @@ void QApp::exitCmd()
 bool QApp::viewCmd()
 {
     return false;
+}
+
+void QApp::freeLaboratory()
+{
+	//timer.Stop();
+	if ( laboratory.get() != 0 )
+    laboratory->pause();
+}
+
+void QApp::buttonPressed()
+{
+	switch (mode)
+	{
+	case (DISABLED):
+		break;
+	case (STOPPED):
+		laboratory->setMaps( maps );
+		laboratory->start();
+		graphScene = boost::shared_ptr<QGraphicsScene>( new QGraphicsScene() );
+		timer.start();
+        ui.pushButton->setText("Pause");
+		mode = RUNNING;
+		break;
+	case (PAUSED):
+		laboratory->start();
+		timer.start();
+        ui.pushButton->setText("Pause");
+		mode = RUNNING;
+		break;
+	case (RUNNING):
+		laboratory->pause();
+		timer.stop();
+		ui.pushButton->setText("Continue");
+		mode = PAUSED;
+		break;
+	}
+}
+
+void QApp::timerEvent()
+{
+	drawGenerationInfo();
+}
+
+void QApp::drawGenerationInfo()
+{
+    int n = laboratory->getGenerationNumber();
+	if ( n == 0 )
+		return;
+    int start = lastNumber;
+   
+    int px = 4 * lastNumber;
+    int py = 4 * laboratory->getMaxFitness( lastNumber );
+	QPen pen;
+	pen.setColor( QColor( 80, 80, 250 ) );
+	pen.setWidth( 2 );
+    for ( int i = start; i < n; ++i )
+    {
+        int x = 4 * i;
+        int y = 4 * laboratory->getMaxFitness( i );
+		graphScene->addLine( px, py, x, y, pen );
+        px = x;
+        py = y;
+    }
+    px = 4 * lastNumber;
+    py = 4 * laboratory->getAvgFitness( lastNumber );
+    pen.setColor( QColor( 80, 250, 80 ) );
+    for ( int i= start; i < n; ++i )
+    {
+        int x = 4 * i;
+        int y = 4 * laboratory->getAvgFitness( i );
+		graphScene->addLine( px, py, x, y, pen );
+        px = x;
+        py = y;
+    }
+	ui.graphicsView->setScene( graphScene.get() );
+	ui.graphicsView->setSceneRect( QRectF( 0, 0, n*4, 300 ));
+	ui.graphicsView->centerOn( n*4 - 100, 150 );
+	ui.graphicsView->show();
+	lastNumber = n - 1;
 }

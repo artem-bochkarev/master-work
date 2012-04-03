@@ -43,7 +43,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(BOOST)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
-				MinimalRebuild="true"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
@@ -136,8 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;C:\Program Files (x86)\AMD APP\lib\x86\openCL.lib&quot;"
+				AdditionalDependencies="&quot;$(OPENCL)\lib\x86\openCL.lib&quot;"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(BOOST)\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

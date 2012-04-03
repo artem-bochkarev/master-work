@@ -105,12 +105,19 @@ void CGeneticStrategyCL::createProgram()
         string s = ss.str();
         OutputDebugStringA( s.c_str() );
     }
-    kernelGen = cl::Kernel( program, "genetic_2d" );
+	try {
+		kernelGen = cl::Kernel( program, "genetic_2d" );
+	} catch(cl::Error& err) {
+        OutputDebugStringW( L"file: can't create context\n" );
+        OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( err.err() ) );
+        OutputDebugStringA( "\n" );
+	}
+    
 }
 
 CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
                                        CLabResultMulti* res, const std::vector< std::string >& strings )
-:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0)
+:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0), buffer(0)
 {
     CRandomPtr rand( new CRandomImpl() );
     setFromStrings( strings, rand );
@@ -225,7 +232,8 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
 
 CGeneticStrategyCL::~CGeneticStrategyCL()
 {
-    free( buffer );
+	if ( buffer != 0 )
+		free( buffer );
     free( mapsBuffer );
     free( cache );
     free( bestResults );

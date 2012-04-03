@@ -119,7 +119,6 @@ std::vector< std::pair<int, int> > CTest::getVisibleCells( const CMap *map, int 
 double CTest::run( CAutomat *automat, CMap *map, size_t moves )
 {
     int x = 0, y = 0;
-    int lem = 0;
     EDirection direct( DRight );
     double cnt = 0;
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);

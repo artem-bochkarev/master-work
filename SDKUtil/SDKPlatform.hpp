@@ -11,7 +11,7 @@ public:
         cl_device_type type ) const
     {
         cl_uint n = 0;
-        cl_int err = ::clGetDeviceIDs(object_, type, 0, NULL, &n);
+        clGetDeviceIDs(object_, type, 0, NULL, &n);
         return n;
     }
 };

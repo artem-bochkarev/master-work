@@ -41,6 +41,9 @@ public:
     {
         return threadPtr( new boost::thread( *this ) );
     }
+    private:
+        CLocalInvoker();
+        CLocalInvoker& operator=( const CLocalInvoker& );
 };
 
 class CMainInvoker : public CInvoker
@@ -88,7 +91,7 @@ public:
                 firstBarrier.wait();
                 strg->preGeneration();
             }
-        }catch( boost::thread_interrupted& error )
+        }catch( boost::thread_interrupted& )
         {
             group.interrupt_all();
         }

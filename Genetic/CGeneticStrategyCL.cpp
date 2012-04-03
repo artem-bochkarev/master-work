@@ -30,7 +30,7 @@ void CGeneticStrategyCL::initMemory()
     srands = (unsigned int*)malloc( 5*4 );
 }
 
-void CGeneticStrategyCL::initCLBuffers( cl::CommandQueue& queue, cl::Event& event )
+void CGeneticStrategyCL::initCLBuffers()
 {
     size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
     buffer = (char*)malloc( bufSize );
@@ -129,7 +129,7 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         cl::vector< cl::Platform > platformList;
         cl::Platform::get(&platformList);
 
-        for ( int i=0; i<platformList.size(); ++i )
+        for ( size_t i=0; i<platformList.size(); ++i )
         {
             SDKPlatform platform(platformList[i]);
             platform.getInfo( CL_PLATFORM_PROFILE, &sProfile );
@@ -163,8 +163,7 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         //devices[0] = cl::Device( context.getInfo<CL_CONTEXT_DEVICES>() );
         queue = cl::CommandQueue( context, devices[0] );
         
-        cl::Event event;
-        initCLBuffers( queue, event );
+        initCLBuffers();
     }catch ( cl::Error& error ) 
     {
     //    std::cerr << "caught exception: " << error.what() 
@@ -299,8 +298,7 @@ void CGeneticStrategyCL::preStart()
 
 void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 {
-    size_t bufSize = ( 2*statesCount*stateSize + 4)*N*M;
-    size_t stime = rand->nextUINT();
+    //size_t bufSize = ( 2*statesCount*stateSize + 4)*N*M;
     try
     {
         //kernelGen.setArg( 0, statesBufCL1 );
@@ -454,7 +452,7 @@ std::string CGeneticStrategyCL::getDeviceType() const
 {
     if ( deviceType == CPU )
     {
-        return "OpenCL on CPU, on" + sName;
+        return "OpenCL on CPU, " + sName;
     }
-    return "OpenCL on GPU, on" + sName;
+    return "OpenCL on GPU, " + sName;
 }

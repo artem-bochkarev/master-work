@@ -2,6 +2,7 @@
 #include "Genetic/CLaboratoryFactory.h"
 #include <QFileDialog>
 #include "Genetic/CMapFactory.h"
+#include "generationsViewer.hpp"
 
 QApp::QApp(QWidget *parent, Qt::WFlags flags)
     : QMainWindow(parent, flags)
@@ -34,7 +35,13 @@ bool QApp::openCmd()
         tr("Open config file"), "", tr("Text config file (*.txt)"));
     laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii() );
 	if ( laboratory.get() != 0 )
+    {
 		mode = STOPPED;
+        ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
+        int n = laboratory->getStrategy()->getN();
+        int m = laboratory->getStrategy()->getM();
+        ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
+    }
     return true;
 }
 bool QApp::saveCmd()
@@ -47,6 +54,9 @@ void QApp::exitCmd()
 }
 bool QApp::viewCmd()
 {
+    generationsViewer viewer( this );
+    viewer.setLaboratory( laboratory );
+    viewer.exec();
     return false;
 }
 
@@ -96,6 +106,9 @@ void QApp::drawGenerationInfo()
     int n = laboratory->getGenerationNumber();
 	if ( n == 0 )
 		return;
+    QString str("Generations: ");
+    str.append( QString().setNum( n ) );
+    ui.label->setText(str);
     int start = lastNumber;
    
     int px = 4 * lastNumber;

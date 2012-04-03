@@ -278,7 +278,7 @@ size_t CMapImpl::toCharBuffer( char* buffer, size_t max_size ) const
    for ( size_t i=0; i<y_size; ++i )
        for ( size_t j=0; j<x_size; ++j )
        {
-           *buffer = map[i][j];
+           *buffer = (char)map[i][j];
            ++buffer;
        }
    return realSize;

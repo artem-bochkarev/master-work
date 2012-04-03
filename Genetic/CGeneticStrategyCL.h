@@ -45,7 +45,7 @@ private:
 
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
 
-    void initCLBuffers( cl::CommandQueue& queue, cl::Event& event ) ;
+    void initCLBuffers() ;
     void initMemory();
     void preStart();
     void swapBuffers();

@@ -104,7 +104,6 @@ char CAutomatImpl::getAction( char currentState, int* input )
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
     char * ptrActions = ptrStates + stateSize;
-    char state = *(ptrStates+index);
     char action = *(ptrActions+index);
     return action;
 }
@@ -198,7 +197,7 @@ std::vector<CAutomatImplPtr> CAutomatImpl::cross( const CAutomat* mother,
     size_t statesCount = fath->statesCount;
     size_t stateSize = fath->stateSize;
 
-    for ( size_t i=0; i<fath->statesCount; ++i)
+    for ( size_t i=0; i<statesCount; ++i)
     {
         char * ptrStates1 = a1->buffer + i*2*stateSize;
         char * ptrActions1 = ptrStates1 + stateSize;
@@ -247,12 +246,12 @@ std::vector<CAutomatImplPtr> CAutomatImpl::cross( const CAutomat* mother,
 
 char CAutomatImpl::getStartState() const
 {
-    return startState;
+    return (char)startState;
 }
 
 char CAutomatImpl::generateRandom( CStateContainer* states, CActionContainer* actions, CRandom* rand )
 {
-    return rand->nextUINT()%states->size();
+    return (char)rand->nextUINT()%states->size();
 }
 
 CAutomatImpl CAutomatImpl::createFromBuffer( CStateContainer* states, 

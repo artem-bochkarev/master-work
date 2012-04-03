@@ -152,7 +152,7 @@ float run( __local uint* ind, const uint statesCount, const uint stateSize, __gl
 }
 
 /*uint mutateHim( uint statesCount, uint stateSize, 
-               __local char* automatPtr, uint random_value )
+               __local uint* automatPtr, uint random_value )
 {
     random_value = nextInt( random_value );
 

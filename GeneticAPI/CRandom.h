@@ -8,7 +8,6 @@ class CRandom
 {
 public:
     CRandom() {};
-    CRandom( uint value ) {};
     virtual uint nextUINT() = 0;
     virtual void setValue( uint value ) = 0;
     virtual ~CRandom() {};

@@ -23,7 +23,6 @@ public:
 
     void operator ()() const
     {
-        int cnt = 0;
         while (true)
         {
             strategy->nextGeneration(start, finish, &rand );
@@ -31,9 +30,6 @@ public:
             boost::this_thread::interruption_point();
             barrier.wait();
             boost::this_thread::interruption_point();
-            ++cnt;
-            if ( cnt % 10 == 0 )
-                rand.setValue( std::clock() );
         }
     }
 

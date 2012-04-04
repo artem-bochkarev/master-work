@@ -159,7 +159,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CCLWrapInvoker.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticStrategyCL.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGeneticStrategyCLWrap.cpp"
 				>
 			</File>
 			<File
@@ -196,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\CTest.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GenCLWrap.cpp"
 				>
 			</File>
 			<File
@@ -237,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CGeneticStrategyCLWrap.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticStrategyImpl.h"
 				>
 			</File>
@@ -261,6 +277,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\COpenCLWrapInvoker.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CRandomImpl.h"
 				>
 			</File>
@@ -270,6 +290,10 @@
 			</File>
 			<File
 				RelativePath=".\CTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GenCLWrap.h"
 				>
 			</File>
 			<File

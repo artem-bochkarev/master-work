@@ -10,6 +10,7 @@ public:
     friend class CLaboratoryMulti;
     friend class CGeneticStrategyImpl;
     friend class CGeneticStrategyCL;
+	friend class CGeneticStrategyCLWrap
     CLabResultMulti();
     virtual size_t getGenerationsNumber() const;
     virtual CAutomatPtr getBestInd( size_t i ) const;

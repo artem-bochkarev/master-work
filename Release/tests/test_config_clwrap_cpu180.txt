@@ -1,0 +1,7 @@
+states=5;
+N=10;
+M=18;
+strategy=CLWrap;
+device=CPU;
+gensCounter=20;
+flowsCounter=4;

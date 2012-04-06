@@ -33,15 +33,18 @@ bool QApp::openCmd()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
         tr("Open config file"), "", tr("Text config file (*.txt)"));
-    laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii() );
-	if ( laboratory.get() != 0 )
-    {
-		mode = STOPPED;
-        ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
-        int n = laboratory->getStrategy()->getN();
-        int m = laboratory->getStrategy()->getM();
-        ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
-    }
+	if ( fileName != "" )
+	{
+		laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii(), logger );
+		if ( laboratory.get() != 0 )
+		{
+			mode = STOPPED;
+			ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
+			int n = laboratory->getStrategy()->getN();
+			int m = laboratory->getStrategy()->getM();
+			ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
+		}
+	}
     return true;
 }
 bool QApp::saveCmd()

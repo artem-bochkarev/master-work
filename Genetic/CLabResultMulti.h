@@ -4,6 +4,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
+
 class CLabResultMulti : public CLaboratoryResult
 {
 public:

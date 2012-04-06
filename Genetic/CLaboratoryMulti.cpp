@@ -48,7 +48,7 @@ void CLaboratoryMulti::pause()
     if ( pThread.get() != 0 )
     {
         pThread->interrupt();
-//        pThread->join();
+        pThread->join();
         running = false;
         pThread->detach();
         pThread.reset();

@@ -122,7 +122,7 @@ void getNext( uint* buf, uint index, uint curState, const uint* ind )
     buf[1] = (buf[1] >> diff)&0x000000FF;
 }
 
-int run( uint* ind, const uint statesCount, const uint stateSize, int* map )
+int run( const uint* ind, const uint statesCount, const uint stateSize, int* map )
 {
     int * myMap = map + 2;
     uint x = 0, y = 0;
@@ -297,9 +297,9 @@ void genetic_2d( uint* stuff, uint* inBuffer, uint* outBuffer,
 
         cache[myPos] = result;
         //swap buffers:
-        uint* tmp = inputBuffer;
+        /*uint* tmp = inputBuffer;
         inputBuffer = outputBuffer;
-        outputBuffer = tmp;
+        outputBuffer = tmp;*/
     }
 }
   

@@ -9,6 +9,7 @@
 #include "CL/cl.hpp"
 #include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
+#include "Tools/Logger.h"
 
 
 class CGeneticStrategyCL : public CGeneticStrategy
@@ -20,7 +21,7 @@ class CGeneticStrategyCL : public CGeneticStrategy
     };
 public:
     CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
-        CLabResultMulti* res, const std::vector< std::string >& strings );
+		CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand );
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -84,4 +85,5 @@ private:
     size_t statesCount, stateSize, gensToCount;
     CLabResultMulti* result;
     CInvoker* invoker;
+	Tools::Logger& logger;
 };

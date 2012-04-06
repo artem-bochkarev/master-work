@@ -5,6 +5,7 @@
 #include <QTimer>
 #include "ui_qapp.h"
 #include "GeneticAPI/CLaboratory.h"
+#include "Tools/Logger.h"
 
 class QApp : public QMainWindow
 {
@@ -40,6 +41,7 @@ private:
 	int lastNumber;
 	int maxFitness;
 	Mode mode;
+	Tools::Logger logger;
 };
 
 #endif // QAPP_H

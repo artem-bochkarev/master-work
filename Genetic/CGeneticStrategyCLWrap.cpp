@@ -45,8 +45,8 @@ void CGeneticStrategyCLWrap::initMemory()
 }
 
 CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
-                                       CLabResultMulti* res, const std::vector< std::string >& strings )
-:states(states), actions(actions), result(res), mapsBuffer(0), mapBuffer(0), invoker(0), buffer(0)
+                                       CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
+:states(states), actions(actions), result(res), mapsBuffer(0), mapBuffer(0), invoker(0), buffer(0), logger(logger)
 {
 
     CRandomPtr rand( new CRandomImpl() );
@@ -128,7 +128,7 @@ void CGeneticStrategyCLWrap::preStart()
 
 	sizes[0] = statesCount;
 	sizes[1] = stateSize;
-	sizes[3] = gensToCount;
+	sizes[3] = 1;
 
 	CRandomImpl random;
 	srands[0] = random.nextUINT();
@@ -137,14 +137,22 @@ void CGeneticStrategyCLWrap::preStart()
 
 void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
 {
-	
+	srands[0] = rand->nextUINT();
 	settings.inBuffer = buffer;
     settings.outBuffer = outBuffer;
     settings.mapsBuffer = mapsBuffer;
     settings.map = mapBuffer;
 
 	CCLWrapInvoker invoker( this, settings );
-    invoker.getThread()->join();
+	try
+	{
+		invoker.getThread()->join();
+	}catch( boost::thread_interrupted& err )
+	{
+		invoker.getThread()->interrupt();
+		invoker.getThread()->join();
+		throw err;
+	}
     
 	
 
@@ -169,6 +177,7 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
     boost::mutex::scoped_lock lock(mutex);
     result->addGeneration( curIndivid, bestResult, avgResult ); 
     swapBuffers();
+	boost::this_thread::interruption_point();
 }
 
 void CGeneticStrategyCLWrap::swapBuffers()

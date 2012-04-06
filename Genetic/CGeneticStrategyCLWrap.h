@@ -6,13 +6,13 @@
 #include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
 #include "GenCLWrap.h"
-
+#include "Tools/Logger.h"
 
 class CGeneticStrategyCLWrap : public CGeneticStrategy
 {
 public:
     CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
-        CLabResultMulti* res, const std::vector< std::string >& strings );
+        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand );
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -55,4 +55,5 @@ private:
     size_t statesCount, stateSize, gensToCount;
     CLabResultMulti* result;
     CInvoker* invoker;
+	Tools::Logger& logger;
 };

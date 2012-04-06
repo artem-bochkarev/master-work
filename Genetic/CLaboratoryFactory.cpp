@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <fstream>
 #include "CLaboratoryFactory.h"
 #include "CStateContainerImpl.h"
 #include "CActionContainerImpl.h"
@@ -7,16 +8,18 @@
 #include "CGeneticStrategyCL.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
-#include <fstream>
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
 
-CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName )
+CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName, Tools::Logger& logger )
 {
     std::ifstream in(fileName);
     std::vector< std::string > strings;
     if ( !in.is_open() )
-        return noFile();
+	{
+		logger << "[WARNING] Can't find config file, so using default settings.\n";
+        return noFile( logger );
+	}
     while ( in.good() )
     {
         char tmp[300];
@@ -28,11 +31,11 @@ CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName )
     CActionContainerPtr actions = createActions( strings );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
 
-    CGeneticStrategyPtr strategy = createStrategy( strings, states, actions, labResults );
+    CGeneticStrategyPtr strategy = createStrategy( strings, states, actions, labResults, logger );
     return createLaboratory( states, actions, strategy, labResults );
 }
 
-CLaboratoryPtr CLaboratoryFactory::noFile()
+CLaboratoryPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 {
     CStateContainerPtr states( new CStateContainerImpl() );
     for ( char i=0; i<5; ++i )
@@ -45,7 +48,7 @@ CLaboratoryPtr CLaboratoryFactory::noFile()
     actions->addAction( 2, "turn left" );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
-    CGeneticStrategyPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings ) );
+    CGeneticStrategyPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
     
     return CLaboratoryPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }
@@ -83,7 +86,7 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
 }
 
 CGeneticStrategyPtr CLaboratoryFactory::createStrategy( const std::vector< std::string >& strings,
-        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults )
+        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
 {
     for ( size_t i=0; i < strings.size(); ++i )
     {
@@ -98,15 +101,15 @@ CGeneticStrategyPtr CLaboratoryFactory::createStrategy( const std::vector< std::
             {
                 if ( str.find("Wrap") == -1 )
                 {
-                    return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings ) );
+                    return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings, logger ) );
                 }else
                 {
-                    return CGeneticStrategyPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), strings ) );
+                    return CGeneticStrategyPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), strings, logger ) );
                 }
             }
         }
     }
-    return CGeneticStrategyPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings ) );
+    return CGeneticStrategyPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
 }
 
 CLaboratoryPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 

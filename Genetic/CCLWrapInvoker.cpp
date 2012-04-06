@@ -19,7 +19,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + 1;
-		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	boost::uint32_t getNextN( boost::uint32_t n )
@@ -30,7 +30,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + n;
-		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	int reset()
@@ -89,14 +89,21 @@ void CCLWrapInvoker::operator ()()
 {
 	boost::thread_group group;
 	SuperQueue queue;
-    boost::this_thread::disable_interruption di;
 
-    for ( size_t i=0; i<settings.flowsCnt; ++i )
-    {
-        CLocalCLWrapInvoker invoker( settings, &queue );
-        group.create_thread( invoker );
-    }
-    group.join_all();       
+	try
+	{
+		for ( size_t i=0; i<settings.flowsCnt; ++i )
+		{
+			CLocalCLWrapInvoker invoker( settings, &queue );
+			group.create_thread( invoker );
+		}
+		group.join_all();       
+	}catch( boost::thread_interrupted& err )
+	{
+		group.interrupt_all();
+		group.join_all();
+		//throw err;
+	}
 }
 
 threadPtr CCLWrapInvoker::getThread() const

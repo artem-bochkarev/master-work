@@ -105,8 +105,8 @@ public:
 
 
 CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
-                                           CLabResultMulti* res, const std::vector< std::string >& strings )
-:states(states), actions(actions), isCacheValid(false), result(res), cnt(0), invoker(0), cachedResult(0)
+                                           CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
+:states(states), actions(actions), isCacheValid(false), result(res), cnt(0), invoker(0), cachedResult(0), logger(logger)
 {
     CRandomPtr rand( new CRandomImpl() );
     setFromStrings( strings, rand );

@@ -1,3 +1,3 @@
-Processor: Intel i7 
+Processor: Intel(R) Core(TM) i7 CPU 860  2.80 GHz
 Graphics: NVidia Quadro 2000
 RAM: 4Gb

@@ -5,6 +5,7 @@
 #include "CAutomatImpl.h"
 #include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
+#include "Tools/Logger.h"
 
 class CLocalInvoker;
 
@@ -14,7 +15,7 @@ public:
     friend class CLocalInvoker;
     friend class CMainInvoker;
     CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
-        CLabResultMulti* res, const std::vector< std::string >& strings );
+        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& );
     virtual void nextGeneration( CRandom* rand );
 
     virtual void setMaps( std::vector<CMapPtr> maps );
@@ -51,6 +52,7 @@ private:
     std::vector<CMapPtr> maps;
     CLabResultMulti* result;
     CInvoker* invoker;
+	Tools::Logger& logger;
 
     int cnt;
 };

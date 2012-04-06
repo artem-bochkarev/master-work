@@ -60,11 +60,14 @@ void CGeneticStrategyCL::initCLBuffers()
 void CGeneticStrategyCL::createProgram()
 {
     // build the program from the source in the file
+	logger << "[INIT] Start building program.\n";
     using namespace std;
     ifstream file("gen.c");
     if ( !file.is_open() )
     {
         OutputDebugStringW( L"file not found\n" );
+		logger << "[FAILED] File not found.\n";
+		return;
     }
    /* string prog(istreambuf_iterator<char>(file),
         (istreambuf_iterator<char>()));
@@ -91,24 +94,25 @@ void CGeneticStrategyCL::createProgram()
 
     try {
         cl_int res = program.build(devices);
-        if ( res != CL_SUCCESS )
-        {
-            OutputDebugStringW( L"file: gen.txt couldn't be compiled\n" );
-            OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( res ) );
-        }
+		logger << "[SUCCESS] Program compiled.\n";
     } catch(cl::Error& err) {
         OutputDebugStringW( L"file: gen.txt couldn't be compiled\n" );
+		logger << "[FAILED] Can't compile file.\n";
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( err.err() ) );
         OutputDebugStringA( "\n" );
         stringstream ss;
         ss << program.getBuildInfo< CL_PROGRAM_BUILD_LOG >( devices[0] );
         string s = ss.str();
+		logger << "[DESCRIPTION] " << s.c_str() << "\n";
         OutputDebugStringA( s.c_str() );
     }
 	try {
 		kernelGen = cl::Kernel( program, "genetic_2d" );
+		logger << "[SUCCESS] Kernel created.\n";
 	} catch(cl::Error& err) {
         OutputDebugStringW( L"file: can't create context\n" );
+		logger << "[FAILED] Can't create kernel.\n";
+		logger << "[DESCRIPTION] " << streamsdk::getOpenCLErrorCodeStr( err.err() ) << "\n";
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( err.err() ) );
         OutputDebugStringA( "\n" );
 	}
@@ -116,9 +120,10 @@ void CGeneticStrategyCL::createProgram()
 }
 
 CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
-                                       CLabResultMulti* res, const std::vector< std::string >& strings )
-:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0), buffer(0)
+                                       CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
+:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0), buffer(0), logger(logger)
 {
+	logger << "[INIT] Initializing CGeneticLaboratryCL.\n";
     CRandomPtr rand( new CRandomImpl() );
     setFromStrings( strings, rand );
     statesCount = states->size();
@@ -126,6 +131,7 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
     initMemory();
     try
     {
+		logger << "[INIT] Trying to get specified device.\n";
         cl::vector< cl::Platform > platformList;
         cl::Platform::get(&platformList);
 
@@ -153,6 +159,7 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
                 context = cl::Context(CL_DEVICE_TYPE_GPU, cprops);
             else
                 context = cl::Context(CL_DEVICE_TYPE_CPU, cprops);
+			logger << "[SUCCESS] Creating Context.\n";
             break;
         }
 
@@ -164,10 +171,10 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         queue = cl::CommandQueue( context, devices[0] );
         
         initCLBuffers();
+		logger << "[SUCCES] CGeneticStrategyCL created.\n";
     }catch ( cl::Error& error ) 
     {
-    //    std::cerr << "caught exception: " << error.what() 
-     //       << '(' << error.err() << ')' << std::endl;
+		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
     }
@@ -225,6 +232,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
+		logger << "[FAILED] Bad config!\n";
         throw std::exception( "bad config!" );
     }
 }
@@ -291,6 +299,7 @@ void CGeneticStrategyCL::preStart()
 
     }catch( cl::Error& error )
     {
+		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
     }
@@ -298,12 +307,8 @@ void CGeneticStrategyCL::preStart()
 
 void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 {
-    //size_t bufSize = ( 2*statesCount*stateSize + 4)*N*M;
     try
     {
-        //kernelGen.setArg( 0, statesBufCL1 );
-        //kernelGen.setArg( 1, statesBufCL2 );
-        //kernelGen.setArg( 4, stime );
         queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange( N, M ) );
         queue.finish();
        
@@ -312,14 +317,10 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
         queue.enqueueReadBuffer( bestIndivid, CL_TRUE, 0, ( 2*statesCount*stateSize + 4)*gensToCount, bestIndivids );
     }catch( cl::Error& error )
     {
+		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
     }
-    
-    //delete ptr;
-
-    //queue.enqueueReadBuffer( statesBufCL2, CL_TRUE, 0, bufSize, buffer );
-    //queue.enqueueReadBuffer( cacheBuffer, CL_TRUE, 0, N*N*sizeof(float), cache );
 
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
@@ -330,16 +331,6 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
                 new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, bestIndivids + i*autSize ) ) );
         result->addGeneration( curIndivid, bestResults[i], sumResults[i] );
     }
-
-    /*for ( int i=0; i<N*N; ++i )
-    {
-        automats[i] = CAutomatPtr( 
-            new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, buffer+i*autSize ) ) );
-    }*/
-
-    //swapBuffers();
-
-    //pushResults();
 }
 
 void CGeneticStrategyCL::swapBuffers()

@@ -1,0 +1,14 @@
+test_config_clwrap_cpu25.txt
+test_config_clwrap_cpu50.txt
+test_config_clwrap_cpu80.txt
+test_config_clwrap_cpu100.txt
+test_config_clwrap_cpu140.txt
+test_config_clwrap_cpu180.txt
+test_config_clwrap_cpu256.txt
+test_config_cpu25.txt
+test_config_cpu50.txt
+test_config_cpu80.txt
+test_config_cpu100.txt
+test_config_cpu140.txt
+test_config_cpu180.txt
+test_config_cpu256.txt

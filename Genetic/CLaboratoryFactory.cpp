@@ -5,9 +5,11 @@
 #include "CLabResultMulti.h"
 #include "CGeneticStrategyImpl.h"
 #include "CGeneticStrategyCL.h"
+#include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
 #include <fstream>
 #include <cstdlib>
+#include <boost/algorithm/string/predicate.hpp>
 
 CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName )
 {
@@ -64,7 +66,7 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
-        if ( str.find( "states" ) != -1 )
+        if ( boost::starts_with( str, "states" ) )
         {
             int b = str.find( "=" );
             ++b;
@@ -86,14 +88,22 @@ CGeneticStrategyPtr CLaboratoryFactory::createStrategy( const std::vector< std::
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
-        if ( str.find( "strategy" ) != -1 )
+        if ( boost::starts_with( str, "strategy" ) )
         {
             int b = str.find( "=" );
             ++b;
             int e = str.find( ";" );
             const std::string tmp( str.substr( b, e ) );
             if ( tmp[0] == 'C' )
-                return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings ) );
+            {
+                if ( str.find("Wrap") == -1 )
+                {
+                    return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings ) );
+                }else
+                {
+                    return CGeneticStrategyPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), strings ) );
+                }
+            }
         }
     }
     return CGeneticStrategyPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings ) );

@@ -19,7 +19,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + 1;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	boost::uint32_t getNextN( boost::uint32_t n )
@@ -30,7 +30,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + n;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	int reset()
@@ -57,18 +57,26 @@ public:
 		size_t step = settings.step;
 		size_t end = queue->getNext();
 		size_t start = end - step;
+        uint stuff[4];
+        stuff[0] = N;
+        stuff[1] = M;
 		while ( start < N*M )
 		{
-			size_t end = std::min( N*M, end);
+			end = std::min( N*M, end);
 			for ( size_t i = start; i < end; ++i )
 			{
 				size_t n = i / M;
 				size_t m = i - n*M;
+                stuff[2] = n;
+                stuff[3] = m;
 				//kernelCall();
+                genetic_2d( stuff, settings.inBuffer, settings.outBuffer, settings.constSizes,
+                    settings.varValues, settings.mapsBuffer, settings.tempBuffer, settings.map, settings.cache );
 			}
 			end = queue->getNext();
 			start = end - step;
 		}
+        int z = start;
 	}
 
     virtual threadPtr getThread() const
@@ -81,12 +89,14 @@ void CCLWrapInvoker::operator ()()
 {
 	boost::thread_group group;
 	SuperQueue queue;
-	for ( size_t i=0; i<settings.flowsCnt; ++i )
-	{
-		CLocalCLWrapInvoker invoker( settings, &queue );
-		group.create_thread( invoker );
-	}
-	group.join_all();
+    boost::this_thread::disable_interruption di;
+
+    for ( size_t i=0; i<settings.flowsCnt; ++i )
+    {
+        CLocalCLWrapInvoker invoker( settings, &queue );
+        group.create_thread( invoker );
+    }
+    group.join_all();       
 }
 
 threadPtr CCLWrapInvoker::getThread() const

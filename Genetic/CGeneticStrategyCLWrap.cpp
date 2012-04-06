@@ -19,29 +19,36 @@ void CGeneticStrategyCLWrap::pushResults()
 
 void CGeneticStrategyCLWrap::initMemory()
 {
-    cache = (float*)malloc( N*M*sizeof(float) );
 
-    bestResults = (float*)malloc( gensToCount*sizeof(float) );
-    sumResults = (float*)malloc( gensToCount*sizeof(float) );
-    bestIndivids = (char*)malloc( gensToCount*( 2*statesCount*stateSize + 4 ) );
-    sizes = (unsigned int*)malloc( 5*4 );
-    srands = (unsigned int*)malloc( 5*4 );
+    /*uint* buffer, outBuffer, tempBuffer;
+
+    int* mapsBuffer, mapBuffer;
+    int* cache;*/
+
+    sizes = (uint*)malloc( 5*4 );
+    srands = (uint*)malloc( 5*4 );
 
 	size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
-    buffer = (char*)malloc( bufSize );
+    buffer     = (uint*)malloc( bufSize );
+    outBuffer  = (uint*)malloc( bufSize );
+    tempBuffer = (uint*)malloc( bufSize );
+
+
+    cache = (int*)malloc( N*M*sizeof(int) );
 
     CRandomImpl rand;
     for ( int i=0; i < N*M; ++i )
     {
-        char * buf = buffer + i*(2*statesCount*stateSize + 4);
+        char * buf = (char*)buffer + i*(2*statesCount*stateSize + 4);
         CAutomatImpl::fillRandom( states, actions, buf, stateSize, &rand );
     }
 }
 
 CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
                                        CLabResultMulti* res, const std::vector< std::string >& strings )
-:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0), buffer(0)
+:states(states), actions(actions), result(res), mapsBuffer(0), mapBuffer(0), invoker(0), buffer(0)
 {
+
     CRandomPtr rand( new CRandomImpl() );
     setFromStrings( strings, rand );
     statesCount = states->size();
@@ -53,11 +60,10 @@ void CGeneticStrategyCLWrap::setFromStrings( const std::vector< std::string >& s
 {
     gensToCount = 1;
     M = N = 0;
-    deviceType = GPU;
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
-        if ( boost::starts_with( str, "gensCounter" ) )
+        if ( boost::starts_with( str, "flowsCounter" ) )
         {
             int b = str.find( "=" );
             ++b;
@@ -100,9 +106,6 @@ CGeneticStrategyCLWrap::~CGeneticStrategyCLWrap()
 		free( buffer );
     free( mapsBuffer );
     free( cache );
-    free( bestResults );
-    free( sumResults );
-    free( bestIndivids );
     free( sizes );
     free( srands );
     if ( invoker != 0 )
@@ -111,9 +114,18 @@ CGeneticStrategyCLWrap::~CGeneticStrategyCLWrap()
 
 void CGeneticStrategyCLWrap::preStart()
 {
+    settings.M = M;
+	settings.N = N;
+	settings.step = 1;
+    settings.inBuffer = buffer;
+    settings.outBuffer = outBuffer;
     
-	size_t mapSize = (2 + maps[0]->width()*maps[0]->height() );
-	size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
+    settings.tempBuffer = tempBuffer;
+    settings.constSizes = sizes;
+    settings.varValues = srands;
+    settings.cache = cache;
+	settings.flowsCnt = gensToCount;
+
 	sizes[0] = statesCount;
 	sizes[1] = stateSize;
 	sizes[3] = gensToCount;
@@ -125,34 +137,46 @@ void CGeneticStrategyCLWrap::preStart()
 
 void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
 {
-	CLWrapSettings settings;
-	settings.M = M;
-	settings.M = N;
-	settings.step = 1;
-	settings.rand = rand;
-	settings.flowsCnt = gensToCount;
-	CCLWrapInvoker invoker( this, settings );
-	invoker.getThread()->join();
-    
-	//queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange( N, M ) );
-    //queue.finish();
+	
+	settings.inBuffer = buffer;
+    settings.outBuffer = outBuffer;
+    settings.mapsBuffer = mapsBuffer;
+    settings.map = mapBuffer;
 
+	CCLWrapInvoker invoker( this, settings );
+    invoker.getThread()->join();
+    
+	
+
+    //ToDo: select best;
+    int bestResult = 0;
+    double avgResult = 0.0;
+    int bestPos = 0;
+    for ( int i=0; i<M*N; ++i ) 
+    {
+        avgResult += cache[i];
+        if ( cache[i] > cache[bestPos] )
+            bestPos = i;
+    }
+    avgResult /= M*N;
+    bestResult = cache[bestPos];
+    size_t autSize = ( 2*statesCount*stateSize + 4);
+
+    boost::this_thread::disable_interruption di;
+    curIndivid = CAutomatPtr( 
+                new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, (char*)outBuffer + bestPos*autSize ) ) );
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
-    size_t autSize = ( 2*statesCount*stateSize + 4);
-    for ( size_t i=0; i<gensToCount; ++i)
-    {
-        curIndivid = CAutomatPtr( 
-                new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, bestIndivids + i*autSize ) ) );
-        result->addGeneration( curIndivid, bestResults[i], sumResults[i] );
-    }
+    result->addGeneration( curIndivid, bestResult, avgResult ); 
+    swapBuffers();
 }
 
 void CGeneticStrategyCLWrap::swapBuffers()
 {
-    cl::Buffer tmp = statesBufCL2;
-    statesBufCL2 = statesBufCL1;
-    statesBufCL1 = tmp;
+//TODO: !
+    uint* tmp = buffer;
+    buffer = outBuffer;
+    outBuffer = tmp;
 }
 
 void CGeneticStrategyCLWrap::setMaps( std::vector<CMapPtr> maps )
@@ -161,8 +185,13 @@ void CGeneticStrategyCLWrap::setMaps( std::vector<CMapPtr> maps )
 
     size_t mapSize = 2 + maps[0]->width()*maps[0]->height();
     size_t mapSizes = N*M*( mapSize );
-    mapsBuffer = (int*)malloc( mapSize*4 );
-    maps[0]->toIntBuffer( mapsBuffer );
+    if ( mapBuffer != 0 )
+        delete mapBuffer;
+    if ( mapsBuffer != 0 )
+        delete mapsBuffer;
+    mapBuffer = (int*)malloc( mapSize*4 );
+    mapsBuffer = (int*)malloc( mapSizes*4 );
+    maps[0]->toIntBuffer( mapBuffer );
     sizes[2] = mapSize;
 
     preStart();
@@ -190,31 +219,27 @@ CAutomatPtr CGeneticStrategyCLWrap::getBestIndivid() const
     return curIndivid;
 }
 
-double CGeneticStrategyCL::getMaxFitness() const
+double CGeneticStrategyCLWrap::getMaxFitness() const
 {
     return 0.0;
 }
 
-CInvoker* CGeneticStrategyCL::getInvoker() const
+CInvoker* CGeneticStrategyCLWrap::getInvoker() const
 {
     return invoker;
 }
 
-size_t CGeneticStrategyCL::getN() const
+size_t CGeneticStrategyCLWrap::getN() const
 {
     return N;
 }
 
-size_t CGeneticStrategyCL::getM() const
+size_t CGeneticStrategyCLWrap::getM() const
 {
     return M;
 }
 
-std::string CGeneticStrategyCL::getDeviceType() const
+std::string CGeneticStrategyCLWrap::getDeviceType() const
 {
-    if ( deviceType == CPU )
-    {
-        return "OpenCL on CPU, " + sName;
-    }
-    return "OpenCL on GPU, " + sName;
+    return "OpenCL Wrapping on CPU";
 }

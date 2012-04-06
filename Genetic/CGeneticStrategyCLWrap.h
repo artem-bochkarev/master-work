@@ -5,6 +5,7 @@
 #include "CAutomatImpl.h"
 #include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
+#include "GenCLWrap.h"
 
 
 class CGeneticStrategyCLWrap : public CGeneticStrategy
@@ -42,10 +43,11 @@ private:
     CStateContainer* states;
     CActionContainer* actions;
     CAutomatPtr curIndivid;
-    char* buffer;
-    int* mapsBuffer;
-    float *cache, *bestResults, *sumResults;
-    char *steps, *bestIndivids;
+    CLWrapSettings settings;
+    uint *buffer, *outBuffer, *tempBuffer;
+
+    int *mapsBuffer, *mapBuffer;
+    int *cache;
 
     unsigned int *sizes, *srands;
 

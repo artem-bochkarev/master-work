@@ -1,13 +1,7 @@
 #pragma once
 #include "CRandomImpl.h"
 #include "CGeneticStrategyCLWrap.h"
-
-struct CLWrapSettings
-{
-	size_t N, M, step;
-	size_t flowsCnt;
-	CRandomPtr rand;
-};
+#include "GenCLWrap.h"
 
 class CCLWrapInvoker
 {
@@ -22,5 +16,4 @@ public:
     virtual threadPtr getThread() const;
 private:
 	CCLWrapInvoker();
-	CCLWrapInvoker( const CCLWrapInvoker& );
 };

@@ -71,11 +71,6 @@ void CAutomatImpl::fillRandom( CStateContainer* states, CActionContainer* action
         {
             *(ptrStates + j) = states->randomState( rand );
             char action = actions->randomAction( rand );
-            if ( action > 2 )
-            {
-                int k =0;
-                ++k;
-            }
             *(ptrActions + j) = action;
         }
     }

@@ -1,0 +1,14 @@
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 5x5,  result: 101920
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 5x10,  result: 51620
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 8x10,  result: 32440
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x10,  result: 25860
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x14,  result: 18380
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x18,  result: 14240
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 3,  size: 16x16,  result: 10760
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 5x5,  result: 11500
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 5x10,  result: 10600
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 8x10,  result: 10280
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x10,  result: 10360
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x14,  result: 10460
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 10x18,  result: 10340
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 3,  size: 16x16,  result: 11720

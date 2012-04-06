@@ -1,0 +1,14 @@
+OpenCL Wrapping on CPU, states count: 5,  size: 5x5,  result: 65432
+OpenCL Wrapping on CPU, states count: 5,  size: 5x10,  result: 55086
+OpenCL Wrapping on CPU, states count: 5,  size: 8x10,  result: 45378
+OpenCL Wrapping on CPU, states count: 5,  size: 10x10,  result: 40646
+OpenCL Wrapping on CPU, states count: 5,  size: 10x14,  result: 33931
+OpenCL Wrapping on CPU, states count: 5,  size: 10x18,  result: 29375
+OpenCL Wrapping on CPU, states count: 3,  size: 16x16,  result: 23629
+C++ on CPU, states count: 5,  size: 5x5,  result: 34931
+C++ on CPU, states count: 5,  size: 5x10,  result: 18025
+C++ on CPU, states count: 5,  size: 8x10,  result: 15640
+C++ on CPU, states count: 5,  size: 10x10,  result: 8737
+C++ on CPU, states count: 5,  size: 14x10,  result: 8087
+C++ on CPU, states count: 5,  size: 10x18,  result: 5029
+C++ on CPU, states count: 3,  size: 16x16,  result: 3997

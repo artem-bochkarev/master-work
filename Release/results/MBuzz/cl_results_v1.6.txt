@@ -1,0 +1,3 @@
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 5x5,  result: 64620
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 10x10,  result: 16240
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 16x16,  result: 3820

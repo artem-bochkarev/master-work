@@ -1,0 +1,6 @@
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 5x5,  result: 91820
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 10x10,  result: 23480
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 16x16,  result: 5480
+OpenCL on GPU, NVIDIA CUDA, states count: 5,  size: 5x5,  result: 7380
+OpenCL on GPU, NVIDIA CUDA, states count: 5,  size: 10x10,  result: 3300
+OpenCL on GPU, NVIDIA CUDA, states count: 3,  size: 16x16,  result: 1720

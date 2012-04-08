@@ -1,0 +1,4 @@
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 5x5,  result: 65920
+OpenCL on CPU, Intel(R) OpenCL, states count: 5,  size: 10x10,  result: 16540
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 16x16,  result: 4120
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 5,  size: 5x5,  result: 9340

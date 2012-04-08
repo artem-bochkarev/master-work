@@ -1,0 +1,3 @@
+Processor: Intel Core 2 Quad CPU Q9400 2.67 GHz
+Graphics: ATI Radeon HD 4600
+RAM: 4Gb

@@ -1,0 +1,2 @@
+CPU: Intel Core i3-2130  3.40 GHz
+Graphic: NVidia GeForce GT 520

@@ -1,0 +1,4 @@
+test_config_cl_cpu_1024
+test_config_cl_cpu_3072
+test_config_cl_gpu_1024
+test_config_cl_gpu_3072

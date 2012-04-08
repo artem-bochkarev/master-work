@@ -175,7 +175,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
 
     if (( M == 0 ) || ( N == 0 ))
     {
-        throw std::exception( "bad config!" );
+        throw std::runtime_error( "bad config!" );
     }
 }
 

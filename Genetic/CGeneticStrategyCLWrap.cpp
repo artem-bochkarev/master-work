@@ -96,7 +96,7 @@ void CGeneticStrategyCLWrap::setFromStrings( const std::vector< std::string >& s
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
-        throw std::exception( "bad config!" );
+        throw std::runtime_error( "bad config!" );
     }
 }
 

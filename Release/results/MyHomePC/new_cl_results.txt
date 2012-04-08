@@ -1,0 +1,6 @@
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 3,  size: 32x32,  result: 7060
+OpenCL on CPU, AMD Accelerated Parallel Processing, states count: 3,  size: 64x48,  result: 2320
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 3,  size: 32x32,  result: 13840
+OpenCL on GPU, AMD Accelerated Parallel Processing, states count: 3,  size: 64x48,  result: 5160
+OpenCL Wrapping on CPU, states count: 3,  size: 32x32,  result: 7619
+OpenCL Wrapping on CPU, states count: 3,  size: 64x48,  result: 2578

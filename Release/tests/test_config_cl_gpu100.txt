@@ -3,5 +3,4 @@ N=10;
 M=10;
 strategy=CL;
 device=GPU;
-gensCounter=20;
-flowsCounter=5;
+gensCounter=2;

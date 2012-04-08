@@ -1,4 +1,4 @@
-#pragma OPENCL EXTENSION cl_khr_byte_addressable_store : enable
+//version 1.8
 
 // rand like in MSVC
 __constant uint rand_m = 0x80000000;
@@ -8,7 +8,8 @@ __constant uint rand_c = 2531011;
 //probablility in % (0..100)
 __constant uint mutation_probability = 0;
 __constant uint actions_count = 3;
-__constant uint max_size = 20;
+
+#define max_size 20;
 
 #define c_x_size 32
 #define c_y_size 32
@@ -17,7 +18,14 @@ __constant uint max_size = 20;
 
 uint nextInt( uint x )
 {
-    return ( rand_a*x + rand_c );// % rand_m;
+    return ( rand_a*x + rand_c );
+}
+
+char16 nextUChar16( char16 x )
+{
+    char16 a = (char16)(17);
+    char16 b = (char16)(31);
+    return mad_hi( x, a, b);
 }
 
 uint left( uint direction )
@@ -113,8 +121,6 @@ uint2 getNext( uint index, uint curState, const __local uint* ind )
 	next.y = ind[ diff + step + 4 ];
 	diff = shift*8;
     next = (next >> diff)&0x000000FF;
-	//next.x = (nextState >> diff)&0x000000FF;
-	//next.y = (nextAction >> diff)&0x000000FF;
     return next;
 }
 
@@ -145,7 +151,7 @@ float run( __local uint* ind, const uint statesCount, const uint stateSize, __gl
 }
 
 /*uint mutateHim( uint statesCount, uint stateSize, 
-               __local char* automatPtr, uint random_value )
+               __local uint* automatPtr, uint random_value )
 {
     random_value = nextInt( random_value );
 
@@ -188,20 +194,63 @@ void memcpy_from_local( __global uint* to, const __local uint* from, uint count 
         ptrTo[i] = ptrFrom[i];
 }
 
-uint crossThem( uint bufSize, uint myBuf, __local uint* tempBuffer, 
+void memcpy_to_local( __local uint* to, const __global uint* from, uint count )
+{
+    uint16 tmp16;
+    uint cnt = count / 16;
+    for ( uint i=0; i < cnt; ++i )
+    {
+        tmp16 = vload16( i, from );
+        vstore16( tmp16, i, to );
+    }
+    count -= cnt*16;
+    __local uint* ptrTo = to + cnt*16;
+    const __global uint* ptrFrom = from + cnt*16;
+    for ( uint i=0; i<count; ++i )
+        ptrTo[i] = ptrFrom[i];
+}
+
+uint crossThem( uint bufSize, uint myBuf, uint myBufLocal, __local uint* tempBuffer, 
               uint hisBuf, __global uint* inBuffer, uint random_value )
 {
 	//difficult
-    for ( uint i=0; i < bufSize; ++i )
+	uint4 rand;
+	random_value = nextInt( random_value );
+	rand.x = random_value;
+	random_value = nextInt( random_value );
+	rand.y = random_value;
+	random_value = nextInt( random_value );
+	rand.z = random_value;
+	random_value = nextInt( random_value );
+	rand.w = random_value;
+	char16 r = as_char16(rand);
+	uint cnt = bufSize/4;
+	//uint cnt = 10;
+    for ( uint i=0; i < cnt; ++i )
+    {
+        char16 father = as_char16(vload4( i, inBuffer + myBuf));
+		char16 mother = as_char16(vload4( i, inBuffer + hisBuf));
+        char16 res = select( father, mother, (r << 3) );
+		r = nextUChar16( r );
+		vstore4( as_uint4(res), i, tempBuffer + myBufLocal );
+        //tempBuffer[ myBuf + i ] = inBuffer[ res + i ];
+    }
+	/*for ( uint i=0; i < cnt*4; ++i )
     {
         random_value = nextInt( random_value );
         uint res = select( myBuf, hisBuf, (random_value & 512) ); 
         tempBuffer[ myBuf + i ] = inBuffer[ res + i ];
-    }
+    }*/
+	for ( uint i=cnt*4; i<bufSize; ++i )
+	{
+		random_value = nextInt( random_value );
+        uint res = select( myBuf, hisBuf, (random_value & 512) ); 
+        tempBuffer[ myBufLocal + i ] = inBuffer[ res + i ];
+	}
     return random_value;
 }
 
-float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __local uint* tempBuffer, 
+float tryHim( uint bufSize, uint myBuf, uint myBufLocal, uint statesCount, uint stateSize, __local uint* tempBuffer, 
              float bestResult, __global int* myMaps, __global uint* outBuffer, __constant int* maps )
 {
     //make copy of a map
@@ -215,11 +264,11 @@ float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __loca
         vstore16( tmp, i, to );
     }
 
-    float result = run( tempBuffer + myBuf, statesCount, stateSize, myMaps );
+    float result = run( tempBuffer + myBufLocal, statesCount, stateSize, myMaps );
     if ( result > bestResult )
     {
         bestResult = result;
-        memcpy_from_local( outBuffer + myBuf, tempBuffer + myBuf, bufSize );
+        memcpy_from_local( outBuffer + myBuf, tempBuffer + myBufLocal, bufSize );
     }
     return bestResult;
 }
@@ -232,15 +281,22 @@ float tryHim( uint bufSize, uint myBuf, uint statesCount, uint stateSize, __loca
 //varValues[1] - last buf
 __kernel void genetic_2d( __global uint* inBuffer, __global uint* outBuffer, 
                          __global const uint* constSizes, __global uint* varValues,
-                         __global int* mapBuffer, __local uint* tempBuffer, 
+                         __global int* mapBuffer, __global uint* maxCache, 
+						 __global float* avgCache, __global uint* bestPos,
                          __constant int* maps, __global float* bestResult,
                          __global float* sumResult, __global uint* bestIndivid )
 {
-    uint N = get_global_size(0);
-    uint M = get_global_size(1);
+    uint2 size_global, size_local;
+	size_global.x = get_global_size(0);
+	size_global.y = get_global_size(1);
+    size_local.x = get_local_size(0);
+	size_local.y = get_local_size(1);
 
-    uint x = get_global_id(0);
-    uint y = get_global_id(1);
+	uint2 coord_global, coord_local;
+    coord_global.x = get_global_id(0);
+    coord_global.y = get_global_id(1);
+	coord_local.x = get_local_id(0);
+    coord_local.y = get_local_id(1);
 
     uint statesCount = constSizes[0];
     uint stateSize = constSizes[1];
@@ -249,118 +305,140 @@ __kernel void genetic_2d( __global uint* inBuffer, __global uint* outBuffer,
     uint sizeInBytes = 4 + 2 * statesCount * stateSize;
 	uint bufSize = sizeInBytes / 4;
 
-    uint myPos = x*M + y;
+    uint myPos = coord_global.x*size_global.y + coord_global.y;
+	uint myPosLocal = coord_local.x*size_local.y + coord_local.y;
     uint myBuf = myPos * bufSize;
+	uint myBufLocal = myPosLocal * bufSize;
     uint srand = varValues[0];
-    uint random_value = nextInt( srand+(srand*x - srand*y)%(N*M) );
+    uint random_value = nextInt( srand+(srand*coord_global.x - srand*coord_global.y)%(size_global.x*size_global.y) );
 
-    __local float cache[ max_size*max_size ];
-    __local uint bestResults[ max_size ];
-    __local float sumResults[ max_size ];
+    __local float cache[ 256 ];
+    __local uint bestResults[ 16 ];
+    __local float sumResults[ 16 ];
+	__local uint tempBuffer[ 6400 ];
 
     __global int* myMapsPtr = mapBuffer + myPos*mapSize;    
     
-
-    //todo: in/out due to the varValues[1]
     __global uint* inputBuffer = inBuffer;// = (1-koeff)*inBuffer + koeff*outBuffer;
     __global uint* outputBuffer = outBuffer;// = (1-koeff)*outBuffer + koeff*inBuffer;
-    
-    /*uint koeff = varValues[1];
-    if ( koeff%2 != 0 )
-    {
-        inputBuffer = outBuffer;
-        outputBuffer = inBuffer;
-    }*/
 
     uint gensNum = constSizes[3];
-    //for ( uint i=0; i<bufSize; ++i )
-      //  tempBuffer[myBuf + i] = inputBuffer[myBuf + i];
 
     for ( uint counter = 0; counter < gensNum; ++counter )
     {
         float result = -1.0f;
         //try me
-        uint hisPos = x*M + y;
+        uint hisPos = coord_global.x*size_global.y + coord_global.y;
         uint hisBuf = hisPos * bufSize;
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
         //bestResult = tryHim( bufSize, myBuf, statesCount, stateSize, tempBuffer, bestResult, myMapsPtr, outputBuffer, ptr+myPos*200 );    
 
         // with left of him
         // myMapsPtr += mapSize;
-        hisPos = x*M + (y + M - 1)%M;
+        hisPos = coord_global.x*size_global.y + ( coord_global.y + size_global.y - 1)%size_global.y;
         hisBuf = hisPos * bufSize;
-        random_value = crossThem( bufSize, myBuf, tempBuffer, hisBuf, inputBuffer, random_value );
+        random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         // with up of him
-        hisPos = ((x + N - 1)%N)*M + y;
+        hisPos = (( coord_global.x + size_global.x - 1)%size_global.x)*size_global.y + coord_global.y;
         hisBuf = hisPos * bufSize;
-        random_value = crossThem( bufSize, myBuf, tempBuffer, hisBuf, inputBuffer, random_value );
+        random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         //with right of him
-        hisPos = x*M + (y + 1)%M;
+        hisPos = coord_global.x*size_global.y + ( coord_global.y + 1)%size_global.y;
         hisBuf = hisPos * bufSize;
-        random_value = crossThem( bufSize, myBuf, tempBuffer, hisBuf, inputBuffer, random_value );
+        random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         //with down of him
-        hisPos = ((x + 1)%N)*M + y;
+        hisPos = (( coord_global.x + 1)%size_global.x)*size_global.y + coord_global.y;
         hisBuf = hisPos * bufSize;
-        random_value = crossThem( bufSize, myBuf, tempBuffer, hisBuf, inputBuffer, random_value );
+        random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
 
-        cache[myPos] = result;
-        barrier( CLK_GLOBAL_MEM_FENCE );
+        cache[myPosLocal] = result;
+		//ToDo next!
+        barrier( CLK_LOCAL_MEM_FENCE );
 
-        if ( y == M - 1 )
+        if ( coord_local.y == 0 )
         {
             uint max = 0;
             float sum = 0;
-            for ( uint i=0; i<M; ++i )
+            for ( uint i=0; i<size_local.y; ++i )
             {
-                sum += cache[ x*M + i ];
-                if ( cache[ x*M + i ] > cache[ x*M + max ] )
+                sum += cache[ coord_local.x*size_local.y + i ];
+                if ( cache[ coord_local.x*size_local.y + i ] > cache[ coord_local.x*size_local.y + max ] )
                     max = i;
             }
-            bestResults[x] = max;
-            sumResults[x] = sum;
+            bestResults[ coord_local.x ] = max;
+            sumResults[ coord_local.x ] = sum;
         }
 
-        barrier( CLK_LOCAL_MEM_FENCE ); //change to local
-        if (( y == M - 1 ) && (x == N - 1) )
+        barrier( CLK_LOCAL_MEM_FENCE );
+        if (( coord_local.y == 0 ) && ( coord_local.x == 0) )
         {
             uint max = 0;
             float sum = 0;
-            for ( uint i=0; i<N; ++i )
+            for ( uint i=0; i<size_local.x; ++i )
             {
                 sum += sumResults[i];
-                if ( cache[ i*M + bestResults[i] ] > cache[ max*M + bestResults[max] ] )
+                if ( cache[ i*size_local.y + bestResults[i] ] > cache[ max*size_local.y + bestResults[max] ] )
                     max = i;
             }
-            bestResult[counter] = cache[ max*M + bestResults[max] ];
-            sumResult[counter] = sum / (N*M);
-            hisPos = max*M + bestResults[max];
-            hisBuf = hisPos * bufSize;
-            for ( uint i=0; i < bufSize; ++i )
-                bestIndivid[ counter*bufSize + i ] = outputBuffer[ hisBuf + i ];
+			uint2 group;
+			group.x = get_group_id(0);
+			group.y = get_group_id(1);
+			maxCache[ group.x*get_num_groups(1) + group.y ] = cache[ max*size_local.y + bestResults[max] ];
+			avgCache[ group.x*get_num_groups(1) + group.y ] = sum / (size_local.x*size_local.y);
+			short2 pos;
+			pos.x = group.x*size_local.x + max;
+			pos.y = group.y*size_local.y + bestResults[max];
+			bestPos[ group.x*get_num_groups(1) + group.y ] = as_uint(pos);
 
             //set new values for next turn
             //srand:
             varValues[0] = nextInt( random_value );
             varValues[1] = ( varValues[1] + 1 )%2;
         }
-        //swap buffers:
+        
+        barrier( CLK_GLOBAL_MEM_FENCE );
+		if ( coord_global.x == 0 && coord_global.y == 0 )
+		{
+			uint2 max = 0;
+			float sum = 0.0f;
+			uint2 size;
+			size.x = get_num_groups(0);
+			size.y = get_num_groups(1);
+			for ( uint i=0; i<size.x; ++i )
+				for ( uint j=0; j<size.y; ++j )
+				{
+					sum += avgCache[ i*size.y + j ];
+					if ( maxCache[ i*size.y + j ] > maxCache[ max.x*size.y + max.y ] )
+					{
+                        max.x = i;
+						max.y = j;
+					}
+				}
+			sum /= size.x*size.y;
+			sumResult[counter] = sum;
+			bestResult[counter] = maxCache[ max.x*size.y + max.y ];
+			short2 pos = as_short2( bestPos[ max.x*size.y + max.y ] );
+			hisPos = pos.x*size_global.y + pos.y;
+            hisBuf = hisPos * bufSize;
+            for ( uint i=0; i < bufSize; ++i )
+                bestIndivid[ counter*bufSize + i ] = outputBuffer[ hisBuf + i ];
+		}
+		//swap buffers:
         __global uint* tmp = inputBuffer;
         inputBuffer = outputBuffer;
         outputBuffer = tmp;
-        
-        barrier( CLK_GLOBAL_MEM_FENCE );
     }
 }
   

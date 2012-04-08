@@ -35,15 +35,22 @@ bool QApp::openCmd()
         tr("Open config file"), "", tr("Text config file (*.txt)"));
 	if ( fileName != "" )
 	{
-		laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii(), logger );
-		if ( laboratory.get() != 0 )
-		{
-			mode = STOPPED;
-			ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
-			int n = laboratory->getStrategy()->getN();
-			int m = laboratory->getStrategy()->getM();
-			ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
-		}
+        try
+        {
+		    laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii(), logger );
+		    if ( laboratory.get() != 0 )
+		    {
+			    mode = STOPPED;
+			    ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
+			    int n = laboratory->getStrategy()->getN();
+			    int m = laboratory->getStrategy()->getM();
+			    ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
+		    }
+        }catch ( std::runtime_error& error )
+        {
+            ui.deviceLabel->setText("ERROR:");
+            ui.sizeLabel->setText( error.what() );
+        }
 	}
     return true;
 }

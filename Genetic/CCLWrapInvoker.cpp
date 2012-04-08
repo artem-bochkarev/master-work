@@ -19,7 +19,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + 1;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	boost::uint32_t getNextN( boost::uint32_t n )
@@ -30,7 +30,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + n;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	int reset()

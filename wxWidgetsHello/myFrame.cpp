@@ -59,7 +59,13 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     this->Connect( ID_View, wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(MyFrame::OnView) );
 
-    laboratory = CLaboratoryFactory::getLaboratory();
+    try
+    {
+        laboratory = CLaboratoryFactory::getLaboratory( logger );
+    }catch( std::exception& err )
+    {
+        OutputDebugStringA( err.what() );
+    }
     CMapPtr map1 = CMapFactory::getMap( "map1.txt" );
   //  CMap map2( 32, 32, 64 );
     CMapPtr map3 = CMapFactory::getRandomMap( 32, 32, 64 );

@@ -35,6 +35,11 @@ CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName, Tools::L
     return createLaboratory( states, actions, strategy, labResults );
 }
 
+CLaboratoryPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger )
+{
+    return getLaboratory( "config.txt", logger );
+}
+
 CLaboratoryPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 {
     CStateContainerPtr states( new CStateContainerImpl() );

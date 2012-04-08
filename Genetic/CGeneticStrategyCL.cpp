@@ -53,6 +53,10 @@ void CGeneticStrategyCL::initCLBuffers()
     sumResult = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*sizeof(float) );
     bestIndivid = cl::Buffer(context, CL_MEM_WRITE_ONLY, gensToCount*( 2*statesCount*stateSize + 4 ) );
 
+    maxCache = cl::Buffer(context, CL_MEM_READ_WRITE, M*N*4);
+    bestPos = cl::Buffer(context, CL_MEM_READ_WRITE, M*N*4);
+    avgCache = cl::Buffer(context, CL_MEM_READ_WRITE, M*N*4);
+
    // startStateBufCL1 = cl::Buffer(context, CL_MEM_READ_WRITE, N*N);
    // startStateBufCL2 = cl::Buffer(context, CL_MEM_READ_WRITE, N*N);
 }
@@ -67,7 +71,7 @@ void CGeneticStrategyCL::createProgram()
     {
         OutputDebugStringW( L"file not found\n" );
 		logger << "[FAILED] File not found.\n";
-		return;
+		throw std::runtime_error( "File not found" );
     }
    /* string prog(istreambuf_iterator<char>(file),
         (istreambuf_iterator<char>()));
@@ -105,6 +109,7 @@ void CGeneticStrategyCL::createProgram()
         string s = ss.str();
 		logger << "[DESCRIPTION] " << s.c_str() << "\n";
         OutputDebugStringA( s.c_str() );
+        throw std::runtime_error( "Failed to compile Program" );
     }
 	try {
 		kernelGen = cl::Kernel( program, "genetic_2d" );
@@ -115,6 +120,7 @@ void CGeneticStrategyCL::createProgram()
 		logger << "[DESCRIPTION] " << streamsdk::getOpenCLErrorCodeStr( err.err() ) << "\n";
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( err.err() ) );
         OutputDebugStringA( "\n" );
+        throw std::runtime_error( "Failed to create Kernel" );
 	}
     
 }
@@ -177,6 +183,12 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
 		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
+        throw std::runtime_error( std::string("Failed to create GeneticStrategy: ").append( 
+            streamsdk::getOpenCLErrorCodeStr( error.err() )) );
+    }catch ( std::runtime_error& err )
+    {
+        throw std::runtime_error( std::string( "Failed to create GeneticStrategy: " ).append(
+            err.what() ));
     }
 }
 
@@ -185,6 +197,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
     gensToCount = 1;
     M = N = 0;
     deviceType = GPU;
+    mode = NEW;
     for ( size_t i=0; i < strings.size(); ++i )
     {
         const std::string& str = strings[i];
@@ -226,6 +239,16 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
                 deviceType = CPU;
             continue;
         }
+        if ( boost::starts_with( str, "compute" ) )
+        {
+            int b = str.find( "=" );
+            ++b;
+            int e = str.find( ";" );
+            const std::string tmp( str.substr( b, e ) );
+            if ( tmp.find("old") != -1 || tmp.find("one") != -1 )
+                mode = OLD;
+            continue;
+        }
     }
     
     invoker = new CInvoker( this, rand );
@@ -233,7 +256,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
     if (( M <= 0 ) || ( N <= 0 ))
     {
 		logger << "[FAILED] Bad config!\n";
-        throw std::exception( "bad config!" );
+        throw std::runtime_error( "bad config!" );
     }
 }
 
@@ -278,11 +301,24 @@ void CGeneticStrategyCL::preStart()
         kernelGen.setArg( 4, mapBufCL );
         //kernelGen.setArg( 4, mapSize, 0 );
         //kernelGen.setArg( 5, tempBuffer );
-        kernelGen.setArg( 5, bufSize, 0 );
-        kernelGen.setArg( 6, mapCL );
-        kernelGen.setArg( 7, bestResult );
-        kernelGen.setArg( 8, sumResult );
-        kernelGen.setArg( 9, bestIndivid );
+        //kernelGen.setArg( 5, bufSize, 0 );
+        if ( mode == NEW )
+        {
+            kernelGen.setArg( 5, maxCache );
+            kernelGen.setArg( 6, avgCache );
+            kernelGen.setArg( 7, bestPos );
+            kernelGen.setArg( 8, mapCL );
+            kernelGen.setArg( 9, bestResult );
+            kernelGen.setArg( 10, sumResult );
+            kernelGen.setArg( 11, bestIndivid );
+        }else
+        {
+            kernelGen.setArg( 5, bufSize, 0 );
+            kernelGen.setArg( 6, mapCL );
+            kernelGen.setArg( 7, bestResult );
+            kernelGen.setArg( 8, sumResult );
+            kernelGen.setArg( 9, bestIndivid );
+        }
 
         sizes[0] = statesCount;
         sizes[1] = stateSize;
@@ -299,9 +335,11 @@ void CGeneticStrategyCL::preStart()
 
     }catch( cl::Error& error )
     {
-		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
+        logger << "[FAILED] to set arguments: " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
+        throw std::runtime_error( std::string( "Failed to set arguments: " ).append (
+            streamsdk::getOpenCLErrorCodeStr( error.err() ) ));
     }
 }
 
@@ -309,7 +347,8 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 {
     try
     {
-        queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange( N, M ) );
+        //queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );
+        queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange(16, 16) );
         queue.finish();
        
         queue.enqueueReadBuffer( bestResult, CL_TRUE, 0, gensToCount*sizeof(float), bestResults );
@@ -320,6 +359,8 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 		logger << "[FAILED] " << streamsdk::getOpenCLErrorCodeStr( error.err() ) << "\n";
         OutputDebugStringA( error.what() );
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
+        throw std::runtime_error( std::string( "Failed to get next generation: " ).append ( 
+            streamsdk::getOpenCLErrorCodeStr( error.err() ) ));
     }
 
     boost::mutex& mutex = result->getMutex();

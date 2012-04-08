@@ -19,6 +19,11 @@ class CGeneticStrategyCL : public CGeneticStrategy
         CPU,
         GPU
     };
+    enum Mode
+    {
+        OLD,
+        NEW
+    };
 public:
     CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
 		CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
@@ -39,6 +44,7 @@ public:
 private:
     int N, M;
     DeviceType deviceType;
+    Mode mode;
     std::string sProfile;
     std::string sName;
     std::string sVendor;
@@ -65,6 +71,7 @@ private:
     char *steps, *bestIndivids;
 
     cl::Buffer statesBufCL1, statesBufCL2, tempBuffer;
+    cl::Buffer maxCache, avgCache, bestPos;
     cl::Buffer mapBufCL, mapCL;
     cl::Buffer cacheBuffer;
     cl::Buffer sizesBuf, srandBuf;

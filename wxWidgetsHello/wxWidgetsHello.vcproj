@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\wxWidgets-2.9.2\include&quot;;D:\Data\Programming\Shit\Project;&quot;C:\wxWidgets-2.9.2\include\msvc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;C:\wxWidgets-2.9.2\include&quot;;&quot;C:\wxWidgets-2.9.2\include\msvc&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="D:\Data\Programming\Shit\Project;&quot;C:\wxWidgets-2.9.2\include&quot;;&quot;C:\wxWidgets-2.9.2\include\msvc&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;C:\wxWidgets-2.9.2\include&quot;;&quot;C:\wxWidgets-2.9.2\include\msvc&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

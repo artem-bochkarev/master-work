@@ -1,6 +1,7 @@
 #include "wx/wx.h"
 #include "Genetic/CTest.h"
 #include "Genetic/CLaboratoryMulti.h"
+#include "Tools/Logger.h"
 
 class MyApp: public wxApp
 {
@@ -33,6 +34,7 @@ private:
     CLaboratoryPtr laboratory;
     std::vector<CMapPtr> maps;
     wxTimer timer;
+    Tools::Logger logger;
 };
 
 enum

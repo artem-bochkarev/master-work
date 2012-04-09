@@ -175,6 +175,38 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         //cl::vector<cl::Device> devices; 
         //devices[0] = cl::Device( context.getInfo<CL_CONTEXT_DEVICES>() );
         queue = cl::CommandQueue( context, devices[0] );
+        uint val;
+        devices[0].getInfo( CL_DEVICE_MAX_WORK_GROUP_SIZE, &val );
+        cl_ulong lMemSize;
+        devices[0].getInfo( CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, &lMemSize );
+        cl_ulong autSize = 4 + 2*16*statesCount;
+        cl_ulong nMemSize = val * autSize;
+        localRange = cl::NullRange;
+        globalRange = cl::NDRange( N, M );
+        if ( lMemSize < nMemSize )
+        {
+            cl_ulong res = lMemSize / autSize;
+            std::vector<int> Ndels, Mdels;
+            for ( int i=1; i<=(std::max)( N, M )/2; ++i ) 
+            {
+                if ( N % i == 0 )
+                    Ndels.push_back(i);
+                if ( M % i == 0 )
+                    Mdels.push_back(i);
+            }
+            int maxA = 1, maxB = 1;
+            for ( size_t i=0; i<Ndels.size(); ++i )
+                for ( size_t j=0; j<Mdels.size(); ++j )
+                {
+                    int a = Ndels[i], b = Mdels[i];
+                    if ( a * b < res && a*b > maxA*maxB )
+                    {
+                        maxA = a;
+                        maxB = b;
+                    }
+                }
+            localRange = cl::NDRange( maxA, maxB );
+        }
         
         initCLBuffers();
 		logger << "[SUCCES] CGeneticStrategyCL created.\n";
@@ -348,7 +380,7 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
     try
     {
         //queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );
-        queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange(16, 16) );
+        queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, globalRange, localRange );
         queue.finish();
        
         queue.enqueueReadBuffer( bestResult, CL_TRUE, 0, gensToCount*sizeof(float), bestResults );

@@ -83,10 +83,10 @@ private:
     cl::Kernel kernelGen;
     cl::Context context;
     cl::CommandQueue queue;
-    cl_platform_id platform;
-    cl_device_id deviceId;
-    cl::Device device;
+    //cl::Device device;
     cl::vector<cl::Device> devices;
+    cl::NDRange globalRange;
+    cl::NDRange localRange;
 
     std::vector<CMapPtr> maps;
     size_t statesCount, stateSize, gensToCount;

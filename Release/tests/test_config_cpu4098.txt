@@ -1,0 +1,7 @@
+states=3;
+N=64;
+M=64;
+strategy=NoCL;
+device=CPU;
+gensCounter=20;
+flowsCounter=5;

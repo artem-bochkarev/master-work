@@ -1,0 +1,6 @@
+states=3;
+N=128;
+M=128;
+strategy=CL;
+device=GPU;
+gensCounter=20;

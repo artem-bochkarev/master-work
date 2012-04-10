@@ -4,3 +4,4 @@ M=16;
 strategy=CL;
 device=CPU;
 gensCounter=2;
+compute=one;

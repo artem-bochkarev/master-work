@@ -1,0 +1,44 @@
+SET( OUTFILE, speed_results.txt );
+SET( TIME, 1 );
+SET( VERSION, 2.0 );
+SET( CLSOURCE, versions/version2.0/gen.c )
+
+RUN( tests/test_config_clwrap_cpu_1024.txt );
+RUN( tests/test_config_cl_gpu_1024.txt );
+RUN( tests/test_config_cl_cpu_1024.txt );
+RUN( tests/test_config_cpu1024.txt );
+
+RUN( tests/test_config_clwrap_cpu_4098.txt );
+RUN( tests/test_config_cl_gpu_4098.txt );
+RUN( tests/test_config_cl_cpu_4098.txt );
+RUN( tests/test_config_cpu4098.txt );
+
+RUN( tests/test_config_clwrap_cpu_16384.txt );
+RUN( tests/test_config_cl_gpu_16384.txt );
+RUN( tests/test_config_cl_cpu_16384.txt );
+RUN( tests/test_config_cpu16384.txt );
+
+SET( TIME, 1 );
+SET( VERSION, 1.7 );
+SET( CLSOURCE, versions/version1.7/gen.c )
+RUN( tests/test_config_cl_cpu256.txt );
+RUN( tests/test_config_cl_gpu256.txt );
+RUN( tests/test_config_clwrap_cpu256.txt );
+RUN( tests/test_config_cpu256.txt );
+
+RUN( tests/test_config_cl_cpu25.txt );
+RUN( tests/test_config_cl_gpu25.txt );
+RUN( tests/test_config_clwrap_cpu25.txt );
+RUN( tests/test_config_cpu25.txt );
+
+SET( VERSION, 1.8 );
+SET( CLSOURCE, versions/version1.8/gen.c )
+RUN( tests/test_config_cl_cpu256.txt );
+RUN( tests/test_config_cl_gpu256.txt );
+RUN( tests/test_config_clwrap_cpu256.txt );
+RUN( tests/test_config_cpu256.txt );
+
+RUN( tests/test_config_cl_cpu25.txt );
+RUN( tests/test_config_cl_gpu25.txt );
+RUN( tests/test_config_clwrap_cpu25.txt );
+RUN( tests/test_config_cpu25.txt );

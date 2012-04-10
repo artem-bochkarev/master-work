@@ -1,0 +1,68 @@
+SET( OUTFILE, mean_results.txt );
+SET( TIME, 1 );
+SET( VERSION, 2.0 );
+SET( CLSOURCE, versions/version2.0/gen.c )
+
+AR_MEAN( tests/test_config_clwrap_cpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cl_cpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cpu1024.txt, 10 );
+
+AR_MEAN( tests/test_config_clwrap_cpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cl_cpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cpu3072.txt, 10 );
+
+SET( VERSION, 1.8 );
+SET( CLSOURCE, versions/version1.8/gen.c )
+AR_MEAN( tests/test_config_cl_cpu256.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu256.txt, 10 );
+AR_MEAN( tests/test_config_clwrap_cpu256.txt, 10 );
+AR_MEAN( tests/test_config_cpu256.txt, 10 );
+
+AR_MEAN( tests/test_config_cl_cpu25.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu25.txt, 10 );
+AR_MEAN( tests/test_config_clwrap_cpu25.txt, 10 );
+AR_MEAN( tests/test_config_cpu25.txt, 10 );
+
+SET( TIME, 5 );
+SET( VERSION, 2.0 );
+SET( CLSOURCE, versions/version2.0/gen.c )
+
+AR_MEAN( tests/test_config_clwrap_cpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cl_cpu_1024.txt, 10 );
+AR_MEAN( tests/test_config_cpu1024.txt, 10 );
+
+AR_MEAN( tests/test_config_clwrap_cpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cl_cpu_3072.txt, 10 );
+AR_MEAN( tests/test_config_cpu3072.txt, 10 );
+
+SET( VERSION, 1.8 );
+SET( CLSOURCE, versions/version1.8/gen.c )
+AR_MEAN( tests/test_config_cl_cpu256.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu256.txt, 10 );
+AR_MEAN( tests/test_config_clwrap_cpu256.txt, 10 );
+AR_MEAN( tests/test_config_cpu256.txt, 10 );
+
+AR_MEAN( tests/test_config_cl_cpu25.txt, 10 );
+AR_MEAN( tests/test_config_cl_gpu25.txt, 10 );
+AR_MEAN( tests/test_config_clwrap_cpu25.txt, 10 );
+AR_MEAN( tests/test_config_cpu25.txt, 10 );
+
+#SET( TIME, 10 );
+#SET( VERSION, 2.0 );
+#SET( CLSOURCE, versions/version2.0/gen.c )
+
+#AR_MEAN( tests/test_config_clwrap_cpu_1024.txt, 10 );
+#AR_MEAN( tests/test_config_cl_gpu_1024.txt, 10 );
+#AR_MEAN( tests/test_config_cl_cpu_1024.txt, 10 );
+#AR_MEAN( tests/test_config_cpu1024.txt, 10 );
+
+#SET( VERSION, 1.8 );
+#SET( CLSOURCE, versions/version1.8/gen.c )
+#AR_MEAN( tests/test_config_cl_cpu256.txt, 10 );
+#AR_MEAN( tests/test_config_cl_gpu256.txt, 10 );
+#AR_MEAN( tests/test_config_clwrap_cpu256.txt, 10 );
+#AR_MEAN( tests/test_config_cpu256.txt, 10 );

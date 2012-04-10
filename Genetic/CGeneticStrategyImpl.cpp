@@ -47,53 +47,61 @@ class CMainInvoker : public CInvoker
     CAutomatImpl*** newIndivids;
     size_t cnt;
 public:
-    CMainInvoker( CGeneticStrategyImpl* strg, size_t threadCount, CRandomPtr rand )
-        :CInvoker(strg, rand), cnt(threadCount) {}
+    CMainInvoker( CGeneticStrategyImpl* strg, size_t threadCount, CRandomPtr rand, boost::exception_ptr & error )
+        :CInvoker(strg, rand, error), cnt(threadCount) {}
 
     void operator ()() const
     {
-        boost::thread_group group;
-        size_t N = strategy->getN();
-        size_t step = std::max( (size_t)1, N / cnt );
-        size_t counter = N / step;
-        if ( N%step != 0 )
-            ++counter;
-        size_t prev = 0;
-        size_t next = prev + step;
-        
-
-        CGeneticStrategyImpl* strg = static_cast<CGeneticStrategyImpl*>(strategy);
-        strg->preGeneration();
-
-        boost::barrier firstBarrier( counter + 1 );
-        for ( size_t i=0; i<counter; ++i )
-        {
-            if ( i == counter - 1 )
-                next = N;
-            CLocalInvoker invoker( static_cast<CGeneticStrategyImpl*>(strategy), prev, next, 
-                firstBarrier );
-            group.create_thread( invoker );
-            prev = next;
-            next += step;
-        }
-
         try
         {
-            while (true)
-            {
-                firstBarrier.wait();
-                strg->postGeneration();
-                boost::this_thread::interruption_point();
-                firstBarrier.wait();
-                strg->preGeneration();
-            }
-        }catch( boost::thread_interrupted& )
-        {
-            group.interrupt_all();
-        }
+            boost::thread_group group;
+            size_t N = strategy->getN();
+            size_t step = std::max( (size_t)1, N / cnt );
+            size_t counter = N / step;
+            if ( N%step != 0 )
+                ++counter;
+            size_t prev = 0;
+            size_t next = prev + step;
+            
 
-        group.interrupt_all();
-        group.join_all();
+            CGeneticStrategyImpl* strg = static_cast<CGeneticStrategyImpl*>(strategy);
+            strg->preGeneration();
+
+            boost::barrier firstBarrier( counter + 1 );
+            for ( size_t i=0; i<counter; ++i )
+            {
+                if ( i == counter - 1 )
+                    next = N;
+                CLocalInvoker invoker( static_cast<CGeneticStrategyImpl*>(strategy), prev, next, 
+                    firstBarrier );
+                group.create_thread( invoker );
+                prev = next;
+                next += step;
+            }
+
+            try
+            {
+                while (true)
+                {
+                    firstBarrier.wait();
+                    strg->postGeneration();
+                    boost::this_thread::interruption_point();
+                    firstBarrier.wait();
+                    strg->preGeneration();
+                }
+            }catch( boost::thread_interrupted& )
+            {
+                group.interrupt_all();
+            }
+
+            group.interrupt_all();
+            group.join_all();
+        }
+        catch( boost::thread_interrupted& ) {}
+        catch( ... )
+        {
+            error = boost::current_exception();
+        }
     }
 
     virtual threadPtr getThread() const
@@ -167,10 +175,10 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
 
     if ( flowsCnt == 1 )
     {
-        invoker = new CInvoker( this, rand );
+        invoker = new CInvoker( this, rand, error );
     }else
     {
-        invoker = new CMainInvoker( this, flowsCnt, rand );
+        invoker = new CMainInvoker( this, flowsCnt, rand, error );
     }
 
     if (( M == 0 ) || ( N == 0 ))
@@ -399,4 +407,9 @@ size_t CGeneticStrategyImpl::getM() const
 std::string CGeneticStrategyImpl::getDeviceType() const
 {
     return "C++ on CPU";
+}
+
+const boost::exception_ptr& CGeneticStrategyImpl::getError() const
+{
+    return error;
 }

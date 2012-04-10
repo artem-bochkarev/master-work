@@ -31,6 +31,7 @@ public:
     virtual size_t getN() const;
     virtual size_t getM() const;
     virtual std::string getDeviceType() const;
+    virtual const boost::exception_ptr& getError() const;
 private:
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
     int N, M;
@@ -53,6 +54,7 @@ private:
     CLabResultMulti* result;
     CInvoker* invoker;
 	Tools::Logger& logger;
+    boost::exception_ptr error;
 
     int cnt;
 };

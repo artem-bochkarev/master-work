@@ -85,20 +85,20 @@ void QApp::buttonPressed()
 		break;
 	case (STOPPED):
 		laboratory->setMaps( maps );
-		laboratory->start();
+		//laboratory->start();
 		graphScene = boost::shared_ptr<QGraphicsScene>( new QGraphicsScene() );
 		timer.start();
         ui.pushButton->setText("Pause");
 		mode = RUNNING;
 		break;
 	case (PAUSED):
-		laboratory->start();
+		//laboratory->start();
 		timer.start();
         ui.pushButton->setText("Pause");
 		mode = RUNNING;
 		break;
 	case (RUNNING):
-		laboratory->pause();
+		//laboratory->pause();
 		timer.stop();
 		ui.pushButton->setText("Continue");
 		mode = PAUSED;
@@ -108,7 +108,22 @@ void QApp::buttonPressed()
 
 void QApp::timerEvent()
 {
-	drawGenerationInfo();
+    try
+    {
+        if (mode == RUNNING)
+            laboratory->runForTime( 1 );
+        drawGenerationInfo();
+    }catch( std::exception& ex )
+    {
+        laboratory->pause();
+        ui.deviceLabel->setText("ERROR:");
+        ui.sizeLabel->setText( ex.what() );
+    }catch( ... )
+    {
+        laboratory->pause();
+        ui.deviceLabel->setText("ERROR:");
+        ui.sizeLabel->setText( "unknown error" );
+    }
 }
 
 void QApp::drawGenerationInfo()

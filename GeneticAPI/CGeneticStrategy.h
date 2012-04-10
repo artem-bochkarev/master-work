@@ -2,6 +2,7 @@
 #include "CMap.h"
 #include "CRandom.h"
 #include "CAutomat.h"
+#include <boost/exception_ptr.hpp>
 
 
 class CInvoker;
@@ -21,6 +22,7 @@ public:
     virtual size_t getN() const = 0;
     virtual size_t getM() const = 0;
     virtual std::string getDeviceType() const = 0;
+    virtual const boost::exception_ptr& getError() const = 0;
 };
 
 typedef boost::shared_ptr<CGeneticStrategy> CGeneticStrategyPtr;

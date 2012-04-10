@@ -92,7 +92,7 @@ void CGeneticStrategyCLWrap::setFromStrings( const std::vector< std::string >& s
             continue;
         }
     }
-    invoker = new CInvoker( this, rand );
+    invoker = new CInvoker( this, rand, error );
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
@@ -144,19 +144,17 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
     settings.map = mapBuffer;
 
 	CCLWrapInvoker invoker( this, settings );
+    threadPtr invokerThread = invoker.getThread();
 	try
 	{
-		invoker.getThread()->join();
+		invokerThread->join();
 	}catch( boost::thread_interrupted& err )
 	{
-		invoker.getThread()->interrupt();
-		invoker.getThread()->join();
+		invokerThread->interrupt();
+		invokerThread->join();
 		throw err;
 	}
-    
-	
 
-    //ToDo: select best;
     int bestResult = 0;
     double avgResult = 0.0;
     int bestPos = 0;
@@ -182,7 +180,6 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
 
 void CGeneticStrategyCLWrap::swapBuffers()
 {
-//TODO: !
     uint* tmp = buffer;
     buffer = outBuffer;
     outBuffer = tmp;
@@ -251,4 +248,8 @@ size_t CGeneticStrategyCLWrap::getM() const
 std::string CGeneticStrategyCLWrap::getDeviceType() const
 {
     return "OpenCL Wrapping on CPU";
+}
+const boost::exception_ptr& CGeneticStrategyCLWrap::getError() const
+{
+    return error;
 }

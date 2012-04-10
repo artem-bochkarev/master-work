@@ -35,12 +35,12 @@ public:
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
     CAutomatPtr getBestIndivid() const;
-    void createProgram();
     virtual ~CGeneticStrategyCL();
     virtual CInvoker* getInvoker() const;
     virtual size_t getN() const;
     virtual size_t getM() const;
     virtual std::string getDeviceType() const;
+    virtual const boost::exception_ptr& getError() const;
 private:
     int N, M;
     DeviceType deviceType;
@@ -51,6 +51,8 @@ private:
     std::string sVersion;
 
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
+    void processString( std::string& str, const std::vector<size_t>& vals ) const;
+    void createProgram( const std::vector<size_t>& vals );
 
     void initCLBuffers() ;
     void initMemory();
@@ -93,4 +95,5 @@ private:
     CLabResultMulti* result;
     CInvoker* invoker;
 	Tools::Logger& logger;
+    boost::exception_ptr error;
 };

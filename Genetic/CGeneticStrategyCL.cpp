@@ -10,6 +10,7 @@
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "SDKUtil/SDKPlatform.hpp"
+#include <boost/lexical_cast.hpp>
 
 
 void CGeneticStrategyCL::pushResults()
@@ -61,7 +62,39 @@ void CGeneticStrategyCL::initCLBuffers()
    // startStateBufCL2 = cl::Buffer(context, CL_MEM_READ_WRITE, N*N);
 }
 
-void CGeneticStrategyCL::createProgram()
+void CGeneticStrategyCL::processString( std::string& str, const std::vector<size_t>& vals ) const
+{
+    #define max_linear_size 16;
+    #define max_squared_size 16;
+    #define max_tmp_buffer_size 6400;
+    int i = str.find("#define");
+    if ( i >= 0 )
+    {
+        int j = str.find("max_linear_size");
+        if ( j > i )
+        {
+            if ( vals[0] > 0 )
+                str = "#define max_linear_size " + boost::lexical_cast<std::string, size_t>(vals[0]) + "\n";
+            return;
+        }
+        j = str.find("max_squared_size");
+        if ( j > i )
+        {
+            if ( vals[1] > 0 )
+                str = "#define max_squared_size " + boost::lexical_cast<std::string, size_t>(vals[1]) + "\n";
+            return;
+        }
+        j = str.find("max_tmp_buffer_size");
+        if ( j > i )
+        {
+            if ( vals[2] > 0 )
+                str = "#define max_tmp_buffer_size " + boost::lexical_cast<std::string, size_t>(vals[2]) + "\n";
+            return;
+        }
+    }
+}
+
+void CGeneticStrategyCL::createProgram( const std::vector<size_t>& vals )
 {
     // build the program from the source in the file
 	logger << "[INIT] Start building program.\n";
@@ -87,6 +120,7 @@ void CGeneticStrategyCL::createProgram()
         size_t len = strlen( str );
         
         std::string s( str );
+        processString( s, vals );
         input.append( s );
         input.append("\n");
         //strs.push_back( s );
@@ -170,7 +204,6 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         }
 
         devices = context.getInfo<CL_CONTEXT_DEVICES>();
-        createProgram();
 
         //cl::vector<cl::Device> devices; 
         //devices[0] = cl::Device( context.getInfo<CL_CONTEXT_DEVICES>() );
@@ -178,11 +211,13 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
         uint val;
         devices[0].getInfo( CL_DEVICE_MAX_WORK_GROUP_SIZE, &val );
         cl_ulong lMemSize;
-        devices[0].getInfo( CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, &lMemSize );
+        devices[0].getInfo( CL_DEVICE_LOCAL_MEM_SIZE, &lMemSize );
         cl_ulong autSize = 4 + 2*16*statesCount;
         cl_ulong nMemSize = val * autSize;
         localRange = cl::NullRange;
         globalRange = cl::NDRange( N, M );
+        std::vector<size_t> vals;
+        vals.assign(3, 0);
         if ( lMemSize < nMemSize )
         {
             cl_ulong res = lMemSize / autSize;
@@ -198,16 +233,27 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
             for ( size_t i=0; i<Ndels.size(); ++i )
                 for ( size_t j=0; j<Mdels.size(); ++j )
                 {
-                    int a = Ndels[i], b = Mdels[i];
-                    if ( a * b < res && a*b > maxA*maxB )
+                    int a = Ndels[i], b = Mdels[j];
+                    if ( (2*a + a*b*(1 + autSize/4))*4 < lMemSize )
                     {
-                        maxA = a;
-                        maxB = b;
+                        if ( a*b > maxA*maxB )
+                        {
+                            maxA = a;
+                            maxB = b;
+                        }else if ( a*b == maxA*maxB && std::abs(a - b) < std::abs( maxA - maxB ) )
+                        {
+                            maxA = a;
+                            maxB = b;
+                        }
                     }
                 }
             localRange = cl::NDRange( maxA, maxB );
+            vals[0] = maxA;
+            vals[1] = maxA * maxB;
+            vals[2] = maxA*maxB*(size_t)(autSize / 4);
         }
-        
+
+        createProgram( vals );
         initCLBuffers();
 		logger << "[SUCCES] CGeneticStrategyCL created.\n";
     }catch ( cl::Error& error ) 
@@ -240,7 +286,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
             int e = str.find( ";" );
             const std::string tmp( str.substr( b, e ) );
             gensToCount = atoi( tmp.c_str() );
-            break;
+            continue;
         }
 
         if ( boost::starts_with( str, "M" ) )
@@ -283,7 +329,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
         }
     }
     
-    invoker = new CInvoker( this, rand );
+    invoker = new CInvoker( this, rand, error );
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
@@ -380,7 +426,11 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
     try
     {
         //queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );
-        queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, globalRange, localRange );
+        boost::this_thread::disable_interruption di;
+        if ( mode == NEW )
+            queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, globalRange, localRange );
+        else
+            queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NDRange(N, M) );
         queue.finish();
        
         queue.enqueueReadBuffer( bestResult, CL_TRUE, 0, gensToCount*sizeof(float), bestResults );
@@ -393,6 +443,10 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
         OutputDebugStringA( streamsdk::getOpenCLErrorCodeStr( error.err() ) );
         throw std::runtime_error( std::string( "Failed to get next generation: " ).append ( 
             streamsdk::getOpenCLErrorCodeStr( error.err() ) ));
+    }catch( std::exception& ex )
+    {
+        int k = 0;
+        throw ex;
     }
 
     boost::mutex& mutex = result->getMutex();
@@ -519,4 +573,9 @@ std::string CGeneticStrategyCL::getDeviceType() const
         return "OpenCL on CPU, " + sName;
     }
     return "OpenCL on GPU, " + sName;
+}
+
+const boost::exception_ptr& CGeneticStrategyCL::getError() const
+{
+    return error;
 }

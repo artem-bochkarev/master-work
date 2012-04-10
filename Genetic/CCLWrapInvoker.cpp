@@ -19,7 +19,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + 1;
-		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	boost::uint32_t getNextN( boost::uint32_t n )
@@ -30,7 +30,7 @@ public:
 		{
 			oldVal = value;
 			newVal = oldVal + n;
-		}while ( oldVal != boost::interprocess::detail::atomic_cas32( &value, newVal, oldVal) );
+		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
 		return newVal;
 	}
 	int reset()
@@ -52,31 +52,33 @@ public:
 
     virtual void operator ()()
 	{
-		size_t N = settings.N;
-		size_t M = settings.M;
-		size_t step = settings.step;
-		size_t end = queue->getNext();
-		size_t start = end - step;
-        uint stuff[4];
-        stuff[0] = N;
-        stuff[1] = M;
-		while ( start < N*M )
-		{
-			end = std::min( N*M, end);
-			for ( size_t i = start; i < end; ++i )
-			{
-				size_t n = i / M;
-				size_t m = i - n*M;
-                stuff[2] = n;
-                stuff[3] = m;
-				//kernelCall();
-                genetic_2d( stuff, settings.inBuffer, settings.outBuffer, settings.constSizes,
-                    settings.varValues, settings.mapsBuffer, settings.tempBuffer, settings.map, settings.cache );
-			}
-			end = queue->getNext();
-			start = end - step;
-		}
-        int z = start;
+        try
+        {
+		    size_t N = settings.N;
+		    size_t M = settings.M;
+		    size_t step = settings.step;
+		    size_t end = queue->getNext();
+		    size_t start = end - step;
+            uint stuff[4];
+            stuff[0] = N;
+            stuff[1] = M;
+		    while ( start < N*M )
+		    {
+			    end = std::min( N*M, end);
+			    for ( size_t i = start; i < end; ++i )
+			    {
+				    size_t n = i / M;
+				    size_t m = i - n*M;
+                    stuff[2] = n;
+                    stuff[3] = m;
+				    //kernelCall();
+                    genetic_2d( stuff, settings.inBuffer, settings.outBuffer, settings.constSizes,
+                        settings.varValues, settings.mapsBuffer, settings.tempBuffer, settings.map, settings.cache );
+			    }
+			    end = queue->getNext();
+			    start = end - step;
+		    }
+        }catch( boost::thread_interrupted& ){}
 	}
 
     virtual threadPtr getThread() const
@@ -102,7 +104,6 @@ void CCLWrapInvoker::operator ()()
 	{
 		group.interrupt_all();
 		group.join_all();
-		//throw err;
 	}
 }
 

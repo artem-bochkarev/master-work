@@ -2,6 +2,9 @@
 #include "CLaboratoryMulti.h"
 #include "CGeneticStrategyImpl.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/chrono.hpp>
+
+const long sleep_time = 100; //millisec
 
 double CLaboratoryMulti::getAvgFitness( size_t i ) const
 {
@@ -19,6 +22,8 @@ CAutomatPtr CLaboratoryMulti::getBestInd( size_t i ) const
 
 size_t CLaboratoryMulti::getGenerationNumber() const
 {
+    if ( strategy->getError() )
+        boost::rethrow_exception(strategy->getError());
     boost::mutex& mutex = results->getMutex();
     boost::mutex::scoped_lock lock(mutex);
     return results->getGenerationsNumber();
@@ -52,14 +57,27 @@ void CLaboratoryMulti::pause()
         running = false;
         pThread->detach();
         pThread.reset();
+        if ( strategy->getError() )
+            boost::rethrow_exception(strategy->getError());
     }
 }
 
 void CLaboratoryMulti::runForTime( int milisec )
 {
+    typedef boost::chrono::milliseconds ms;
     start();
-    boost::this_thread::sleep( boost::posix_time::millisec( milisec ) );
+    boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+    while (true)
+    {
+        boost::this_thread::sleep( boost::posix_time::millisec( sleep_time ) );
+        ms millis = boost::chrono::duration_cast<ms>(boost::chrono::system_clock::now() - start);
+        if ( milisec - millis.count() <= 0 || milisec - millis.count() < sleep_time/2  )
+            break;
+        if ( strategy->getError() )
+            boost::rethrow_exception(strategy->getError());
+    }
     pause();
+    boost::this_thread::sleep( boost::posix_time::millisec( sleep_time ) );
 }
 
 bool CLaboratoryMulti::isRunning() const

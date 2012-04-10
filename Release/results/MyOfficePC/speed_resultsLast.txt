@@ -1,0 +1,12 @@
+OpenCL Wrapping on CPU, version=2.0, states count: 3,  size: 32x32,  result: 8272
+OpenCL on CPU, Intel(R) OpenCL, version=2.0, states count: 3,  size: 32x32,  result: 4200
+C++ on CPU, version=2.0, states count: 3,  size: 32x32,  result: 1327
+OpenCL Wrapping on CPU, version=2.0, states count: 3,  size: 64x48,  result: 2893
+OpenCL on CPU, Intel(R) OpenCL, version=2.0, states count: 3,  size: 64x48,  result: 1400
+C++ on CPU, version=2.0, states count: 3,  size: 64x48,  result: 471
+OpenCL Wrapping on CPU, version=2.0, states count: 3,  size: 128x128,  result: 566
+OpenCL on CPU, Intel(R) OpenCL, version=2.0, states count: 3,  size: 128x128,  result: 280
+C++ on CPU, version=2.0, states count: 3,  size: 128x128,  result: 101
+C++ on CPU, version=1.7, states count: 3,  size: 16x16,  result: 5236
+OpenCL on CPU, Intel(R) OpenCL, version=1.7, states count: 3,  size: 16x16,  result: 16896
+C++ on CPU, version=1.8, states count: 3,  size: 16x16,  result: 5165

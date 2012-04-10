@@ -1,0 +1,33 @@
+#pragma once
+#include <fstream>
+#include <Tools/Logger.h>
+#include <vector>
+#include <string>
+#include <boost/filesystem.hpp>
+
+class Tester
+{
+    enum Commands
+    {
+        RUN,
+        SET,
+        AR_MEAN,
+        ERROR
+    };
+public:
+    Tester( const char* inFileName, const char* outFileName, Tools::Logger& logger );
+    void run();
+private:
+    Commands parseStr( const std::string& in, std::vector<std::string>& args );
+    bool runCmd( std::vector<std::string>& args );
+    bool setCmd( std::vector<std::string>& args );
+    bool meanCmd( std::vector<std::string>& args );
+    bool process( const std::string& in );
+    std::ifstream in;
+    typedef boost::shared_ptr<std::ofstream> ofstreamPtr;
+    ofstreamPtr pOut;
+    std::string version;
+    Tools::Logger& logger;
+
+    int timeSec;
+};

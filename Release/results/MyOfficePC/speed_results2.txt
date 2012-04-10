@@ -1,0 +1,10 @@
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 32x32,  result: 3900
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 64x48,  result: 1300
+OpenCL on GPU, NVIDIA CUDA, states count: 3,  size: 32x32,  result: 2040
+OpenCL on GPU, NVIDIA CUDA, states count: 3,  size: 64x48,  result: 680
+OpenCL Wrapping on CPU, states count: 3,  size: 32x32,  result: 8178
+OpenCL Wrapping on CPU, states count: 3,  size: 64x48,  result: 2902
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 32x32,  result: 4240
+OpenCL on CPU, Intel(R) OpenCL, states count: 3,  size: 64x48,  result: 1420
+OpenCL Wrapping on CPU, states count: 3,  size: 32x32,  result: 7923
+OpenCL Wrapping on CPU, states count: 3,  size: 64x48,  result: 2907

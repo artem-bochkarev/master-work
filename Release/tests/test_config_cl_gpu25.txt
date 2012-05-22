@@ -3,5 +3,5 @@ N=5;
 M=5;
 strategy=CL;
 device=GPU;
-gensCounter=2;
+gensCounter=20;
 compute=one;

@@ -183,8 +183,8 @@ void AntViewer::draw()
 {
     drawMap();
     drawVisibleCells( wxColor( 170, 170, 230 ) );
-    drawAnt( wxColor( 250, 100, 100 ) );
-    drawFood( wxColor( 150, 250, 150) );
+    drawAnt( wxColor( 250, 70, 70 ) );
+    drawFood( wxColor( 100, 250, 100) );
     itemTextMoves->SetLabel( wxString::Format( wxT("%i"), antArena->movesMaked() ) );
     itemTextEaten->SetLabel( wxString::Format( wxT("%i"), antArena->foodEaten() ) );
 }

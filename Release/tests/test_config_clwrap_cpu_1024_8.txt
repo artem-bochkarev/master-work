@@ -1,0 +1,6 @@
+states=3;
+N=32;
+M=32;
+strategy=CLWrap;
+device=CPU;
+gensCounter=8;

@@ -118,11 +118,15 @@ void QApp::timerEvent()
         laboratory->pause();
         ui.deviceLabel->setText("ERROR:");
         ui.sizeLabel->setText( ex.what() );
+        timer.stop();
+        mode = DISABLED;
     }catch( ... )
     {
         laboratory->pause();
         ui.deviceLabel->setText("ERROR:");
         ui.sizeLabel->setText( "unknown error" );
+        timer.stop();
+        mode = DISABLED;
     }
 }
 

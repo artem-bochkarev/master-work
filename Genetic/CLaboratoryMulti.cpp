@@ -57,8 +57,8 @@ void CLaboratoryMulti::pause()
         running = false;
         pThread->detach();
         pThread.reset();
-        if ( strategy->getError() )
-            boost::rethrow_exception(strategy->getError());
+        //if ( strategy->getError() )
+        //    boost::rethrow_exception(strategy->getError());
     }
 }
 

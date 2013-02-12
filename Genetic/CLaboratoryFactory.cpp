@@ -6,14 +6,25 @@
 #include "CLabResultMulti.h"
 #include "CGeneticStrategyImpl.h"
 #include "CGeneticStrategyCL.h"
+#include "CGeneticStrategyCLv2.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
+#include <fstream>
 
 CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName, Tools::Logger& logger )
 {
     std::ifstream in(fileName);
+    boost::filesystem3::path source(fileName);
+    if ( !boost::filesystem3::exists(source) )
+    {
+        int k = 0;
+        std::string str = boost::filesystem::current_path().string();
+        int z = 1;
+    }
     std::vector< std::string > strings;
     if ( !in.is_open() )
 	{
@@ -106,7 +117,7 @@ CGeneticStrategyPtr CLaboratoryFactory::createStrategy( const std::vector< std::
             {
                 if ( str.find("Wrap") == -1 )
                 {
-                    return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings, logger ) );
+                    return createCLStrategy( strings, states, actions, labResults, logger );
                 }else
                 {
                     return CGeneticStrategyPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), strings, logger ) );
@@ -115,6 +126,34 @@ CGeneticStrategyPtr CLaboratoryFactory::createStrategy( const std::vector< std::
         }
     }
     return CGeneticStrategyPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
+}
+
+CGeneticStrategyPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
+        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
+{
+    boost::filesystem3::path source("gen.cl");
+    if ( !boost::filesystem3::exists(source) )
+    {
+        source = boost::filesystem3::path("gen.c");
+        if ( !boost::filesystem3::exists(source) )
+            throw std::runtime_error("[ERROR] Source file not found\n");
+    }
+    std::ifstream in (source.generic_string().c_str() );
+    char buf[500];
+    in.getline( buf, 490 );
+    std::string str(buf);
+    int version = 1;
+    if ( str.find("#version=") != -1 )
+    {
+        str = str.substr(str.find("=")+1, str.length()-str.find("=") );
+        version = boost::lexical_cast<int>( str );
+    }
+    in.close();
+    //ToDo: continue it!
+    if (version == 1)
+        return CGeneticStrategyPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings, logger ) );
+    else
+        return CGeneticStrategyPtr( new CGeneticStrategyCLv2( source, states.get(), actions.get(), labResults.get(), strings, logger ) );
 }
 
 CLaboratoryPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 

@@ -167,7 +167,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CGeneticStrategyCLv2.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticStrategyCLWrap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGeneticStrategyCommon.cpp"
 				>
 			</File>
 			<File
@@ -249,7 +257,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CGeneticStrategyCLv2.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticStrategyCLWrap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGeneticStrategyCommon.h"
 				>
 			</File>
 			<File

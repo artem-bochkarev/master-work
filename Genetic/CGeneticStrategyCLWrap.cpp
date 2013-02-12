@@ -9,14 +9,6 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "COpenCLWrapInvoker.h"
 
-
-void CGeneticStrategyCLWrap::pushResults()
-{
-    boost::mutex& mutex = result->getMutex();
-    boost::mutex::scoped_lock lock(mutex);
-    result->addGeneration( getBestIndivid(), getMaxFitness(), getAvgFitness() );
-}
-
 void CGeneticStrategyCLWrap::initMemory()
 {
 
@@ -46,7 +38,7 @@ void CGeneticStrategyCLWrap::initMemory()
 
 CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
                                        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
-:states(states), actions(actions), result(res), mapsBuffer(0), mapBuffer(0), invoker(0), buffer(0), logger(logger)
+:CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), mapBuffer(0), buffer(0)
 {
 
     CRandomPtr rand( new CRandomImpl() );
@@ -204,52 +196,55 @@ void CGeneticStrategyCLWrap::setMaps( std::vector<CMapPtr> maps )
     //pushResults();
 }
 
-const CMapPtr CGeneticStrategyCLWrap::getMap( size_t i )
-{
-    CMapImpl* map = new CMapImpl( maps.at(i).get() );
-    return CMapPtr( map );
-}
-
-size_t CGeneticStrategyCLWrap::getMapsCount()
-{
-    return maps.size();
-}
-
-double CGeneticStrategyCLWrap::getAvgFitness() const
-{
-    return 0;
-}
-
-CAutomatPtr CGeneticStrategyCLWrap::getBestIndivid() const
-{   
-    return curIndivid;
-}
-
-double CGeneticStrategyCLWrap::getMaxFitness() const
-{
-    return 0.0;
-}
-
-CInvoker* CGeneticStrategyCLWrap::getInvoker() const
-{
-    return invoker;
-}
-
-size_t CGeneticStrategyCLWrap::getN() const
-{
-    return N;
-}
-
-size_t CGeneticStrategyCLWrap::getM() const
-{
-    return M;
-}
-
 std::string CGeneticStrategyCLWrap::getDeviceType() const
 {
     return "OpenCL Wrapping on CPU";
 }
+
+double CGeneticStrategyCLWrap::getAvgFitness() const
+{
+    return 0.0;
+}
+double CGeneticStrategyCLWrap::getMaxFitness() const
+{
+    return 0.0;
+}
+CAutomatPtr CGeneticStrategyCLWrap::getBestIndivid() const
+{
+    return CAutomatPtr();
+}
+
+const CMapPtr CGeneticStrategyCLWrap::getMap( size_t i )
+{
+    return CGeneticStrategyCommon::getMap(i);
+}
+
+size_t CGeneticStrategyCLWrap::getMapsCount()
+{
+    return CGeneticStrategyCommon::getMapsCount();
+}
+
+void CGeneticStrategyCLWrap::pushResults()
+{
+    CGeneticStrategyCommon::pushResults();
+}
+
+CInvoker* CGeneticStrategyCLWrap::getInvoker() const
+{
+    return CGeneticStrategyCommon::getInvoker();
+}
+
+size_t CGeneticStrategyCLWrap::getN() const
+{
+    return CGeneticStrategyCommon::getN();
+}
+
+size_t CGeneticStrategyCLWrap::getM() const
+{
+    return CGeneticStrategyCommon::getM();
+}
+
 const boost::exception_ptr& CGeneticStrategyCLWrap::getError() const
 {
-    return error;
+    return CGeneticStrategyCommon::getError();
 }

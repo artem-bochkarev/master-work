@@ -8,9 +8,11 @@
 class CLabResultMulti : public CLaboratoryResult
 {
 public:
+    friend class CGeneticStrategyCommon;
     friend class CLaboratoryMulti;
     friend class CGeneticStrategyImpl;
     friend class CGeneticStrategyCL;
+    friend class CGeneticStrategyCLv2;
 	friend class CGeneticStrategyCLWrap;
     CLabResultMulti();
     virtual size_t getGenerationsNumber() const;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Tools"
 	ProjectGUID="{C6C20A1D-C572-444C-8891-94341DC19F0B}"
 	RootNamespace="Tools"
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir)"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(BOOST)&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -102,7 +102,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(ProjectDir)"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(BOOST)&quot;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -149,6 +149,10 @@
 				RelativePath=".\Logger.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\StringProcessorSimple.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -156,7 +160,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\errorMsg.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\helper.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StringProcessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StringProcessorSimple.h"
 				>
 			</File>
 		</Filter>

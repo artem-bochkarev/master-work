@@ -2280,5 +2280,3 @@ std::string SDKCommon::toString<float>(float t, std::ios_base &(*r)(std::ios_bas
 template
 std::string SDKCommon::toString<double>(double t, std::ios_base &(*r)(std::ios_base&));
 }
-
-

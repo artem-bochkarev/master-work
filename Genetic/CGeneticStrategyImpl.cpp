@@ -114,7 +114,7 @@ public:
 
 CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
                                            CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
-:states(states), actions(actions), isCacheValid(false), result(res), cnt(0), invoker(0), cachedResult(0), logger(logger)
+:CGeneticStrategyCommon(states, actions, res, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
     CRandomPtr rand( new CRandomImpl() );
     setFromStrings( strings, rand );
@@ -232,13 +232,6 @@ double CGeneticStrategyImpl::getMaxFitness() const
     return max;    
 }
 
-void CGeneticStrategyImpl::pushResults()
-{
-    boost::mutex& mutex = result->getMutex();
-    boost::mutex::scoped_lock lock(mutex);
-    result->addGeneration( getBestIndivid(), getMaxFitness(), getAvgFitness() );
-}
-
 void CGeneticStrategyImpl::fillCache() const
 {
     if ( isCacheValid )
@@ -340,22 +333,6 @@ void CGeneticStrategyImpl::setMaps( std::vector<CMapPtr> maps )
     pushResults();
 }
 
-const CMapPtr CGeneticStrategyImpl::getMap( size_t i )
-{
-    CMapImpl* map = new CMapImpl( maps.at(i).get() );
-    return CMapPtr( map );
-}
-
-size_t CGeneticStrategyImpl::getMapsCount()
-{
-    return maps.size();
-}
-
-void CGeneticStrategyImpl::addMap( CMapPtr map )
-{
-    maps.push_back( map );
-}
-
 void CGeneticStrategyImpl::freeIndivids( CAutomatImpl*** ind )
 {
     if ( ind != 0 )
@@ -389,27 +366,42 @@ CGeneticStrategyImpl::~CGeneticStrategyImpl()
         delete invoker;
 }
 
-CInvoker* CGeneticStrategyImpl::getInvoker() const
-{
-    return invoker;
-}
-
-size_t CGeneticStrategyImpl::getN() const
-{
-    return N;
-}
-
-size_t CGeneticStrategyImpl::getM() const
-{
-    return M;
-}
-
 std::string CGeneticStrategyImpl::getDeviceType() const
 {
     return "C++ on CPU";
 }
 
+const CMapPtr CGeneticStrategyImpl::getMap( size_t i )
+{
+    return CGeneticStrategyCommon::getMap(i);
+}
+
+size_t CGeneticStrategyImpl::getMapsCount()
+{
+    return CGeneticStrategyCommon::getMapsCount();
+}
+
+void CGeneticStrategyImpl::pushResults()
+{
+    CGeneticStrategyCommon::pushResults();
+}
+
+CInvoker* CGeneticStrategyImpl::getInvoker() const
+{
+    return CGeneticStrategyCommon::getInvoker();
+}
+
+size_t CGeneticStrategyImpl::getN() const
+{
+    return CGeneticStrategyCommon::getN();
+}
+
+size_t CGeneticStrategyImpl::getM() const
+{
+    return CGeneticStrategyCommon::getM();
+}
+
 const boost::exception_ptr& CGeneticStrategyImpl::getError() const
 {
-    return error;
+    return CGeneticStrategyCommon::getError();
 }

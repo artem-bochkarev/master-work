@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GeneticAPI/CGeneticStrategy.h"
+#include "CGeneticStrategyCommon.h"
 #include "GeneticAPI/CMap.h"
 #include "CAutomatImpl.h"
 #include "GeneticAPI/CInvoker.h"
@@ -9,7 +9,7 @@
 
 class CLocalInvoker;
 
-class CGeneticStrategyImpl : public CGeneticStrategy
+class CGeneticStrategyImpl : public CGeneticStrategyCommon
 {
 public:
     friend class CLocalInvoker;
@@ -22,7 +22,7 @@ public:
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
 
-    virtual void addMap( CMapPtr map );
+    //virtual void addMap( CMapPtr map );
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
     CAutomatPtr getBestIndivid() const;
@@ -32,9 +32,10 @@ public:
     virtual size_t getM() const;
     virtual std::string getDeviceType() const;
     virtual const boost::exception_ptr& getError() const;
+protected:
+    void pushResults();
 private:
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
-    int N, M;
 
     CGeneticStrategyImpl();
     CGeneticStrategyImpl( const CGeneticStrategyImpl& );
@@ -43,18 +44,13 @@ private:
     void nextGeneration( size_t start, size_t finish, CRandom* rand );
     void CGeneticStrategyImpl::preGeneration();
     void CGeneticStrategyImpl::postGeneration();
+
     mutable double** cachedResult;
     mutable bool isCacheValid;
-    void pushResults();
-    CStateContainer* states;
-    CActionContainer* actions;
+    
     CAutomatImpl*** individs;
     CAutomatImpl*** newIndivids;
     std::vector<CMapPtr> maps;
-    CLabResultMulti* result;
-    CInvoker* invoker;
-	Tools::Logger& logger;
-    boost::exception_ptr error;
 
     int cnt;
 };

@@ -12,14 +12,6 @@
 #include "SDKUtil/SDKPlatform.hpp"
 #include <boost/lexical_cast.hpp>
 
-
-void CGeneticStrategyCL::pushResults()
-{
-    boost::mutex& mutex = result->getMutex();
-    boost::mutex::scoped_lock lock(mutex);
-    result->addGeneration( getBestIndivid(), getMaxFitness(), getAvgFitness() );
-}
-
 void CGeneticStrategyCL::initMemory()
 {
     cache = (float*)malloc( N*M*sizeof(float) );
@@ -64,9 +56,6 @@ void CGeneticStrategyCL::initCLBuffers()
 
 void CGeneticStrategyCL::processString( std::string& str, const std::vector<size_t>& vals ) const
 {
-    #define max_linear_size 16;
-    #define max_squared_size 16;
-    #define max_tmp_buffer_size 6400;
     int i = str.find("#define");
     if ( i >= 0 )
     {
@@ -161,7 +150,7 @@ void CGeneticStrategyCL::createProgram( const std::vector<size_t>& vals )
 
 CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
                                        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
-:states(states), actions(actions), result(res), mapsBuffer(0), invoker(0), buffer(0), logger(logger)
+:CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticLaboratryCL.\n";
     CRandomPtr rand( new CRandomImpl() );
@@ -483,89 +472,6 @@ void CGeneticStrategyCL::setMaps( std::vector<CMapPtr> maps )
     //pushResults();
 }
 
-const CMapPtr CGeneticStrategyCL::getMap( size_t i )
-{
-    CMapImpl* map = new CMapImpl( maps.at(i).get() );
-    return CMapPtr( map );
-}
-
-size_t CGeneticStrategyCL::getMapsCount()
-{
-    return maps.size();
-}
-
-double CGeneticStrategyCL::getAvgFitness() const
-{
-    /*double sum = 0.0;
-    for ( int i=0; i<N*M; ++i )
-        sum += cache[i];
-    return sum/(N*N);*/
-    return 0;
-}
-
-CAutomatPtr CGeneticStrategyCL::getBestIndivid() const
-{
-    /*size_t max_coord = 0;
-    for ( int i=1; i<N*M; ++i )
-        if ( cache[i] > cache[max_coord] )
-            max_coord = i;
-
-    /*double res3 = 0.0;
-    for ( size_t i=1; i<N*N; ++i )
-    {
-        CMapImpl tmpMap( maps[0].get() );
-        double r = CTest::run( automats[i].get(),  &tmpMap );
-        if ( r > res3 )
-            res3 = r;
-    }
-
-    CMapImpl tmpMap( maps[0].get() );
-    double res = CTest::run( automats[max_coord].get(),  &tmpMap );//, 100, steps2 );
- /*   for ( int i=0; i<100; ++i )
-    {
-        int a1 = steps[max_coord*200 + i];
-        int a2 = steps2[i];
-        if ( a1 != a2 )
-        {
-            int k = 1;
-            ++k;
-        }
-    }*/
-    /*double res2 = getMaxFitness();
-    if (( std::abs(res - res2) > 1.0 ) || ( std::abs(res - res3) > 1.0 ))
-    {
-        int k = 1;
-        ++k;
-    }*/
-    
-    return curIndivid;
-}
-
-double CGeneticStrategyCL::getMaxFitness() const
-{
-    /*size_t max_coord = 0;
-    for ( size_t i=1; i<N*M; ++i )
-        if ( cache[i] > cache[max_coord] )
-            max_coord = i;
-    return cache[max_coord];    */
-    return 0.0;
-}
-
-CInvoker* CGeneticStrategyCL::getInvoker() const
-{
-    return invoker;
-}
-
-size_t CGeneticStrategyCL::getN() const
-{
-    return N;
-}
-
-size_t CGeneticStrategyCL::getM() const
-{
-    return M;
-}
-
 std::string CGeneticStrategyCL::getDeviceType() const
 {
     if ( deviceType == CPU )
@@ -575,7 +481,50 @@ std::string CGeneticStrategyCL::getDeviceType() const
     return "OpenCL on GPU, " + sName;
 }
 
+double CGeneticStrategyCL::getAvgFitness() const
+{
+    return 0.0;
+}
+double CGeneticStrategyCL::getMaxFitness() const
+{
+    return 0.0;
+}
+CAutomatPtr CGeneticStrategyCL::getBestIndivid() const
+{
+    return CAutomatPtr();
+}
+
+const CMapPtr CGeneticStrategyCL::getMap( size_t i )
+{
+    return CGeneticStrategyCommon::getMap(i);
+}
+
+size_t CGeneticStrategyCL::getMapsCount()
+{
+    return CGeneticStrategyCommon::getMapsCount();
+}
+
+void CGeneticStrategyCL::pushResults()
+{
+    CGeneticStrategyCommon::pushResults();
+}
+
+CInvoker* CGeneticStrategyCL::getInvoker() const
+{
+    return CGeneticStrategyCommon::getInvoker();
+}
+
+size_t CGeneticStrategyCL::getN() const
+{
+    return CGeneticStrategyCommon::getN();
+}
+
+size_t CGeneticStrategyCL::getM() const
+{
+    return CGeneticStrategyCommon::getM();
+}
+
 const boost::exception_ptr& CGeneticStrategyCL::getError() const
 {
-    return error;
+    return CGeneticStrategyCommon::getError();
 }

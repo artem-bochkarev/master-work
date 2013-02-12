@@ -377,7 +377,7 @@ public:
     double readTimer(int handle);
 
     void printTable(Table* t);
-}; 
+};
 
 } // namespace amd
 

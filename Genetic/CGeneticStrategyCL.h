@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GeneticAPI/CGeneticStrategy.h"
+#include "CGeneticStrategyCommon.h"
 #include "GeneticAPI/CMap.h"
 #include "CAutomatImpl.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
@@ -12,7 +12,7 @@
 #include "Tools/Logger.h"
 
 
-class CGeneticStrategyCL : public CGeneticStrategy
+class CGeneticStrategyCL : public CGeneticStrategyCommon
 {
     enum DeviceType
     {
@@ -41,8 +41,9 @@ public:
     virtual size_t getM() const;
     virtual std::string getDeviceType() const;
     virtual const boost::exception_ptr& getError() const;
+protected:
+    void pushResults();
 private:
-    int N, M;
     DeviceType deviceType;
     Mode mode;
     std::string sProfile;
@@ -62,10 +63,7 @@ private:
     CGeneticStrategyCL( const CGeneticStrategyImpl& );
     void freeIndivids();
     void fillCache() const;
-    void pushResults();
 
-    CStateContainer* states;
-    CActionContainer* actions;
     CAutomatPtr curIndivid;
     char* buffer;
     int* mapsBuffer;
@@ -92,8 +90,4 @@ private:
 
     std::vector<CMapPtr> maps;
     size_t statesCount, stateSize, gensToCount;
-    CLabResultMulti* result;
-    CInvoker* invoker;
-	Tools::Logger& logger;
-    boost::exception_ptr error;
 };

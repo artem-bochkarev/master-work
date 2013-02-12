@@ -15,6 +15,8 @@ private:
     static  CStateContainerPtr createStates( const std::vector< std::string >& strings );
     static  CGeneticStrategyPtr createStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
+    static CGeneticStrategyPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
+        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
 
     static  CLaboratoryPtr createLaboratory( CStateContainerPtr states, 
         CActionContainerPtr actions, CGeneticStrategyPtr strategy, CLabResultMultiPtr labResults );

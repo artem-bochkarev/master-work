@@ -1,0 +1,19 @@
+SET( OUTFILE, speed_results.txt );
+SET( VERSION, 2.1 );
+SET( CLSOURCE, versions/version2.1/gen.cl )
+SET( TIME, 30 );
+
+RUN( tests/test_config_cl_cpu_1024.txt );
+RUN( tests/test_config_cl_cpu_3072.txt );
+RUN( tests/test_config_cl_cpu_4098.txt );
+RUN( tests/test_config_cl_cpu_16384.txt );
+
+RUN( tests/test_config_cl_gpu_1024.txt );
+RUN( tests/test_config_cl_gpu_3072.txt );
+RUN( tests/test_config_cl_gpu_4098.txt );
+RUN( tests/test_config_cl_gpu_16384.txt );
+
+RUN( tests/test_config_clwrap_cpu_1024.txt );
+RUN( tests/test_config_clwrap_cpu_3072.txt );
+RUN( tests/test_config_clwrap_cpu_4098.txt );
+RUN( tests/test_config_clwrap_cpu_16384.txt );

@@ -1,0 +1,6 @@
+states=3;
+N=32;
+M=16;
+strategy=CL;
+device=CPU;
+gensCounter=20;

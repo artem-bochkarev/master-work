@@ -1,0 +1,6 @@
+states=3;
+N=32;
+M=16;
+strategy=CLWrap;
+device=CPU;
+flowsCounter=4;

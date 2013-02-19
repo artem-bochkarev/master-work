@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QApp", "QApp\QApp.vcproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tools", "Tools\Tools.vcproj", "{C6C20A1D-C572-444C-8891-94341DC19F0B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimeRun", "TimeRun\TimeRun.vcproj", "{B9C14178-A21F-49A1-AC8C-C80F3543BBB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -65,6 +67,10 @@ Global
 		{C6C20A1D-C572-444C-8891-94341DC19F0B}.Debug|Win32.Build.0 = Debug|Win32
 		{C6C20A1D-C572-444C-8891-94341DC19F0B}.Release|Win32.ActiveCfg = Release|Win32
 		{C6C20A1D-C572-444C-8891-94341DC19F0B}.Release|Win32.Build.0 = Release|Win32
+		{B9C14178-A21F-49A1-AC8C-C80F3543BBB7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B9C14178-A21F-49A1-AC8C-C80F3543BBB7}.Debug|Win32.Build.0 = Debug|Win32
+		{B9C14178-A21F-49A1-AC8C-C80F3543BBB7}.Release|Win32.ActiveCfg = Release|Win32
+		{B9C14178-A21F-49A1-AC8C-C80F3543BBB7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,9 @@
 
 const long sleep_time = 100; //millisec
 
+CTimeRunner::CTimeRunner()
+:running(false) {}
+
 size_t CTimeRunner::getRunCount() const
 {
     if ( m_pTask->getError() )
@@ -41,7 +44,7 @@ void CTimeRunner::runForTime( int milisec )
     typedef boost::chrono::milliseconds ms;
     start();
     boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-    while (true)
+    for ( ; ; )
     {
         boost::this_thread::sleep( boost::posix_time::millisec( sleep_time ) );
         ms millis = boost::chrono::duration_cast<ms>(boost::chrono::system_clock::now() - start);
@@ -57,4 +60,14 @@ void CTimeRunner::runForTime( int milisec )
 bool CTimeRunner::isRunning() const
 {
     return running;
+}
+
+void CTimeRunner::writeInfo( std::ostream& out ) const
+{
+    out << "Standard TimeRunner\n";
+}
+
+void CTimeRunner::writeResult( std::ostream& out ) const
+{
+    out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
 }

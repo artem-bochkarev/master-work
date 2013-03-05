@@ -36,60 +36,12 @@ double CLaboratoryMulti::getMaxFitness( size_t i ) const
     return results->getMaxFitnes( i );
 }
 
-void CLaboratoryMulti::start()
-{
-    if ( !running  )
-    {
-        running = true;
-        invoker = strategy->getInvoker( );
-        //boost::thread thrd( *invoker );
-        //pThread = boost::move(thrd);
-        pThread = invoker->getThread();
-    }
-}
-
-void CLaboratoryMulti::pause()
-{
-    if ( pThread.get() != 0 )
-    {
-        pThread->interrupt();
-        pThread->join();
-        running = false;
-        pThread->detach();
-        pThread.reset();
-        //if ( strategy->getError() )
-        //    boost::rethrow_exception(strategy->getError());
-    }
-}
-
-void CLaboratoryMulti::runForTime( int milisec )
-{
-    typedef boost::chrono::milliseconds ms;
-    start();
-    boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-    while (true)
-    {
-        boost::this_thread::sleep( boost::posix_time::millisec( sleep_time ) );
-        ms millis = boost::chrono::duration_cast<ms>(boost::chrono::system_clock::now() - start);
-        if ( milisec - millis.count() <= 0 || milisec - millis.count() < sleep_time/2  )
-            break;
-        if ( strategy->getError() )
-            boost::rethrow_exception(strategy->getError());
-    }
-    pause();
-    boost::this_thread::sleep( boost::posix_time::millisec( sleep_time ) );
-}
-
-bool CLaboratoryMulti::isRunning() const
-{
-    return running;
-}
-
 CLaboratoryMulti::CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
                                    CGeneticStrategyPtr strategy, CLabResultMultiPtr labResult )
-:invoker(0), running(false), states(states), actions(actions), strategy(strategy), 
+:states(states), actions(actions), strategy(strategy), 
     results(labResult)
 {
+    m_pTask = strategy;
     //strategy = static_cast<CGeneticStrategy*>(new CGeneticStrategyImpl( states, actions, &results ));
     //strategy = static_cast<CGeneticStrategy*>(new CGeneticStrategyCL( states, actions, &results ));
 }

@@ -153,8 +153,9 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
 :CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticLaboratryCL.\n";
-    CRandomPtr rand( new CRandomImpl() );
-    setFromStrings( strings, rand );
+
+    m_pRandom = CRandomPtr( new CRandomImpl());
+    setFromStrings( strings, m_pRandom );
     statesCount = states->size();
     stateSize = 16;//1 << statesCount;
     initMemory();
@@ -318,7 +319,7 @@ void CGeneticStrategyCL::setFromStrings( const std::vector< std::string >& strin
         }
     }
     
-    invoker = new CInvoker( this, rand, error );
+    invoker = new CInvoker( this, error );
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
@@ -408,6 +409,11 @@ void CGeneticStrategyCL::preStart()
         throw std::runtime_error( std::string( "Failed to set arguments: " ).append (
             streamsdk::getOpenCLErrorCodeStr( error.err() ) ));
     }
+}
+
+void CGeneticStrategyCL::run()
+{
+    nextGeneration( m_pRandom.get() );
 }
 
 void CGeneticStrategyCL::nextGeneration( CRandom* rand )

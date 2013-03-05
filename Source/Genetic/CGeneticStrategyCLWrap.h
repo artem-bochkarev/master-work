@@ -3,7 +3,6 @@
 #include "CGeneticStrategyCommon.h"
 #include "GeneticAPI/CMap.h"
 #include "CAutomatImpl.h"
-#include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
 #include "GenCLWrap.h"
 #include "Tools/Logger.h"
@@ -13,6 +12,9 @@ class CGeneticStrategyCLWrap : public CGeneticStrategyCommon
 public:
     CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
         CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
+
+    virtual void run();
+
     virtual void nextGeneration( CRandom* rand );
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -50,4 +52,5 @@ private:
     unsigned int *sizes, *srands;
 
     size_t statesCount, stateSize, gensToCount;
+    CRandomPtr m_pRandom;
 };

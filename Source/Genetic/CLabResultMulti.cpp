@@ -24,6 +24,11 @@ size_t CLabResultMulti::getGenerationsNumber() const
     return genCnt;
 }
 
+size_t CLabResultMulti::getRunCount() const
+{
+    return genCnt;
+}
+
 CAutomatPtr CLabResultMulti::getLastInd() const
 {
     return individs[genCnt - 1];
@@ -34,10 +39,10 @@ double CLabResultMulti::getMaxFitnes(size_t i) const
     return maxFitnes[i];
 }
 
-boost::mutex& CLabResultMulti::getMutex()
+/*boost::mutex& CLabResultMulti::getMutex()
 {
     return mutex;
-}
+}*/
 
 CLabResultMulti::CLabResultMulti()
 :genCnt(0) {}

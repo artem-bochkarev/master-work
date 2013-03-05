@@ -2,13 +2,18 @@
 #include "CAutomat.h"
 #include "CMap.h"
 #include "CGeneticStrategy.h"
+#include "TimeRun/CTimeRunner.h"
 
-class CLaboratory
+class CLaboratory : public CTimeRunner
 {
 public:
-    virtual void start() = 0;
-    virtual void runForTime( int milisec ) = 0;
-    virtual void pause() = 0;
+    //from CTimeRunner
+    /*virtual void start();
+    virtual void runForTime( int milisec );
+    virtual void pause();
+    virtual size_t getRunCount() const;
+    virtual bool isRunning() const;*/
+
     virtual size_t getGenerationNumber() const = 0;
     virtual double getMaxFitness( size_t i ) const = 0;
     virtual double getAvgFitness( size_t i ) const = 0;
@@ -16,10 +21,12 @@ public:
     virtual void setMaps( std::vector<CMapPtr> maps ) = 0;
     virtual const CMapPtr getMap( size_t i ) = 0;
     virtual size_t getMapsCount() = 0;
-    virtual bool isRunning() const = 0;
+    
     virtual const CGeneticStrategyPtr getStrategy() const = 0;
     virtual const CStateContainerPtr getStates() const = 0;
     virtual const CActionContainerPtr getActions() const = 0;
+
+    virtual void writeInfo( std::ostream& ) const;
 };
 
 typedef boost::shared_ptr<CLaboratory> CLaboratoryPtr;

@@ -20,9 +20,10 @@ public:
     virtual CAutomatPtr getLastInd() const;
     virtual double getMaxFitnes( size_t i ) const;
     virtual double getAvgFitnes( size_t i ) const;
+    virtual size_t getRunCount() const;
 protected:
     virtual void addGeneration( const CAutomatPtr ind, double maxF, double avgF );
-    boost::mutex& getMutex();
+    //boost::mutex& getMutex();
 private:
     boost::mutex mutex;
     size_t genCnt;

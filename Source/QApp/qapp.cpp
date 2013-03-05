@@ -37,7 +37,7 @@ bool QApp::openCmd()
 	{
         try
         {
-		    laboratory = CLaboratoryFactory::getLaboratory( fileName.toAscii(), logger );
+            laboratory = CLaboratoryFactory::getLaboratory( logger, std::string(fileName.toAscii()) );
 		    if ( laboratory.get() != 0 )
 		    {
 			    mode = STOPPED;

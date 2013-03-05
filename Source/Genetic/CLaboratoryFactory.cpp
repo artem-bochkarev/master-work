@@ -9,15 +9,19 @@
 #include "CGeneticStrategyCLv2.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
+#include "CMapFactory.h"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
-
-CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName, Tools::Logger& logger )
+ 
+CLaboratoryPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, const std::string& fileNameM )
 {
-    std::ifstream in(fileName);
+    std::string fileName = fileNameM;
+    if ( fileName.length() == 0 )
+        fileName = "config.txt";
+    std::ifstream in( fileName.c_str() );
     boost::filesystem3::path source(fileName);
     if ( !boost::filesystem3::exists(source) )
     {
@@ -46,9 +50,30 @@ CLaboratoryPtr CLaboratoryFactory::getLaboratory( const char* fileName, Tools::L
     return createLaboratory( states, actions, strategy, labResults );
 }
 
-CLaboratoryPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger )
+CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std::vector<std::string> &args )
 {
-    return getLaboratory( "config.txt", logger );
+    CLaboratoryPtr laboratory;
+
+    if ( args.size() < 1 )
+    {
+        laboratory = CLaboratoryFactory::getLaboratory( logger, "" );
+    }else
+    {
+        laboratory = CLaboratoryFactory::getLaboratory( logger, args[0].c_str() );
+    }
+    CMapPtr map1;
+    if ( args.size() < 2 )
+    {
+        map1 = CMapFactory::getMap( "map1.txt" );
+    }else
+    {
+        map1 = CMapFactory::getMap( args[1].c_str() );
+    }
+
+    std::vector<CMapPtr> maps;
+    maps.push_back( map1 );
+    laboratory->setMaps( maps );
+    return laboratory;
 }
 
 CLaboratoryPtr CLaboratoryFactory::noFile( Tools::Logger& logger )

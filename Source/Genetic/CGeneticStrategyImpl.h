@@ -3,7 +3,6 @@
 #include "CGeneticStrategyCommon.h"
 #include "GeneticAPI/CMap.h"
 #include "CAutomatImpl.h"
-#include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 
@@ -16,6 +15,9 @@ public:
     friend class CMainInvoker;
     CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
         CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& );
+    
+    virtual void run();
+
     virtual void nextGeneration( CRandom* rand );
 
     virtual void setMaps( std::vector<CMapPtr> maps );
@@ -53,4 +55,6 @@ private:
     std::vector<CMapPtr> maps;
 
     int cnt;
+
+    CRandomPtr m_pRandom;
 };

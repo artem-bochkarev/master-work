@@ -40,9 +40,8 @@ CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CStateContainer* states, CActionC
                                        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), mapBuffer(0), buffer(0)
 {
-
-    CRandomPtr rand( new CRandomImpl() );
-    setFromStrings( strings, rand );
+    m_pRandom = CRandomPtr( new CRandomImpl() );
+    setFromStrings( strings, m_pRandom );
     statesCount = states->size();
     stateSize = 16;//1 << statesCount;
     initMemory();
@@ -84,7 +83,7 @@ void CGeneticStrategyCLWrap::setFromStrings( const std::vector< std::string >& s
             continue;
         }
     }
-    invoker = new CInvoker( this, rand, error );
+    invoker = new CInvoker( this, error );
     
     if (( M <= 0 ) || ( N <= 0 ))
     {
@@ -125,6 +124,11 @@ void CGeneticStrategyCLWrap::preStart()
 	CRandomImpl random;
 	srands[0] = random.nextUINT();
 	srands[1] = 0;
+}
+
+void CGeneticStrategyCLWrap::run()
+{
+    nextGeneration( m_pRandom.get() );
 }
 
 void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )

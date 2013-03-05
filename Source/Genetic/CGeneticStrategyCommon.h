@@ -2,7 +2,6 @@
 
 #include "GeneticAPI/CGeneticStrategy.h"
 #include "GeneticAPI/CMap.h"
-#include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 

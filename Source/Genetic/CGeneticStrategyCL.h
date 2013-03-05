@@ -7,7 +7,6 @@
 #define __NO_STD_VECTOR //no std vector
 #define __MAX_DEFAULT_VECTOR_SIZE 100
 #include "CL/cl.hpp"
-#include "GeneticAPI/CInvoker.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 
@@ -27,6 +26,9 @@ class CGeneticStrategyCL : public CGeneticStrategyCommon
 public:
     CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
 		CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
+
+    virtual void run();
+
     virtual void nextGeneration( CRandom* rand );
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -90,4 +92,6 @@ private:
 
     std::vector<CMapPtr> maps;
     size_t statesCount, stateSize, gensToCount;
+
+    CRandomPtr m_pRandom;
 };

@@ -132,8 +132,8 @@ CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem3::path& sour
     :CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticStrategyCLv2.\n";
-    CRandomPtr rand( new CRandomImpl() );
-    setFromStrings( strings, rand );
+    m_pRandom = CRandomPtr( new CRandomImpl() );
+    setFromStrings( strings, m_pRandom );
     statesCount = states->size();
     stateSize = 16;//1 << statesCount;
     initMemory();
@@ -206,7 +206,7 @@ void CGeneticStrategyCLv2::setFromStrings( const std::vector< std::string >& str
             continue;
         }
     }
-    invoker = new CInvoker( this, rand, error );
+    invoker = new CInvoker( this, error );
     if (( M <= 0 ) || ( N <= 0 ))
         Tools::throwFailed( "Failed to create CGeneticStrategyCLv2", &logger );
 }
@@ -260,6 +260,11 @@ void CGeneticStrategyCLv2::setMaps( std::vector<CMapPtr> maps )
     sizes[2] = mapSize;
 
     preStart();
+}
+
+void CGeneticStrategyCLv2::run()
+{
+    nextGeneration( m_pRandom.get() );
 }
 
 void CGeneticStrategyCLv2::nextGeneration( CRandom* rand )

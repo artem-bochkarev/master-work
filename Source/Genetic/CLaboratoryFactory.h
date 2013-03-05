@@ -7,8 +7,8 @@
 class CLaboratoryFactory
 {
 public:
-    static CLaboratoryPtr getLaboratory( const char* fileName, Tools::Logger& logger );
-    static CLaboratoryPtr getLaboratory( Tools::Logger& logger );
+    static CLaboratoryPtr getLaboratory( Tools::Logger& logger, const std::string& fileName );
+    static CLaboratoryPtr createLaboratory( Tools::Logger& logger, std::vector<std::string> &args );
 private:
     static  CLaboratoryPtr noFile( Tools::Logger& logger );
     static  CActionContainerPtr createActions( const std::vector< std::string >& strings );

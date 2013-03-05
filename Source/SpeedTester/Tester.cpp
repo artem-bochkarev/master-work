@@ -1,12 +1,7 @@
 #include "Tester.h"
 #include <iostream>
 
-#include "../Genetic/CTest.h"
-#include "../Genetic/CLaboratoryMulti.h"
-#include "../Genetic/CActionContainerImpl.h"
-#include "../Genetic/CStateContainerImpl.h"
-#include "../Genetic/CLaboratoryFactory.h"
-#include "../Genetic/CMapFactory.h"
+#include "Genetic/CLaboratoryFactory.h"
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/compare.hpp>
@@ -127,43 +122,18 @@ Tester::Commands Tester::parseStr( const std::string& in, std::vector<std::strin
 
 bool Tester::runCmd( std::vector<std::string> &args )
 {
-    CLaboratoryPtr laboratory;
-    std::vector<CMapPtr> maps;
-    if ( args.size() < 1 )
-    {
-        laboratory = CLaboratoryFactory::getLaboratory( "config.txt", logger );
-    }else
-    {
-        laboratory = CLaboratoryFactory::getLaboratory( args[0].c_str(), logger );
-    }
-    CMapPtr map1;
-    if ( args.size() < 2 )
-    {
-        map1 = CMapFactory::getMap( "map1.txt" );
-    }else
-    {
-        map1 = CMapFactory::getMap( args[1].c_str() );
-    }
+    CTimeRunnerPtr laboratory = CLaboratoryFactory::createLaboratory( logger, args );
 
-    maps.push_back( map1 );
-    laboratory->setMaps( maps );
-
-    CGeneticStrategyPtr strategy = laboratory->getStrategy();
-    std::cout << strategy->getDeviceType() << ", version=" << version <<
-        ", states count: " << laboratory->getStates()->size() << ",  size: " << 
-        strategy->getN() << "x" << strategy->getM();
-
-    *pOut << strategy->getDeviceType() << ", version=" << version <<
-        ", states count: " << laboratory->getStates()->size() << ",  size: " << 
-        strategy->getN() << "x" << strategy->getM() << ",  result: ";
+    laboratory->writeInfo( std::cout );
+    laboratory->writeInfo( *pOut );
 
     try
     {
         laboratory->runForTime( timeSec * 1000 );
 
-        std::cout << ",  result: " << 
-            laboratory->getGenerationNumber() << std::endl;
-        *pOut << laboratory->getGenerationNumber() << std::endl;
+        laboratory->writeResult( std::cout );
+        laboratory->writeResult( *pOut );
+
         logger << "[SUCCESS] " << "\n";
     }catch( std::runtime_error& err )
     {
@@ -183,29 +153,10 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     *pOut << "mean test on \"" << args[0] << "\"" << std::endl;
     for ( int i=0; i<cnt; ++i )
     {
-		CLaboratoryPtr laboratory;
-        std::vector<CMapPtr> maps;
-        if ( args.size() < 1 )
-        {
-            laboratory = CLaboratoryFactory::getLaboratory( "config.txt", logger );
-        }else
-        {
-            laboratory = CLaboratoryFactory::getLaboratory( args[0].c_str(), logger );
-        }
-        CMapPtr map1;
-        if ( args.size() > 2 )
-        {
-            map1 = CMapFactory::getMap( args[2].c_str() );
-        }else
-        {
-            map1 = CMapFactory::getMap( "map1.txt" );
-        }
-
-        maps.push_back( map1 );
-        laboratory->setMaps( maps );
+		CTimeRunnerPtr laboratory = CLaboratoryFactory::createLaboratory( logger, args );
 
         laboratory->runForTime( timeSec * 1000 );
-        values[i] = laboratory->getGenerationNumber();
+        values[i] = laboratory->getRunCount();
         sum += values[i];
         std::cout << i+1 << " ";
     }

@@ -48,14 +48,16 @@ class CMainInvoker : public CInvoker
     size_t cnt;
 public:
     CMainInvoker( CGeneticStrategyImpl* strg, size_t threadCount, CRandomPtr rand, boost::exception_ptr & error )
-        :CInvoker(strg, rand, error), cnt(threadCount) {}
+        :CInvoker(strg, error), cnt(threadCount) {}
 
     void operator ()() const
     {
         try
         {
+            CGeneticStrategyImpl* strg = dynamic_cast<CGeneticStrategyImpl*>(m_pTask);
+
             boost::thread_group group;
-            size_t N = strategy->getN();
+            size_t N = strg->getN();
             size_t step = std::max( (size_t)1, N / cnt );
             size_t counter = N / step;
             if ( N%step != 0 )
@@ -63,8 +65,6 @@ public:
             size_t prev = 0;
             size_t next = prev + step;
             
-
-            CGeneticStrategyImpl* strg = static_cast<CGeneticStrategyImpl*>(strategy);
             strg->preGeneration();
 
             boost::barrier firstBarrier( counter + 1 );
@@ -72,7 +72,7 @@ public:
             {
                 if ( i == counter - 1 )
                     next = N;
-                CLocalInvoker invoker( static_cast<CGeneticStrategyImpl*>(strategy), prev, next, 
+                CLocalInvoker invoker( static_cast<CGeneticStrategyImpl*>(m_pTask), prev, next, 
                     firstBarrier );
                 group.create_thread( invoker );
                 prev = next;
@@ -100,7 +100,7 @@ public:
         catch( boost::thread_interrupted& ) {}
         catch( ... )
         {
-            error = boost::current_exception();
+            m_error = boost::current_exception();
         }
     }
 
@@ -116,8 +116,8 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer* states, CActionConta
                                            CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(states, actions, res, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
-    CRandomPtr rand( new CRandomImpl() );
-    setFromStrings( strings, rand );
+    m_pRandom = CRandomPtr( new CRandomImpl() );
+    setFromStrings( strings, m_pRandom );
     individs = new CAutomatImpl**[N];
     newIndivids = new CAutomatImpl**[N];
     cachedResult = new double*[N];
@@ -129,7 +129,7 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer* states, CActionConta
         for ( int j=0; j < M; ++j )
         {
             individs[i][j] = new CAutomatImpl( states, actions );
-            individs[i][j]->generateRandom( rand.get() );
+            individs[i][j]->generateRandom( m_pRandom.get() );
             newIndivids[i][j] = 0;
             cachedResult[i][j] = 0;
         }
@@ -175,7 +175,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
 
     if ( flowsCnt == 1 )
     {
-        invoker = new CInvoker( this, rand, error );
+        invoker = new CInvoker( this, error );
     }else
     {
         invoker = new CMainInvoker( this, flowsCnt, rand, error );
@@ -248,6 +248,11 @@ void CGeneticStrategyImpl::fillCache() const
             cachedResult[i][j] = tmp;
         }
     isCacheValid = true;
+}
+
+void CGeneticStrategyImpl::run()
+{
+    nextGeneration( m_pRandom.get() );
 }
 
 void CGeneticStrategyImpl::nextGeneration( size_t start, size_t finish, CRandom* rand )

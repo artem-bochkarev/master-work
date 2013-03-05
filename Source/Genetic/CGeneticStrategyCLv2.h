@@ -14,6 +14,9 @@ class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 public:
     CGeneticStrategyCLv2( const boost::filesystem3::path& source, CStateContainer* states, CActionContainer* actions, 
 		CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
+
+    virtual void run();
+
     virtual void nextGeneration( CRandom* rand );
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -70,4 +73,5 @@ private:
 
     std::vector<CMapPtr> maps;
     size_t statesCount, stateSize, gensToCount;
+    CRandomPtr m_pRandom;
 };

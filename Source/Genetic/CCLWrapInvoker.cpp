@@ -100,7 +100,7 @@ void CCLWrapInvoker::operator ()()
 			group.create_thread( invoker );
 		}
 		group.join_all();       
-	}catch( boost::thread_interrupted& err )
+	}catch( boost::thread_interrupted& )
 	{
 		group.interrupt_all();
 		group.join_all();

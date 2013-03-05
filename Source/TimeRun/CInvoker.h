@@ -14,18 +14,24 @@ public:
     CInvoker( CTask* task, boost::exception_ptr & error )
         :m_pTask( task ), m_error(error) {}
 
+    CInvoker& operator= ( const CInvoker& inv )
+    {
+        m_pTask = inv.m_pTask;
+        m_error = inv.m_error;
+    }
+
     virtual void operator ()()
     {
         try
         {
-            while ( true )
+            for ( ; ; )
             {
                 boost::this_thread::interruption_point();
                 m_pTask->run();
             }
         }catch( boost::thread_interrupted& ) 
         {
-            int k = 0;
+            //normal situation
         }
         catch( ... )
         {

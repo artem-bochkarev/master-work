@@ -10,9 +10,10 @@ class CInvoker
 protected:
     CTask* m_pTask;
     boost::exception_ptr & m_error;
+    size_t counter;
 public:
     CInvoker( CTask* task, boost::exception_ptr & error )
-        :m_pTask( task ), m_error(error) {}
+        :m_pTask( task ), m_error(error), counter(0) {}
 
     CInvoker& operator= ( const CInvoker& inv )
     {
@@ -28,6 +29,7 @@ public:
             {
                 boost::this_thread::interruption_point();
                 m_pTask->run();
+                ++counter;
             }
         }catch( boost::thread_interrupted& ) 
         {
@@ -42,5 +44,10 @@ public:
     virtual threadPtr getThread() const
     {
         return threadPtr( new boost::thread( *this ) );
+    }
+
+    virtual size_t getLoopCounter() const
+    {
+        return counter;
     }
 };

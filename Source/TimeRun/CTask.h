@@ -4,6 +4,7 @@
 
 class CInvoker;
 
+//Task for multiple execution(in the loop)
 class CTask
 {
 public:

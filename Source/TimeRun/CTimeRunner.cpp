@@ -6,7 +6,7 @@
 const long sleep_time = 100; //millisec
 
 CTimeRunner::CTimeRunner()
-:running(false) {}
+:running(false), m_pInvoker(0) {}
 
 size_t CTimeRunner::getRunCount() const
 {
@@ -69,5 +69,11 @@ void CTimeRunner::writeInfo( std::ostream& out ) const
 
 void CTimeRunner::writeResult( std::ostream& out ) const
 {
-    out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
+    if ( m_pTimeResult.get() != 0 )
+        out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
+    else
+    if ( m_pInvoker != 0 )
+        out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
+    else
+        out << "No Invoker - No Result: " << std::endl;
 }

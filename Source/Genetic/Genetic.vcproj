@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CAutomatShortTables.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticStrategyCL.h"
 				>
 			</File>

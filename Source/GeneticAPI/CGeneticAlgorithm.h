@@ -8,7 +8,7 @@
 
 class CInvoker;
 
-class CGeneticStrategy : public CTask
+class CGeneticAlgorithm : public CTask
 {
 public:
     virtual void nextGeneration( CRandom* rand )  = 0;
@@ -30,4 +30,4 @@ public:
     virtual const boost::exception_ptr& getError() const = 0;
 };
 
-typedef boost::shared_ptr<CGeneticStrategy> CGeneticStrategyPtr;
+typedef boost::shared_ptr<CGeneticAlgorithm> CGeneticAlgorithmPtr;

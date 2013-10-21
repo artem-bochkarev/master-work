@@ -1,7 +1,7 @@
 #pragma once
 #include "CAutomat.h"
 #include "CMap.h"
-#include "CGeneticStrategy.h"
+#include "CGeneticAlgorithm.h"
 #include "TimeRun/CTimeRunner.h"
 
 class CLaboratory : public CTimeRunner
@@ -22,7 +22,7 @@ public:
     virtual const CMapPtr getMap( size_t i ) = 0;
     virtual size_t getMapsCount() = 0;
     
-    virtual const CGeneticStrategyPtr getStrategy() const = 0;
+    virtual const CGeneticAlgorithmPtr getStrategy() const = 0;
     virtual const CStateContainerPtr getStates() const = 0;
     virtual const CActionContainerPtr getActions() const = 0;
 

@@ -37,13 +37,13 @@ double CLaboratoryMulti::getMaxFitness( size_t i ) const
 }
 
 CLaboratoryMulti::CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
-                                   CGeneticStrategyPtr strategy, CLabResultMultiPtr labResult )
+                                   CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResult )
 :states(states), actions(actions), strategy(strategy), 
     results(labResult)
 {
     m_pTask = strategy;
-    //strategy = static_cast<CGeneticStrategy*>(new CGeneticStrategyImpl( states, actions, &results ));
-    //strategy = static_cast<CGeneticStrategy*>(new CGeneticStrategyCL( states, actions, &results ));
+    //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyImpl( states, actions, &results ));
+    //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyCL( states, actions, &results ));
 }
 
 CLaboratoryMulti::~CLaboratoryMulti()
@@ -65,7 +65,7 @@ size_t CLaboratoryMulti::getMapsCount()
     return strategy->getMapsCount();
 }
 
-const CGeneticStrategyPtr CLaboratoryMulti::getStrategy() const
+const CGeneticAlgorithmPtr CLaboratoryMulti::getStrategy() const
 {
     return strategy;
 }

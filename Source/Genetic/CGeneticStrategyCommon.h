@@ -1,12 +1,12 @@
 #pragma once
 
-#include "GeneticAPI/CGeneticStrategy.h"
+#include "GeneticAPI/CGeneticAlgorithm.h"
 #include "GeneticAPI/CMap.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 
 
-class CGeneticStrategyCommon : public CGeneticStrategy
+class CGeneticStrategyCommon : public CGeneticAlgorithm
 {
 public:
     CGeneticStrategyCommon(CStateContainer* states, CActionContainer* actions, 

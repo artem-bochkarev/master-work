@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Genetic"
 	ProjectGUID="{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
 	RootNamespace="Genetic"
@@ -156,6 +156,10 @@
 			</File>
 			<File
 				RelativePath=".\CAutomatImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CAutomatShortTables.cpp"
 				>
 			</File>
 			<File

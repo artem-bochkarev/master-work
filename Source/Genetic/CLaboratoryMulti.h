@@ -1,13 +1,13 @@
 #pragma once
 #include "../GeneticAPI/CLaboratory.h"
 #include "CLabResultMulti.h"
-#include "../GeneticAPI/CGeneticStrategy.h"
+#include "../GeneticAPI/CGeneticAlgorithm.h"
 
 class CLaboratoryMulti : public CLaboratory
 {
 public:
     CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
-        CGeneticStrategyPtr strategy, CLabResultMultiPtr labResult );
+        CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResult );
     virtual void setMaps( std::vector<CMapPtr> maps );
     
     /*virtual void start();
@@ -19,7 +19,7 @@ public:
     virtual double getMaxFitness( size_t i ) const;
     virtual double getAvgFitness( size_t i ) const;
     virtual CAutomatPtr getBestInd( size_t i ) const;
-    virtual const CGeneticStrategyPtr getStrategy() const;
+    virtual const CGeneticAlgorithmPtr getStrategy() const;
 
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
@@ -31,7 +31,7 @@ public:
 private:
     CLaboratoryMulti();
     mutable CLabResultMultiPtr results;
-    CGeneticStrategyPtr strategy;
+    CGeneticAlgorithmPtr strategy;
 
     CStateContainerPtr states;
     CActionContainerPtr actions;

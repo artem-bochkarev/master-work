@@ -2,6 +2,7 @@
 #include "../GeneticAPI/CLaboratory.h"
 #include "CLabResultMulti.h"
 #include "../GeneticAPI/CGeneticAlgorithm.h"
+#include "CAntFitnes.h"
 
 class CLaboratoryMulti : public CLaboratory
 {
@@ -32,7 +33,10 @@ private:
     CLaboratoryMulti();
     mutable CLabResultMultiPtr results;
     CGeneticAlgorithmPtr strategy;
+    CAntFitnesPtr fitnesFunctor;
 
     CStateContainerPtr states;
     CActionContainerPtr actions;
 };
+
+typedef boost::shared_ptr<CLaboratoryMulti> CLaboratoryMultiPtr;

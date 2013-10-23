@@ -1,6 +1,6 @@
 #pragma once
 #include "../GeneticAPI/CAutomat.h"
-#include "../GeneticAPI/CMap.h"
+#include "CMap.h"
 
 class CTest
 {

@@ -1,16 +1,16 @@
 #pragma once
 #include "GeneticAPI/CGeneticAlgorithm.h"
-#include "GeneticAPI/CLaboratory.h"
+#include "CLaboratoryMulti.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 
 class CLaboratoryFactory
 {
 public:
-    static CLaboratoryPtr getLaboratory( Tools::Logger& logger, const std::string& fileName );
+    static CLaboratoryMultiPtr getLaboratory( Tools::Logger& logger, const std::string& fileName );
     static CLaboratoryPtr createLaboratory( Tools::Logger& logger, std::vector<std::string> &args );
 private:
-    static  CLaboratoryPtr noFile( Tools::Logger& logger );
+    static  CLaboratoryMultiPtr noFile( Tools::Logger& logger );
     static  CActionContainerPtr createActions( const std::vector< std::string >& strings );
     static  CStateContainerPtr createStates( const std::vector< std::string >& strings );
     static  CGeneticAlgorithmPtr createStrategy( const std::vector< std::string >& strings,
@@ -18,7 +18,7 @@ private:
     static CGeneticAlgorithmPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
 
-    static  CLaboratoryPtr createLaboratory( CStateContainerPtr states, 
+    static  CLaboratoryMultiPtr createLaboratory( CStateContainerPtr states, 
         CActionContainerPtr actions, CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResults );
 
     CLaboratoryFactory();

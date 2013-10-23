@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CGeneticStrategyCommon.h"
-#include "GeneticAPI/CMap.h"
+#include "CMap.h"
 #include "CAutomatImpl.h"
 #include "CLabResultMulti.h"
 #include "GenCLWrap.h"

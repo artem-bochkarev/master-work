@@ -16,7 +16,7 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
  
-CLaboratoryPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, const std::string& fileNameM )
+CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, const std::string& fileNameM )
 {
     std::string fileName = fileNameM;
     if ( fileName.length() == 0 )
@@ -52,7 +52,7 @@ CLaboratoryPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, const s
 
 CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std::vector<std::string> &args )
 {
-    CLaboratoryPtr laboratory;
+    CLaboratoryMultiPtr laboratory;
 
     if ( args.size() < 1 )
     {
@@ -76,7 +76,7 @@ CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std:
     return laboratory;
 }
 
-CLaboratoryPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
+CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 {
     CStateContainerPtr states( new CStateContainerImpl() );
     for ( char i=0; i<5; ++i )
@@ -91,7 +91,7 @@ CLaboratoryPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
     std::vector< std::string > strings;
     CGeneticAlgorithmPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
     
-    return CLaboratoryPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
+    return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }
 
 CActionContainerPtr CLaboratoryFactory::createActions( const std::vector< std::string >& strings )
@@ -181,8 +181,8 @@ CGeneticAlgorithmPtr CLaboratoryFactory::createCLStrategy( const std::vector< st
         return CGeneticAlgorithmPtr( new CGeneticStrategyCLv2( source, states.get(), actions.get(), labResults.get(), strings, logger ) );
 }
 
-CLaboratoryPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 
+CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 
         CActionContainerPtr actions, CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResults )
 {
-    return CLaboratoryPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
+    return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }

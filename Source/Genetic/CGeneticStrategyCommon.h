@@ -1,9 +1,11 @@
 #pragma once
 
 #include "GeneticAPI/CGeneticAlgorithm.h"
-#include "GeneticAPI/CMap.h"
+#include "CMap.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
+
+class CAntFitnes;
 
 
 class CGeneticStrategyCommon : public CGeneticAlgorithm
@@ -12,7 +14,7 @@ public:
     CGeneticStrategyCommon(CStateContainer* states, CActionContainer* actions, 
         CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
-    virtual void setMaps( std::vector<CMapPtr> maps );
+    //virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
     virtual double getAvgFitness() const;
@@ -29,11 +31,12 @@ protected:
 
     CStateContainer* states;
     CActionContainer* actions;
+    CAntFitnes* fitnesFunctor;
 
     int N, M;
     CLabResultMulti* result;
     CInvoker* invoker;
 	Tools::Logger& logger;
-    std::vector<CMapPtr> maps;
+    //std::vector<CMapPtr> maps;
     boost::exception_ptr error;
 };

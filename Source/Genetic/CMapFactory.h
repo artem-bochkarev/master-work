@@ -1,4 +1,4 @@
-#include "../GeneticAPI/CMap.h"
+#include "CMap.h"
 
 class CMapFactory
 {

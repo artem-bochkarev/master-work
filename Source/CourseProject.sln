@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Genetic", "Genetic\Genetic.vcproj", "{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CleverAnt", "Genetic\CleverAnt.vcproj", "{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
 	ProjectSection(ProjectDependencies) = postProject
 		{12B84E62-D3D1-43DE-81ED-9F97B593AEC6} = {12B84E62-D3D1-43DE-81ED-9F97B593AEC6}
 		{D3A5C576-BFCB-4550-A753-9B52EF7B06E6} = {D3A5C576-BFCB-4550-A753-9B52EF7B06E6}

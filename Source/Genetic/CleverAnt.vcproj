@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Genetic"
+	Name="CleverAnt"
 	ProjectGUID="{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
 	RootNamespace="Genetic"
 	Keyword="Win32Proj"
@@ -155,6 +155,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CAntFitnes.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CAutomatImpl.cpp"
 				>
 			</File>
@@ -253,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CAntFitnes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CAutomatImpl.h"
 				>
 			</File>
@@ -290,6 +298,10 @@
 			</File>
 			<File
 				RelativePath=".\CLabResultMulti.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CMap.h"
 				>
 			</File>
 			<File

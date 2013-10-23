@@ -173,6 +173,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CFitnessCounter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CGeneticAlgorithm.h"
 				>
 			</File>
@@ -182,10 +186,6 @@
 			</File>
 			<File
 				RelativePath=".\CLaboratoryResult.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CMap.h"
 				>
 			</File>
 			<File

@@ -53,16 +53,16 @@ CLaboratoryMulti::~CLaboratoryMulti()
 
 void CLaboratoryMulti::setMaps( std::vector<CMapPtr> maps )
 {
-    strategy->setMaps( maps );
+    fitnesFunctor->setMaps( maps );
 }
 
 const CMapPtr CLaboratoryMulti::getMap( size_t i )
 {
-    return strategy->getMap( i );
+    return fitnesFunctor->getMap( i );
 }
 size_t CLaboratoryMulti::getMapsCount()
 {
-    return strategy->getMapsCount();
+    return fitnesFunctor->getMapsCount();
 }
 
 const CGeneticAlgorithmPtr CLaboratoryMulti::getStrategy() const

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CGeneticStrategyCommon.h"
-#include "GeneticAPI/CMap.h"
+#include "CMap.h"
 #include "CAutomatImpl.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #define __NO_STD_VECTOR //no std vector

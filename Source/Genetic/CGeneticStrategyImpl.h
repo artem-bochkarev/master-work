@@ -20,22 +20,13 @@ public:
 
     virtual void nextGeneration( CRandom* rand );
 
-    virtual void setMaps( std::vector<CMapPtr> maps );
-    virtual const CMapPtr getMap( size_t i );
-    virtual size_t getMapsCount();
+    //virtual void setMaps( std::vector<CMapPtr> maps );
 
-    //virtual void addMap( CMapPtr map );
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
     CAutomatPtr getBestIndivid() const;
     virtual ~CGeneticStrategyImpl();
-    virtual CInvoker* getInvoker() const;
-    virtual size_t getN() const;
-    virtual size_t getM() const;
     virtual std::string getDeviceType() const;
-    virtual const boost::exception_ptr& getError() const;
-protected:
-    void pushResults();
 private:
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
 

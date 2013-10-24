@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="CleverAnt"
 	ProjectGUID="{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
 	RootNamespace="Genetic"
@@ -159,10 +159,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CAutomatImpl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CAutomatShortTables.cpp"
 				>
 			</File>
@@ -171,23 +167,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CGeneticStrategyCL.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyCLv2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyCLWrap.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CGeneticStrategyCommon.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyImpl.cpp"
 				>
 			</File>
 			<File
@@ -223,10 +203,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GenCLWrap.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -246,6 +222,34 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="FullTables"
+				>
+				<File
+					RelativePath=".\CAutomatImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCL.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCLv2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCLWrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\GenCLWrap.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -261,31 +265,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CAutomatImpl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CAutomatShortTables.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CGeneticStrategyCL.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyCLv2.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyCLWrap.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CGeneticStrategyCommon.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CGeneticStrategyImpl.h"
 				>
 			</File>
 			<File
@@ -329,10 +313,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GenCLWrap.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -340,6 +320,34 @@
 				RelativePath=".\targetver.h"
 				>
 			</File>
+			<Filter
+				Name="FullTables"
+				>
+				<File
+					RelativePath=".\CAutomatImpl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCL.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCLv2.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyCLWrap.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CGeneticStrategyImpl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\GenCLWrap.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

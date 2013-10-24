@@ -11,11 +11,11 @@ public:
     CAutomatImpl( const CAutomatImpl& automat );
     CAutomatImpl& operator = ( const CAutomatImpl& automat );
     virtual void generateRandom( CRandom* rand );
-    virtual char getNextState( char currentState, std::vector<int>* input );
-    virtual char getNextState( char currentState, int* input );
+    virtual char getNextState( char currentState, std::vector<int>* input ) const;
+    virtual char getNextState( char currentState, int* input ) const;
     virtual char getStartState() const;
-    virtual char getAction( char currentState, std::vector<int>* input );
-    virtual char getAction( char currentState, int* input );
+    virtual char getAction( char currentState, std::vector<int>* input ) const;
+    virtual char getAction( char currentState, int* input ) const;
     virtual size_t countIndex( std::vector<int>* input ) const;
     virtual size_t countIndex( int* input ) const;
     virtual void mutate( CRandom* rand );

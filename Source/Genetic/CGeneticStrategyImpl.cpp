@@ -7,6 +7,7 @@
 #include <boost/thread/thread_time.hpp>
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
+#include "CAntFitnes.h"
 
 class CLocalInvoker
 {
@@ -261,35 +262,19 @@ void CGeneticStrategyImpl::nextGeneration( size_t start, size_t finish, CRandom*
     {
         for ( int j=0; j < M; ++j )
         {
-            
-            //CAutomatImpl b[8] = { a[0], a[0], a[0], a[0], a[0], a[0], a[0], a[0] };
-           // if ( rand()%100 < 10 )
-           //     individs[i][j]->mutate();
             CAutomatImpl a[5] = { CAutomatImpl(states, actions), CAutomatImpl(states, actions),
                         CAutomatImpl(states, actions), CAutomatImpl(states, actions), CAutomatImpl(*individs[i][j]) };
-          /*  std::vector<CAutomatImplPtr> vec( CAutomatImpl::cross( individs[i][j], individs[ i ][ (j + 1)%N ] ) );
-            b[0] = *vec[0];
-            b[1] = *vec[1];
-            vec = CAutomatImpl::cross( individs[i][j], individs[ (i + 1)%N ][ j ] );
-            b[2] = *vec[0];
-            b[3] = *vec[1];
-            vec = CAutomatImpl::cross( individs[i][j], individs[ i ][ (j + N - 1)%N ] );
-            b[4] = *vec[0];
-            b[5] = *vec[1];
-            vec = CAutomatImpl::cross( individs[i][j], individs[ (i + N - 1)%N ][ j ] );
-            b[6] = *vec[0];
-            b[7] = *vec[1];*/
+
             a[0].crossover( individs[i][j], individs[ i ][ (j + 1)%M ], rand );
             a[2].crossover( individs[i][j], individs[ (i + 1)%N ][ j ], rand );
             a[1].crossover( individs[i][j], individs[ i ][ (j + N - 1)%M ], rand );
             a[3].crossover( individs[i][j], individs[ (i + N - 1)%N ][ j ], rand );
             double r[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
-            for ( std::vector<CMapPtr>::const_iterator it = maps.begin(); it != maps.end(); ++it )
-                for ( int z=0; z<5; ++z )
-                {
-                    CMapImpl tmpMap( it->get() );
-                    r[z] +=  CTest::run( &a[z],  &tmpMap );
-                }
+            for ( int z=0; z<5; ++z )
+            {
+                r[z] = fitnesFunctor->fitnes( &a[z] );
+            }
+
             int k = 0;
             for ( int z=1; z<4; ++z )
                 if ( r[z] > r[k] )
@@ -298,8 +283,6 @@ void CGeneticStrategyImpl::nextGeneration( size_t start, size_t finish, CRandom*
             if ( newIndivids[i][j] != 0 )
                 delete newIndivids[i][j];
             newIndivids[i][j] = new CAutomatImpl( a[k] );
-           // if ( rand()%100 < 10 )
-            //    newIndivids[i][j]->mutate( rand );
         }
     }
 }
@@ -329,13 +312,6 @@ void CGeneticStrategyImpl::nextGeneration( CRandom* rand )
     preGeneration();
     nextGeneration( 0, N, rand );
     postGeneration();
-}
-
-
-void CGeneticStrategyImpl::setMaps( std::vector<CMapPtr> maps )
-{
-    this->maps = maps;
-    pushResults();
 }
 
 void CGeneticStrategyImpl::freeIndivids( CAutomatImpl*** ind )
@@ -374,39 +350,4 @@ CGeneticStrategyImpl::~CGeneticStrategyImpl()
 std::string CGeneticStrategyImpl::getDeviceType() const
 {
     return "C++ on CPU";
-}
-
-const CMapPtr CGeneticStrategyImpl::getMap( size_t i )
-{
-    return CGeneticStrategyCommon::getMap(i);
-}
-
-size_t CGeneticStrategyImpl::getMapsCount()
-{
-    return CGeneticStrategyCommon::getMapsCount();
-}
-
-void CGeneticStrategyImpl::pushResults()
-{
-    CGeneticStrategyCommon::pushResults();
-}
-
-CInvoker* CGeneticStrategyImpl::getInvoker() const
-{
-    return CGeneticStrategyCommon::getInvoker();
-}
-
-size_t CGeneticStrategyImpl::getN() const
-{
-    return CGeneticStrategyCommon::getN();
-}
-
-size_t CGeneticStrategyImpl::getM() const
-{
-    return CGeneticStrategyCommon::getM();
-}
-
-const boost::exception_ptr& CGeneticStrategyImpl::getError() const
-{
-    return CGeneticStrategyCommon::getError();
 }

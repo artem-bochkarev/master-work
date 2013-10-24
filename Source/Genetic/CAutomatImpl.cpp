@@ -86,7 +86,7 @@ size_t CAutomatImpl::countIndex( int* mas ) const
     return index;// % stateSize;
 }
 
-char CAutomatImpl::getNextState( char currentState, int* input )
+char CAutomatImpl::getNextState( char currentState, int* input ) const
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -94,7 +94,7 @@ char CAutomatImpl::getNextState( char currentState, int* input )
     return state;
 }
 
-char CAutomatImpl::getAction( char currentState, int* input )
+char CAutomatImpl::getAction( char currentState, int* input ) const
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -109,13 +109,13 @@ size_t CAutomatImpl::countIndex( std::vector<int>* input ) const
     return 0;// % stateSize;
 }
 
-char CAutomatImpl::getNextState( char currentState, std::vector<int>* input )
+char CAutomatImpl::getNextState( char currentState, std::vector<int>* input ) const
 {
     BOOST_ASSERT(0);
     return 0;
 }
 
-char CAutomatImpl::getAction( char currentState, std::vector<int>* input )
+char CAutomatImpl::getAction( char currentState, std::vector<int>* input ) const
 {
     BOOST_ASSERT(0);
     return 0;

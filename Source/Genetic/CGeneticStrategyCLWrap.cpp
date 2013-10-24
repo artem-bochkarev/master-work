@@ -8,6 +8,7 @@
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "COpenCLWrapInvoker.h"
+#include "CAntFitnes.h"
 
 void CGeneticStrategyCLWrap::initMemory()
 {
@@ -183,7 +184,7 @@ void CGeneticStrategyCLWrap::swapBuffers()
 
 void CGeneticStrategyCLWrap::setMaps( std::vector<CMapPtr> maps )
 {
-    this->maps = maps;
+    fitnesFunctor->setMaps(maps);
 
     size_t mapSize = 2 + maps[0]->width()*maps[0]->height();
     size_t mapSizes = N*M*( mapSize );

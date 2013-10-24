@@ -2,6 +2,7 @@
 #include "CGeneticStrategyCommon.h"
 #include "CMapImpl.h"
 #include "CAntFitnes.h"
+#include <sstream>
 
 CGeneticStrategyCommon::CGeneticStrategyCommon(CStateContainer *states, CActionContainer *actions, 
                         CLabResultMulti *res, const std::vector<std::string> &strings, Tools::Logger &logger)
@@ -41,6 +42,13 @@ size_t CGeneticStrategyCommon::getN() const
 size_t CGeneticStrategyCommon::getM() const
 {
     return M;
+}
+
+std::string CGeneticStrategyCommon::getPoolInfo() const
+{
+    std::stringstream out;
+    out << "Size: " << getN() << "x" << getM();
+    return out.str();
 }
 
 const boost::exception_ptr& CGeneticStrategyCommon::getError() const

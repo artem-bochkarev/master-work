@@ -42,9 +42,7 @@ bool QApp::openCmd()
 		    {
 			    mode = STOPPED;
 			    ui.deviceLabel->setText( laboratory->getStrategy()->getDeviceType().c_str() );
-			    int n = laboratory->getStrategy()->getN();
-			    int m = laboratory->getStrategy()->getM();
-			    ui.sizeLabel->setText( "Size: " + QString().setNum(n) + "x" + QString().setNum(m) );
+			    ui.sizeLabel->setText( QString(laboratory->getStrategy()->getPoolInfo().c_str()) );
 		    }
         }catch ( std::runtime_error& error )
         {

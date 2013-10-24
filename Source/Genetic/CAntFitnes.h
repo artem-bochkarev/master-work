@@ -7,7 +7,7 @@ typedef double ANT_FITNES_TYPE;
 class CAntFitnes : public CFitnesCounter<ANT_FITNES_TYPE>
 {
 public:
-    virtual ANT_FITNES_TYPE fitnes( CAutomatPtr automat ) const = 0;
+    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const = 0;
 
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -17,3 +17,15 @@ protected:
 };
 
 typedef boost::shared_ptr<CAntFitnes> CAntFitnesPtr;
+
+class CAntFitnesFullTablesCPU : public CAntFitnes
+{
+public:
+    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
+};
+
+class CAntFitnesFullTablesNone : public CAntFitnes
+{
+public:
+    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
+};

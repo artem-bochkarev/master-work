@@ -8,7 +8,7 @@ public:
     CTest( CAutomat* automat, CMap* map, size_t moves = 100, int x = 0, int y = 0, 
            EDirection start = DRight );
     bool makeMove();
-    static double run( CAutomat* automat, CMap* map, size_t moves = 100 );
+    static double run( const CAutomat* automat, CMap* map, size_t moves = 100 );
     const CMap* getArena() const;
     size_t movesMaked() const;
     size_t foodEaten() const;

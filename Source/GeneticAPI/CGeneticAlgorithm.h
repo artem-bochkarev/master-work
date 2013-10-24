@@ -1,5 +1,4 @@
 #pragma once
-#include "CMap.h"
 #include "CRandom.h"
 #include "CAutomat.h"
 #include <boost/exception_ptr.hpp>
@@ -16,13 +15,8 @@ public:
     virtual double getMaxFitness() const  = 0;
     CAutomatPtr getBestIndivid() const {};
 
-    /*virtual void setMaps( std::vector<CMapPtr> maps ) = 0;
-    virtual const CMapPtr getMap( size_t i ) = 0;
-    virtual size_t getMapsCount() = 0;
-    
-    virtual size_t getN() const = 0;
-    virtual size_t getM() const = 0;*/
     virtual std::string getDeviceType() const = 0;
+    virtual std::string getPoolInfo() const = 0;
     
     //from CTask
     virtual void run() = 0;

@@ -26,6 +26,7 @@ public:
     virtual size_t getM() const;
     virtual std::string getDeviceType() const =0;
     virtual const boost::exception_ptr& getError() const;
+    virtual std::string getPoolInfo() const;
 protected:
     virtual void pushResults();
 

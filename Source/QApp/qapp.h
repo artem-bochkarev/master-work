@@ -4,7 +4,8 @@
 #include <QtGui/QMainWindow>
 #include <QTimer>
 #include "ui_qapp.h"
-#include "GeneticAPI/CLaboratory.h"
+#include "Genetic/CLaboratoryMulti.h"
+#include "Genetic/CMap.h"
 #include "Tools/Logger.h"
 
 class QApp : public QMainWindow
@@ -35,7 +36,7 @@ private:
 	void freeLaboratory();
     Ui::QAppClass ui;
 	QTimer timer;
-    CLaboratoryPtr laboratory;
+    CLaboratoryMultiPtr laboratory;
 	std::vector<CMapPtr> maps;
 	boost::shared_ptr< QGraphicsScene > graphScene;
 	int lastNumber;

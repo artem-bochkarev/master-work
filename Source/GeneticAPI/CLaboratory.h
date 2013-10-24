@@ -1,6 +1,5 @@
 #pragma once
 #include "CAutomat.h"
-#include "CMap.h"
 #include "CGeneticAlgorithm.h"
 #include "TimeRun/CTimeRunner.h"
 

@@ -116,13 +116,13 @@ std::vector< std::pair<int, int> > CTest::getVisibleCells( const CMap *map, int 
     return map->getVisibleCells( x, y, direct );
 }
 
-double CTest::run( CAutomat *automat, CMap *map, size_t moves )
+double CTest::run( const CAutomat *automat, CMap *map, size_t moves )
 {
     int x = 0, y = 0;
     EDirection direct( DRight );
     double cnt = 0;
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
-    CAutomatImpl* autImpl = static_cast<CAutomatImpl*>(automat);
+    const CAutomatImpl* autImpl = static_cast<const CAutomatImpl*>(automat);
     char curState = automat->getStartState();
     for ( size_t i=0; i<moves; ++i )
     {

@@ -9,7 +9,6 @@ class CLaboratoryMulti : public CLaboratory
 public:
     CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
         CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResult );
-    virtual void setMaps( std::vector<CMapPtr> maps );
     
     /*virtual void start();
     virtual void runForTime( int milisec );
@@ -22,6 +21,7 @@ public:
     virtual CAutomatPtr getBestInd( size_t i ) const;
     virtual const CGeneticAlgorithmPtr getStrategy() const;
 
+    virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
 

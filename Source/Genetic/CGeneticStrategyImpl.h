@@ -14,7 +14,7 @@ public:
     friend class CLocalInvoker;
     friend class CMainInvoker;
     CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
-        CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& );
+        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();
 

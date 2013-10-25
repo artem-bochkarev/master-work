@@ -23,9 +23,12 @@ class CAntFitnesFullTablesCPU : public CAntFitnes
 public:
     virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
 };
+typedef boost::shared_ptr<CAntFitnesFullTablesCPU> CAntFitnesFullTablesCPUPtr;
+
 
 class CAntFitnesFullTablesNone : public CAntFitnes
 {
 public:
     virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
 };
+typedef boost::shared_ptr<CAntFitnesFullTablesNone> CAntFitnesFullTablesNonePtr;

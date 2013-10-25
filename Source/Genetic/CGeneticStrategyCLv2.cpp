@@ -128,8 +128,8 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
 }
 
 CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem3::path& source, CStateContainer* states, CActionContainer* actions, 
-                                       CLabResultMulti* res, const std::vector< std::string >& strings, Tools::Logger& logger )
-    :CGeneticStrategyCommon(states, actions, res, strings, logger), mapsBuffer(0), buffer(0)
+                                       CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
+    :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticStrategyCLv2.\n";
     m_pRandom = CRandomPtr( new CRandomImpl() );

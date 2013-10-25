@@ -37,7 +37,7 @@ double CLaboratoryMulti::getMaxFitness( size_t i ) const
 }
 
 CLaboratoryMulti::CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
-                                   CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResult )
+                                   CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult )
 :states(states), actions(actions), strategy(strategy), 
     results(labResult)
 {
@@ -53,16 +53,16 @@ CLaboratoryMulti::~CLaboratoryMulti()
 
 void CLaboratoryMulti::setMaps( std::vector<CMapPtr> maps )
 {
-    fitnesFunctor->setMaps( maps );
+    getFitnesFunctor()->setMaps( maps );
 }
 
 const CMapPtr CLaboratoryMulti::getMap( size_t i )
 {
-    return fitnesFunctor->getMap( i );
+    return getFitnesFunctor()->getMap( i );
 }
 size_t CLaboratoryMulti::getMapsCount()
 {
-    return fitnesFunctor->getMapsCount();
+    return getFitnesFunctor()->getMapsCount();
 }
 
 const CGeneticAlgorithmPtr CLaboratoryMulti::getStrategy() const
@@ -79,3 +79,18 @@ const CActionContainerPtr CLaboratoryMulti::getActions() const
 {
     return actions;
 }
+
+CAntFitnes* CLaboratoryMulti::getFitnesFunctor()
+{
+    return strategy->getFitnesFunctor();
+}
+
+const CAntFitnes* CLaboratoryMulti::getFitnesFunctor() const
+{
+    return strategy->getFitnesFunctor();
+}
+
+/*void CLaboratoryMulti::getFitnesFunctor()
+{
+    fitnesFunctor = fitnes;
+}*/

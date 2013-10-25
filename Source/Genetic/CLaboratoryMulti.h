@@ -1,14 +1,14 @@
 #pragma once
 #include "../GeneticAPI/CLaboratory.h"
 #include "CLabResultMulti.h"
-#include "../GeneticAPI/CGeneticAlgorithm.h"
+#include "CGeneticStrategyCommon.h"
 #include "CAntFitnes.h"
 
 class CLaboratoryMulti : public CLaboratory
 {
 public:
     CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
-        CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResult );
+        CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult );
     
     /*virtual void start();
     virtual void runForTime( int milisec );
@@ -28,12 +28,14 @@ public:
     virtual const CStateContainerPtr getStates() const;
     virtual const CActionContainerPtr getActions() const;
 
+    CAntFitnes* getFitnesFunctor();
+    const CAntFitnes* getFitnesFunctor() const;
+
     virtual ~CLaboratoryMulti();
 private:
     CLaboratoryMulti();
     mutable CLabResultMultiPtr results;
-    CGeneticAlgorithmPtr strategy;
-    CAntFitnesPtr fitnesFunctor;
+    CGeneticStrategyCommonPtr strategy;
 
     CStateContainerPtr states;
     CActionContainerPtr actions;

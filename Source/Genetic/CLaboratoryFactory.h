@@ -13,13 +13,13 @@ private:
     static  CLaboratoryMultiPtr noFile( Tools::Logger& logger );
     static  CActionContainerPtr createActions( const std::vector< std::string >& strings );
     static  CStateContainerPtr createStates( const std::vector< std::string >& strings );
-    static  CGeneticAlgorithmPtr createStrategy( const std::vector< std::string >& strings,
+    static  CGeneticStrategyCommonPtr createStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
-    static CGeneticAlgorithmPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
+    static CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
 
     static  CLaboratoryMultiPtr createLaboratory( CStateContainerPtr states, 
-        CActionContainerPtr actions, CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResults );
+        CActionContainerPtr actions, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults );
 
     CLaboratoryFactory();
     CLaboratoryFactory( const CLaboratoryFactory& );

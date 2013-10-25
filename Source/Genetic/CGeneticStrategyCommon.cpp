@@ -5,8 +5,8 @@
 #include <sstream>
 
 CGeneticStrategyCommon::CGeneticStrategyCommon(CStateContainer *states, CActionContainer *actions, 
-                        CLabResultMulti *res, const std::vector<std::string> &strings, Tools::Logger &logger)
-                        :logger(logger),states(states), actions(actions), N(0), M(0), result(res)
+                        CLabResultMulti *res, CAntFitnesPtr fitnes, const std::vector<std::string> &strings, Tools::Logger &logger)
+                        :logger(logger),states(states), actions(actions), N(0), M(0), result(res), fitnesFunctor(fitnes)
 {}
 
 void CGeneticStrategyCommon::pushResults()
@@ -64,4 +64,14 @@ const CMapPtr CGeneticStrategyCommon::getMap( size_t i )
 size_t CGeneticStrategyCommon::getMapsCount()
 {
     return fitnesFunctor->getMapsCount();
+}
+
+CAntFitnes* CGeneticStrategyCommon::getFitnesFunctor()
+{
+    return fitnesFunctor.get();
+}
+
+const CAntFitnes* CGeneticStrategyCommon::getFitnesFunctor() const
+{
+    return fitnesFunctor.get();
 }

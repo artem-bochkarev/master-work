@@ -46,7 +46,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, co
     CActionContainerPtr actions = createActions( strings );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
 
-    CGeneticAlgorithmPtr strategy = createStrategy( strings, states, actions, labResults, logger );
+    CGeneticStrategyCommonPtr strategy = createStrategy( strings, states, actions, labResults, logger );
     return createLaboratory( states, actions, strategy, labResults );
 }
 
@@ -89,7 +89,8 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
     actions->addAction( 2, "turn left" );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
-    CGeneticAlgorithmPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
+    CAntFitnesFullTablesCPUPtr fitnesFunctor;
+    CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
     
     return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }
@@ -126,7 +127,7 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
     return states;
 }
 
-CGeneticAlgorithmPtr CLaboratoryFactory::createStrategy( const std::vector< std::string >& strings,
+CGeneticStrategyCommonPtr CLaboratoryFactory::createStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
 {
     for ( size_t i=0; i < strings.size(); ++i )
@@ -145,15 +146,17 @@ CGeneticAlgorithmPtr CLaboratoryFactory::createStrategy( const std::vector< std:
                     return createCLStrategy( strings, states, actions, labResults, logger );
                 }else
                 {
-                    return CGeneticAlgorithmPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), strings, logger ) );
+                    CAntFitnesFullTablesNonePtr fitnesFunctor;
+                    return CGeneticStrategyCommonPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
                 }
             }
         }
     }
-    return CGeneticAlgorithmPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), strings, logger ) );
+    CAntFitnesFullTablesCPUPtr fitnesFunctor;
+    return CGeneticStrategyCommonPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
 }
 
-CGeneticAlgorithmPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
+CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
 {
     boost::filesystem3::path source("gen.cl");
@@ -175,14 +178,15 @@ CGeneticAlgorithmPtr CLaboratoryFactory::createCLStrategy( const std::vector< st
     }
     in.close();
     //ToDo: continue it!
+    CAntFitnesFullTablesNonePtr fitnesFunctor;
     if (version == 1)
-        return CGeneticAlgorithmPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), strings, logger ) );
+        return CGeneticStrategyCommonPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
     else
-        return CGeneticAlgorithmPtr( new CGeneticStrategyCLv2( source, states.get(), actions.get(), labResults.get(), strings, logger ) );
+        return CGeneticStrategyCommonPtr( new CGeneticStrategyCLv2( source, states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
 }
 
 CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 
-        CActionContainerPtr actions, CGeneticAlgorithmPtr strategy, CLabResultMultiPtr labResults )
+        CActionContainerPtr actions, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults )
 {
     return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }

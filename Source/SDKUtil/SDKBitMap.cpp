@@ -1,3 +1,18 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
 #include "SDKBitMap.hpp"
 static const short bitMapID = 19778;
 
@@ -18,6 +33,7 @@ SDKBitMap::releaseResources(void)
     colors_    = NULL;
     isLoaded_  = false;
 }
+
 
 SDKBitMap& SDKBitMap::operator=(const SDKBitMap& rhs)
 {
@@ -71,6 +87,98 @@ SDKBitMap& SDKBitMap::operator=(const SDKBitMap& rhs)
     }
 
     return *this;
+}
+
+
+bool SDKBitMap::write(const char * filename, int width, int height, unsigned int *ptr)
+{
+    // Open BMP file
+    FILE * fd = fopen(filename, "wb");
+
+    int alignSize  = width * 4;
+    alignSize ^= 0x03;
+    alignSize ++;
+    alignSize &= 0x03;
+
+    int rowLength = width * 4 + alignSize;
+
+    // Opened OK
+    if (fd != NULL) 
+    {
+        BitMapHeader *bitMapHeader = new BitMapHeader;
+        bitMapHeader->id = bitMapID;
+        bitMapHeader->offset = sizeof(BitMapHeader) + sizeof(BitMapInfoHeader);
+        bitMapHeader->reserved1 = 0x0000;
+        bitMapHeader->reserved2 = 0x0000;
+        bitMapHeader->size = sizeof(BitMapHeader) + sizeof(BitMapInfoHeader) + rowLength * height;
+        // Write header
+        fwrite(bitMapHeader, sizeof(BitMapHeader), 1, fd);
+
+        // Failed to write header
+        if (ferror(fd)) 
+        {
+            fclose(fd);
+            return false;
+        }
+
+        BitMapInfoHeader *bitMapInfoHeader = new BitMapInfoHeader;
+        bitMapInfoHeader->bitsPerPixel = 32;
+        bitMapInfoHeader->clrImportant = 0;
+        bitMapInfoHeader->clrUsed = 0;
+        bitMapInfoHeader->compression = 0;
+        bitMapInfoHeader->height = height;
+        bitMapInfoHeader->imageSize = rowLength * height;
+        bitMapInfoHeader->planes = 1;
+        bitMapInfoHeader->sizeInfo = sizeof(BitMapInfoHeader);
+        bitMapInfoHeader->width = width; 
+        bitMapInfoHeader->xPelsPerMeter = 0;
+        bitMapInfoHeader->yPelsPerMeter = 0;
+
+        // Write map info header
+        fwrite(bitMapInfoHeader, sizeof(BitMapInfoHeader), 1, fd);
+
+        // Failed to write map info header
+        if (ferror(fd)) 
+        {
+            fclose(fd);
+            return false;
+        }    
+        unsigned char buffer[4];
+        int x, y;
+
+        for (y = 0; y < height; y++)
+        {
+            for (x = 0; x < width; x++, ptr++)
+            {
+                if( 4 != fwrite(ptr, 1, 4, fd)) 
+                {
+                    fclose(fd);
+                    return false;
+                }
+            }
+            memset( buffer, 0x00, 4 );
+
+            fwrite( buffer, 1, alignSize, fd );
+        }
+
+        fclose( fd );
+        return true;
+    }
+
+    return false;
+}
+
+int 
+SDKBitMap::getNumChannels()
+{
+    if (isLoaded_) 
+    {
+        return bitsPerPixel / 8;
+    }
+    else 
+    {
+        return SDK_FAILURE;
+    }
 }
 
 void
@@ -221,7 +329,7 @@ SDKBitMap::colorIndex(uchar4 color)
         }
     }
 
-    return 0;
+    return SDK_SUCCESS;
 }
 
 bool

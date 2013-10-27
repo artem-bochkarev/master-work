@@ -1,32 +1,84 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
 #ifndef SDKFILE_HPP_
 #define SDKFILE_HPP_
 
+/**
+ * Header Files
+ */
 #include <vector>
 #include <string>
 #include <fstream>
 #include <malloc.h>
+#include <SDKCommon.hpp>
 
+/**
+ * namespace streamsdk
+ */
 namespace streamsdk
 {
-//! Get current directory
+/**
+ * getCurrentDir
+ * Get current directory
+ * @return string
+ */
 extern std::string getCurrentDir();
 
-//! \class SDKFile for the opencl program processing
+/**
+ * class SDKFile
+ * for the opencl program file processing
+ */
 class SDKFile
 {
 public:
-    //! Default constructor
+    /**
+	 *Default constructor
+	 */
     SDKFile(): source_(""){}
 
-    //! Destructor
+    /**
+	 * Destructor
+	 */
     ~SDKFile(){};
 
-    //! Opens the CL program file
+    /**
+	 * Opens the CL program file
+	 * @return true if success else false
+	 */
     bool open(const char* fileName);
-    bool writeBinaryToFile(const char* fileName, const char* birary, size_t numBytes);
-    bool readBinaryFromFile(const char* fileName);
 
-    // Replaces Newline with spaces
+	/**
+	 * writeBinaryToFile
+	 * @param fileName Name of the file
+	 * @param binary char binary array
+	 * @param numBytes number of bytes
+	 * @return true if success else false
+	 */
+    int writeBinaryToFile(const char* fileName, const char* binary, size_t numBytes);
+
+	/**
+	 * readBinaryToFile
+	 * @param fileName name of file
+	 * @return true if success else false
+	 */
+    int readBinaryFromFile(const char* fileName);
+
+    /**
+	 * Replaces Newline with spaces
+	 */
     void replaceNewlineWithSpaces()
     {
         size_t pos = source_.find_first_of('\n', 0);
@@ -42,14 +94,22 @@ public:
             pos = source_.find_first_of('\r', pos + 1);
         }
     }
-    //! Returns a pointer to the string object with the source code
+
+	/**
+	 * source
+	 * Returns a pointer to the string object with the source code
+	 */
     const std::string&  source() const { return source_; }
 
 private:
-    //! Disable copy constructor
+    /**
+	 * Disable copy constructor
+	 */
     SDKFile(const SDKFile&);
 
-    //! Disable operator=
+    /**
+	 * Disable operator=
+	 */
     SDKFile& operator=(const SDKFile&);
 
     std::string     source_;    //!< source code of the CL program

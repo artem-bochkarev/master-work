@@ -1,7 +1,23 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
 #include <SDKCommon.hpp>
-#define CL_CONTEXT_OFFLINE_DEVICES_AMD        0x403F
 
-
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 namespace streamsdk
 {
@@ -73,6 +89,27 @@ void SDKCommon::printArray(
     std::cout<<"\n";
 }
 
+int SDKCommon::waitForEventAndRelease(cl_event *event)
+{
+    cl_int status = CL_SUCCESS;
+    cl_int eventStatus = CL_QUEUED;
+	while(eventStatus != CL_COMPLETE)
+    {
+        status = clGetEventInfo(
+                        *event, 
+                        CL_EVENT_COMMAND_EXECUTION_STATUS, 
+                        sizeof(cl_int),
+                        &eventStatus,
+                        NULL);
+		CHECK_OPENCL_ERROR(status, "clGetEventEventInfo Failed with Error Code:");
+	}
+
+    status = clReleaseEvent(*event);
+    CHECK_OPENCL_ERROR(status, "clReleaseEvent Failed with Error Code:");
+
+    return SDK_SUCCESS;
+}
+
 template<typename T> 
 int SDKCommon::fillRandom(
          T * arrayPtr, 
@@ -85,7 +122,7 @@ int SDKCommon::fillRandom(
     if(!arrayPtr)
     {
         error("Cannot fill array. NULL pointer.");
-        return 0;
+        return SDK_FAILURE;
     }
 
     if(!seed)
@@ -102,7 +139,7 @@ int SDKCommon::fillRandom(
             arrayPtr[index] = rangeMin + T(range*rand()/(RAND_MAX + 1.0)); 
         }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 template<typename T> 
@@ -114,7 +151,7 @@ int SDKCommon::fillPos(
     if(!arrayPtr)
     {
         error("Cannot fill array. NULL pointer.");
-        return 0;
+        return SDK_FAILURE;
     }
 
     /* initialisation of input with positions*/
@@ -125,7 +162,7 @@ int SDKCommon::fillPos(
             arrayPtr[index] = index;
         }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 template<typename T> 
@@ -138,7 +175,7 @@ int SDKCommon::fillConstant(
     if(!arrayPtr)
     {
         error("Cannot fill array. NULL pointer.");
-        return 0;
+        return SDK_FAILURE;
     }
 
     /* initialisation of input with constant value*/
@@ -149,7 +186,7 @@ int SDKCommon::fillConstant(
             arrayPtr[index] = val;
         }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 template<typename T>
@@ -170,9 +207,9 @@ int SDKCommon::isPowerOf2(T val)
 {
     long long _val = val;
     if((_val & (-_val))-_val == 0 && _val != 0)
-        return 1;
+        return SDK_SUCCESS;
     else
-        return 0;
+        return SDK_FAILURE;
 }
 const char* 
 getOpenCLErrorCodeStr(std::string input)
@@ -292,12 +329,10 @@ getOpenCLErrorCodeStr(T input)
         case CL_DEVICE_PARTITION_FAILED_EXT:
             return "CL_DEVICE_PARTITION_FAILED_EXT";
         case CL_INVALID_PARTITION_COUNT_EXT:
-            return "CL_INVALID_PARTITION_COUNT_EXT";
+            return "CL_INVALID_PARTITION_COUNT_EXT"; 
         default:
             return "unknown error code";
     }
-
-    return "unknown error code";
 }
 
 
@@ -310,7 +345,7 @@ int SDKDeviceInfo::checkVal(
 {
     if(input==reference)
     {
-        return 1;
+        return 0;
     }
     else
     {
@@ -320,9 +355,69 @@ int SDKDeviceInfo::checkVal(
             std::cout << getOpenCLErrorCodeStr(input) << std::endl;
         }
         else
-            error(message);   
+			std::cout << message;   
+        return 1;
+    }
+}
+
+
+template<typename T>
+int KernelWorkGroupInfo::checkVal(
+    T input, 
+    T reference, 
+    std::string message,
+    bool isAPIerror) const
+{
+    if(input==reference)
+    {
         return 0;
     }
+    else
+    {
+        if(isAPIerror)
+        {
+            std::cout<<"Error: "<< message << " Error code : ";
+            std::cout << getOpenCLErrorCodeStr(input) << std::endl;
+        }
+        else
+			std::cout << message;   
+        return 1;
+    }
+}
+
+int KernelWorkGroupInfo::setKernelWorkGroupInfo(cl_kernel &kernel,cl_device_id &device)
+{
+	cl_int status = CL_SUCCESS;
+
+	//Get Kernel Work Group Info
+	status = clGetKernelWorkGroupInfo(kernel,
+									  device,
+									  CL_KERNEL_WORK_GROUP_SIZE,
+									  sizeof(size_t),
+									  &kernelWorkGroupSize,
+									  NULL);
+	if(checkVal(status, CL_SUCCESS, "clGetKernelWorkGroupInfo failed(CL_KERNEL_WORK_GROUP_SIZE)"))
+			return SDK_FAILURE;
+	
+	status = clGetKernelWorkGroupInfo(kernel,
+									  device,
+									  CL_KERNEL_LOCAL_MEM_SIZE,
+									  sizeof(cl_ulong),
+									  &localMemoryUsed,
+									  NULL);
+	if(checkVal(status, CL_SUCCESS, "clGetKernelWorkGroupInfo failed(CL_KERNEL_LOCAL_MEM_SIZE)"))
+			return SDK_FAILURE;
+
+	status = clGetKernelWorkGroupInfo(kernel,
+									  device,
+									  CL_KERNEL_COMPILE_WORK_GROUP_SIZE,
+									  sizeof(size_t) * 3,
+									  compileWorkGroupSize,
+									  NULL);
+	if(checkVal(status, CL_SUCCESS, "clGetKernelWorkGroupInfo failed(CL_KERNEL_COMPILE_WORK_GROUP_SIZE)"))
+			return SDK_FAILURE;
+
+	return SDK_SUCCESS;
 }
 
 
@@ -332,6 +427,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
 {
     cl_int status = CL_SUCCESS;
 
+
     //Get device type
     status = clGetDeviceInfo(
                     deviceId, 
@@ -339,8 +435,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_type), 
                     &dType, 
                     NULL);
-    if(!checkVal(status, CL_SUCCESS, "clGetDeviceIDs(CL_DEVICE_TYPE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_TYPE) failed");
 
     //Get vender ID
     status = clGetDeviceInfo(
@@ -349,8 +444,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint), 
                     &venderId, 
                     NULL);
-    if(!checkVal(status, CL_SUCCESS, "clGetDeviceIDs(CL_DEVICE_VENDOR_ID) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_VENDOR_ID) failed");
 
     //Get max compute units
     status = clGetDeviceInfo(
@@ -359,11 +453,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint), 
                     &maxComputeUnits, 
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_COMPUTE_UNITS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_COMPUTE_UNITS) failed");
 
     //Get max work item dimensions
     status = clGetDeviceInfo(
@@ -372,31 +462,20 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxWorkItemDims,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS) failed");
 
     //Get max work item sizes
     delete maxWorkItemSizes;
     maxWorkItemSizes = new size_t[maxWorkItemDims];
-    if(maxWorkItemSizes == NULL)
-    {
-        error("Failed to allocate memory(maxWorkItemSizes)");
-        return 0;
-    }
+    CHECK_ALLOCATION(maxWorkItemSizes, "Failed to allocate memory(maxWorkItemSizes)");
+
     status = clGetDeviceInfo(
                     deviceId, 
                     CL_DEVICE_MAX_WORK_ITEM_SIZES,
                     maxWorkItemDims * sizeof(size_t),
                     maxWorkItemSizes,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS) failed");
 
     // Maximum work group size
     status = clGetDeviceInfo(
@@ -405,11 +484,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &maxWorkGroupSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_WORK_GROUP_SIZE) failed"))
-        return 0;
+   CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_WORK_GROUP_SIZE) failed");
 
     // Preferred vector sizes of all data types
     status = clGetDeviceInfo(
@@ -418,11 +493,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredCharVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -430,11 +501,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredShortVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -442,11 +509,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredIntVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -454,11 +517,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredLongVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -466,11 +525,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredFloatVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -478,11 +533,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredDoubleVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -490,11 +541,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &preferredHalfVecWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF) failed");
 
     // Clock frequency
     status = clGetDeviceInfo(
@@ -503,11 +550,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxClockFrequency,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_CLOCK_FREQUENCY) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_CLOCK_FREQUENCY) failed");
 
     // Address bits
     status = clGetDeviceInfo(
@@ -516,11 +559,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &addressBits,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_ADDRESS_BITS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_ADDRESS_BITS) failed");
 
     // Maximum memory alloc size
     status = clGetDeviceInfo(
@@ -529,11 +568,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_ulong),
                     &maxMemAllocSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_MEM_ALLOC_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_MEM_ALLOC_SIZE) failed");
 
     // Image support
     status = clGetDeviceInfo(
@@ -542,11 +577,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_bool),
                     &imageSupport,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE_SUPPORT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE_SUPPORT) failed");
 
     // Maximum read image arguments
     status = clGetDeviceInfo(
@@ -555,11 +586,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxReadImageArgs,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_READ_IMAGE_ARGS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_READ_IMAGE_ARGS) failed");
 
     // Maximum write image arguments
     status = clGetDeviceInfo(
@@ -568,11 +595,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxWriteImageArgs,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_WRITE_IMAGE_ARGS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_WRITE_IMAGE_ARGS) failed");
 
     // 2D image and 3D dimensions
     status = clGetDeviceInfo(
@@ -581,11 +604,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &image2dMaxWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE2D_MAX_WIDTH) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE2D_MAX_WIDTH) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -593,11 +612,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &image2dMaxHeight,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE2D_MAX_HEIGHT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE2D_MAX_HEIGHT) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -605,11 +620,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &image3dMaxWidth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_WIDTH) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_WIDTH) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -617,11 +628,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &image3dMaxHeight,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_HEIGHT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_HEIGHT) failed");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -629,11 +636,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &image3dMaxDepth,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_DEPTH) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_IMAGE3D_MAX_DEPTH) failed");
 
     // Maximum samplers
     status = clGetDeviceInfo(
@@ -642,11 +645,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxSamplers,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_SAMPLERS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_SAMPLERS) failed");
 
     // Maximum parameter size
     status = clGetDeviceInfo(
@@ -655,11 +654,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &maxParameterSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_PARAMETER_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_PARAMETER_SIZE) failed");
 
     // Memory base address align
     status = clGetDeviceInfo(
@@ -668,11 +663,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &memBaseAddressAlign,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MEM_BASE_ADDR_ALIGN) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MEM_BASE_ADDR_ALIGN) failed");
 
     // Minimum data type align size
     status = clGetDeviceInfo(
@@ -681,11 +672,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &minDataTypeAlignSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE) failed");
 
     // Single precision floating point configuration
     status = clGetDeviceInfo(
@@ -694,11 +681,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_fp_config),
                     &singleFpConfig,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_SINGLE_FP_CONFIG) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_SINGLE_FP_CONFIG) failed");
 
     // Double precision floating point configuration
     status = clGetDeviceInfo(
@@ -707,11 +690,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_fp_config),
                     &doubleFpConfig,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_DOUBLE_FP_CONFIG) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_DOUBLE_FP_CONFIG) failed");
 
     // Global memory cache type
     status = clGetDeviceInfo(
@@ -720,11 +699,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_mem_cache_type),
                     &globleMemCacheType,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHE_TYPE) failed");
 
     // Global memory cache line size
     status = clGetDeviceInfo(
@@ -733,11 +708,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &globalMemCachelineSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE) failed");
 
     // Global memory cache size
     status = clGetDeviceInfo(
@@ -746,11 +717,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_ulong),
                     &globalMemCacheSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_CACHE_SIZE) failed");
 
     // Global memory size
     status = clGetDeviceInfo(
@@ -759,11 +726,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_ulong),
                     &globalMemSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_GLOBAL_MEM_SIZE) failed");
 
     // Maximum constant buffer size
     status = clGetDeviceInfo(
@@ -772,11 +735,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_ulong),
                     &maxConstBufSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE) failed");
 
     // Maximum constant arguments
     status = clGetDeviceInfo(
@@ -785,11 +744,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_uint),
                     &maxConstArgs,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_MAX_CONSTANT_ARGS) failed"))
-        return 0;
+   CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_MAX_CONSTANT_ARGS) failed");
 
     // Local memory type
     status = clGetDeviceInfo(
@@ -798,11 +753,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_local_mem_type),
                     &localMemType,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_LOCAL_MEM_TYPE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_LOCAL_MEM_TYPE) failed");
 
     // Local memory size
     status = clGetDeviceInfo(
@@ -811,11 +762,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_ulong),
                     &localMemSize,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_LOCAL_MEM_SIZE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_LOCAL_MEM_SIZE) failed");
 
     // Error correction support
     status = clGetDeviceInfo(
@@ -824,11 +771,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_bool),
                     &errCorrectionSupport,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_ERROR_CORRECTION_SUPPORT) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_ERROR_CORRECTION_SUPPORT) failed");
 
     // Profiling timer resolution
     status = clGetDeviceInfo(
@@ -837,11 +780,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(size_t),
                     &timerResolution,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PROFILING_TIMER_RESOLUTION) failed"))
-        return 0;
+   CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PROFILING_TIMER_RESOLUTION) failed");
 
     // Endian little
     status = clGetDeviceInfo(
@@ -850,11 +789,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_bool),
                     &endianLittle,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_ENDIAN_LITTLE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_ENDIAN_LITTLE) failed");
 
     // Device available
     status = clGetDeviceInfo(
@@ -863,11 +798,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_bool),
                     &available,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_AVAILABLE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_AVAILABLE) failed");
 
     // Device compiler available
     status = clGetDeviceInfo(
@@ -876,11 +807,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_bool),
                     &compilerAvailable,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_COMPILER_AVAILABLE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_COMPILER_AVAILABLE) failed");
 
     // Device execution capabilities
     status = clGetDeviceInfo(
@@ -889,11 +816,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_device_exec_capabilities),
                     &execCapabilities,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_EXECUTION_CAPABILITIES) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_EXECUTION_CAPABILITIES) failed");
 
     // Device queue properities
     status = clGetDeviceInfo(
@@ -902,11 +825,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_command_queue_properties),
                     &queueProperties,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_QUEUE_PROPERTIES) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_QUEUE_PROPERTIES) failed");
 
     // Platform
     status = clGetDeviceInfo(
@@ -915,11 +834,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(cl_platform_id),
                     &platform,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PLATFORM) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PLATFORM) failed");
 
     // Device name
     size_t tempSize = 0;
@@ -929,19 +844,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_NAME) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NAME) failed");
 
     delete name;
     name = new char[tempSize];
-    if(name == NULL)
-    {
-        error("Failed to allocate memory(name)");
-        return 0;
-    }
+    CHECK_ALLOCATION(name, "Failed to allocate memory(name)");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -949,11 +856,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(char) * tempSize,
                     name,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_NAME) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NAME) failed");
 
     // Vender name
     status = clGetDeviceInfo(
@@ -962,31 +865,19 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_VENDOR) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_VENDOR) failed");
 
-    delete venderName;
-    venderName = new char[tempSize];
-    if(venderName == NULL)
-    {
-        error("Failed to allocate memory(venderName)");
-        return 0;
-    }
+    delete vendorName;
+    vendorName = new char[tempSize];
+    CHECK_ALLOCATION(vendorName, "Failed to allocate memory(venderName)");
 
     status = clGetDeviceInfo(
                     deviceId, 
                     CL_DEVICE_VENDOR,
                     sizeof(char) * tempSize,
-                    venderName,
+                    vendorName,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_VENDOR) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_VENDOR) failed");
 
     // Driver name
     status = clGetDeviceInfo(
@@ -995,19 +886,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DRIVER_VERSION) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DRIVER_VERSION) failed");
 
     delete driverVersion;
     driverVersion = new char[tempSize];
-    if(driverVersion == NULL)
-    {
-        error("Failed to allocate memory(driverVersion)");
-        return 0;
-    }
+    CHECK_ALLOCATION(driverVersion, "Failed to allocate memory(driverVersion)");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -1015,11 +898,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(char) * tempSize,
                     driverVersion,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DRIVER_VERSION) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DRIVER_VERSION) failed");
 
     // Device profile
     status = clGetDeviceInfo(
@@ -1028,19 +907,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PROFILE) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PROFILE) failed");
 
     delete profileType;
     profileType = new char[tempSize];
-    if(profileType == NULL)
-    {
-        error("Failed to allocate memory(profileType)");
-        return 0;
-    }
+    CHECK_ALLOCATION(profileType, "Failed to allocate memory(profileType)");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -1048,11 +919,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(char) * tempSize,
                     profileType,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_PROFILE) failed"))
-        return 0;
+   CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_PROFILE) failed");
 
     // Device version
     status = clGetDeviceInfo(
@@ -1061,19 +928,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_VERSION) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_VERSION) failed");
 
     delete deviceVersion;
     deviceVersion = new char[tempSize];
-    if(deviceVersion == NULL)
-    {
-        error("Failed to allocate memory(deviceVersion)");
-        return 0;
-    }
+    CHECK_ALLOCATION(deviceVersion, "Failed to allocate memory(deviceVersion)");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -1081,11 +940,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(char) * tempSize,
                     deviceVersion,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_VERSION) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_VERSION) failed");
 
     // Device extensions
     status = clGetDeviceInfo(
@@ -1094,19 +949,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     0,
                     NULL,
                     &tempSize);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_EXTENSIONS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_EXTENSIONS) failed");
 
     delete extensions;
     extensions = new char[tempSize];
-    if(extensions == NULL)
-    {
-        error("Failed to allocate memory(extensions)");
-        return 0;
-    }
+    CHECK_ALLOCATION(extensions, "Failed to allocate memory(extensions)");
 
     status = clGetDeviceInfo(
                     deviceId, 
@@ -1114,11 +961,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                     sizeof(char) * tempSize,
                     extensions,
                     NULL);
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetDeviceIDs(CL_DEVICE_EXTENSIONS) failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_EXTENSIONS) failed");
 
     // Device parameters of OpenCL 1.1 Specification
 #ifdef CL_VERSION_1_1
@@ -1135,11 +978,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeCharVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1147,11 +986,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeShortVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1159,11 +994,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeIntVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_INT) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_INT) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1171,11 +1002,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeLongVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1183,11 +1010,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeFloatVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1195,11 +1018,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeDoubleVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE) failed");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1207,11 +1026,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_uint),
                         &nativeHalfVecWidth,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF) failed");
 
         // Host unified memory
         status = clGetDeviceInfo(
@@ -1220,11 +1035,7 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(cl_bool),
                         &hostUnifiedMem,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_HOST_UNIFIED_MEMORY) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_HOST_UNIFIED_MEMORY) failed");
 
         // Device OpenCL C version
         status = clGetDeviceInfo(
@@ -1233,19 +1044,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         0,
                         NULL,
                         &tempSize);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_OPENCL_C_VERSION) failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_OPENCL_C_VERSION) failed");
 
         delete openclCVersion;
         openclCVersion = new char[tempSize];
-        if(openclCVersion == NULL)
-        {
-            error("Failed to allocate memory(openclCVersion)");
-            return 0;
-        }
+        CHECK_ALLOCATION(openclCVersion, "Failed to allocate memory(openclCVersion)");
 
         status = clGetDeviceInfo(
                         deviceId, 
@@ -1253,17 +1056,11 @@ SDKDeviceInfo::setDeviceInfo(cl_device_id deviceId)
                         sizeof(char) * tempSize,
                         openclCVersion,
                         NULL);
-        if(!checkVal(
-                status, 
-                CL_SUCCESS, 
-                "clGetDeviceIDs(CL_DEVICE_OPENCL_C_VERSION) failed"))
-            return 0;
-
+        CHECK_OPENCL_ERROR(status, "clGetDeviceIDs(CL_DEVICE_OPENCL_C_VERSION) failed");
     }
 #endif
 
-
-    return 1;
+    return SDK_SUCCESS;
 }
 
 template<typename T>
@@ -1271,11 +1068,11 @@ int SDKCommon::checkVal(
     T input, 
     T reference, 
     std::string message,
-    bool isAPIerror) const
+    bool isAPIerror)
 {
     if(input==reference)
     {
-        return 1;
+        return SDK_SUCCESS;
     }
     else
     {
@@ -1286,7 +1083,7 @@ int SDKCommon::checkVal(
         }
         else
             error(message);   
-        return 0;
+        return SDK_FAILURE;
     }
 }
 
@@ -1308,44 +1105,35 @@ int SDKCommon::displayDevices(cl_platform_id platform, cl_device_type deviceType
     // Get platform name
     char platformVendor[1024];
     status = clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(platformVendor), platformVendor, NULL);
-    if(!checkVal(status, CL_SUCCESS, "clGetPlatformInfo failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetPlatformInfo failed");
     
     std::cout << "\nSelected Platform Vendor : " << platformVendor << std::endl;
 
     // Get number of devices available 
     cl_uint deviceCount = 0;
     status = clGetDeviceIDs(platform, deviceType, 0, NULL, &deviceCount);
-    if(!checkVal(status, CL_SUCCESS, "clGetDeviceIDs failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs failed");
 
     cl_device_id* deviceIds = (cl_device_id*)malloc(sizeof(cl_device_id) * deviceCount);
-    if(deviceIds == NULL)
-    {
-        error("Failed to allocate memory(deviceIds)");
-        return 0;
-    }
+    CHECK_ALLOCATION(deviceIds, "Failed to allocate memory(deviceIds)");
 
     // Get device ids
     status = clGetDeviceIDs(platform, deviceType, deviceCount, deviceIds, NULL);
-    if(!checkVal(status, CL_SUCCESS, "clGetDeviceIDs failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetDeviceIDs failed");
 
     // Print device index and device names
     for(cl_uint i = 0; i < deviceCount; ++i)
     {
         char deviceName[1024];
         status = clGetDeviceInfo(deviceIds[i], CL_DEVICE_NAME, sizeof(deviceName), deviceName, NULL);
+        CHECK_OPENCL_ERROR(status, "clGetDeviceInfo failed");
         
-        if(!checkVal(status, CL_SUCCESS, "clGetDeviceInfo failed"))
-            return 0;
-        
-        std::cout << "Device " << i << " : " << deviceName << std::endl;
+        std::cout << "Device " << i << " : " << deviceName <<" Device ID is "<<deviceIds[i]<< std::endl;
     }
 
     free(deviceIds);
     
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int 
@@ -1357,8 +1145,7 @@ cl_platform_id platform, const cl_device_id* devices, const int deviceCount)
     // Get platform name
     char platformVendor[1024];
     status = clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(platformVendor), platformVendor, NULL);
-    if(!checkVal(status, CL_SUCCESS, "clGetPlatformInfo failed"))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetPlatformInfo failed");
     
     std::cout << "\nSelected Platform Vendor : " << platformVendor << std::endl;
 
@@ -1367,15 +1154,12 @@ cl_platform_id platform, const cl_device_id* devices, const int deviceCount)
     {
         char deviceName[1024];
         status = clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(deviceName), deviceName, NULL);
-        
-        if(!checkVal(status, CL_SUCCESS, "clGetDeviceInfo failed"))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceInfo failed");
         
         std::cout << "Device " << i << " : " << deviceName << std::endl;
     }
 
-    return 1;
-
+    return SDK_SUCCESS;
 }
 
 
@@ -1386,10 +1170,9 @@ SDKCommon::validateDeviceId(int deviceId, int deviceCount)
     if(deviceId >= (int)deviceCount)
     {
         std::cout << "DeviceId should be < " << deviceCount << std::endl;
-        return 0;
+        return SDK_FAILURE;
     }
-
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int
@@ -1404,15 +1187,13 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
     cl_uint numPlatforms;
     cl_platform_id platform = NULL;
     status = clGetPlatformIDs(0, NULL, &numPlatforms);
-    if(!checkVal(status, CL_SUCCESS,"clGetPlatformIDs failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetPlatformIDs failed.");
 
     if (0 < numPlatforms) 
     {
         cl_platform_id* platforms = new cl_platform_id[numPlatforms];
         status = clGetPlatformIDs(numPlatforms, platforms, NULL);
-        if(!checkVal(status, CL_SUCCESS,"clGetPlatformIDs failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetPlatformIDs failed.");
 
         char platformName[100];
         for (unsigned i = 0; i < numPlatforms; ++i) 
@@ -1423,9 +1204,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                         sizeof(platformName),
                         platformName,
                         NULL);
-
-            if(!checkVal(status, CL_SUCCESS, "clGetPlatformInfo failed."))
-                return 0;
+			CHECK_OPENCL_ERROR(status, "clGetPlatformInfo failed.");
 
             platform = platforms[i];
             if (!strcmp(platformName, "Advanced Micro Devices, Inc.")) 
@@ -1437,8 +1216,8 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
 
     if(NULL == platform)
     {
-        error("NULL platform found so Exiting Application.");
-        return 0;
+		std::cout << "NULL platform found so Exiting Application.";
+        return SDK_FAILURE;
     }
 
     /*
@@ -1459,9 +1238,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                             NULL,
                             NULL,
                             &status);
-
-    if(!checkVal(status, CL_SUCCESS, "clCreateContextFromType failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clCreateContextFromType failed.");
 
     /* create a CL program using the kernel source */
     SDKFile kernelFile;
@@ -1470,7 +1247,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
     if(!kernelFile.open(kernelPath.c_str()))
     {
         std::cout << "Failed to load kernel file : " << kernelPath << std::endl;
-        return 0;
+        return SDK_FAILURE;
     }
     const char * source = kernelFile.source().c_str();
     size_t sourceSize[] = {strlen(source)};
@@ -1480,8 +1257,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                             &source,
                             sourceSize,
                             &status);
-    if(!checkVal(status, CL_SUCCESS, "clCreateProgramWithSource failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clCreateProgramWithSource failed.");
 
     std::string flagsStr = std::string(binaryData.flagsStr.c_str());
 
@@ -1494,7 +1270,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
         if(!flagsFile.open(flagsPath.c_str()))
         {
             std::cout << "Failed to load flags file: " << flagsPath << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
         flagsFile.replaceNewlineWithSpaces();
         const char * flags = flagsFile.source().c_str();
@@ -1512,8 +1288,12 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                 flagsStr.c_str(),
                 NULL,
                 NULL);
+    /* This function is intentionally left without a error check
+      as it may not pass if kernels rely on specific properties of devices
+      In such cases, binaries for eligible devices are geenrated and dumped
+      even wen this function will return an error */
 
-    checkVal(status, CL_SUCCESS, "clBuildProgram failed.");
+    //CHECK_OPENCL_ERROR(status, "clBuildProgram failed.");
 
     size_t numDevices;
     status = clGetProgramInfo(
@@ -1522,19 +1302,12 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                 sizeof(numDevices),
                 &numDevices,
                 NULL );
-    if(!checkVal(
-            status, 
-            CL_SUCCESS, 
-            "clGetProgramInfo(CL_PROGRAM_NUM_DEVICES) failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetProgramInfo(CL_PROGRAM_NUM_DEVICES) failed.");
 
     std::cout << "Number of devices found : " << numDevices << "\n\n";
     cl_device_id *devices = (cl_device_id *)malloc( sizeof(cl_device_id) * numDevices );
-    if(devices == NULL)
-    {
-        error("Failed to allocate host memory.(devices)");
-        return 0;
-    }
+    CHECK_ALLOCATION(devices, "Failed to allocate host memory.(devices)");
+
     /* grab the handles to all of the devices in the program. */
     status = clGetProgramInfo(
                 program, 
@@ -1542,19 +1315,11 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                 sizeof(cl_device_id) * numDevices,
                 devices,
                 NULL );
-    if(!checkVal(
-            status,
-            CL_SUCCESS,
-            "clGetProgramInfo(CL_PROGRAM_DEVICES) failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetProgramInfo(CL_PROGRAM_DEVICES) failed.");
 
     /* figure out the sizes of each of the binaries. */
     size_t *binarySizes = (size_t*)malloc( sizeof(size_t) * numDevices );
-    if(devices == NULL)
-    {
-        error("Failed to allocate host memory.(binarySizes)");
-        return 0;
-    }
+   CHECK_ALLOCATION(binarySizes, "Failed to allocate host memory.(binarySizes)");
     
     status = clGetProgramInfo(
                 program, 
@@ -1562,31 +1327,19 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                 sizeof(size_t) * numDevices, 
                 binarySizes, 
                 NULL);
-    if(!checkVal(
-            status,
-            CL_SUCCESS,
-            "clGetProgramInfo(CL_PROGRAM_BINARY_SIZES) failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetProgramInfo(CL_PROGRAM_BINARY_SIZES) failed.");
 
     size_t i = 0;
     /* copy over all of the generated binaries. */
     char **binaries = (char **)malloc( sizeof(char *) * numDevices );
-    if(binaries == NULL)
-    {
-        error("Failed to allocate host memory.(binaries)");
-        return 0;
-    }
+    CHECK_ALLOCATION(binaries, "Failed to allocate host memory.(binaries)");
 
     for(i = 0; i < numDevices; i++)
     {
         if(binarySizes[i] != 0)
         {
             binaries[i] = (char *)malloc( sizeof(char) * binarySizes[i]);
-            if(binaries[i] == NULL)
-            {
-                error("Failed to allocate host memory.(binaries[i])");
-                return 0;
-            }
+            CHECK_ALLOCATION(binaries[i], "Failed to allocate host memory.(binaries[i])");
         }
         else
         {
@@ -1599,11 +1352,7 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                 sizeof(char *) * numDevices, 
                 binaries, 
                 NULL);
-    if(!checkVal(
-            status,
-            CL_SUCCESS,
-            "clGetProgramInfo(CL_PROGRAM_BINARIES) failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetProgramInfo(CL_PROGRAM_BINARIES) failed.");
 
     /* dump out each binary into its own separate file. */
     for(i = 0; i < numDevices; i++)
@@ -1617,22 +1366,18 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
                     sizeof(deviceName),
                     deviceName, 
                     NULL);
-        if(!checkVal(
-                status,
-                CL_SUCCESS,
-                "clGetDeviceInfo(CL_DEVICE_NAME) failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetDeviceInfo(CL_DEVICE_NAME) failed.");
 
         if(binarySizes[i] != 0)
         {
             printf( "%s binary kernel: %s\n", deviceName, fileName);
             streamsdk::SDKFile BinaryFile;
-            if(!BinaryFile.writeBinaryToFile(fileName, 
+            if(BinaryFile.writeBinaryToFile(fileName, 
                                              binaries[i], 
                                              binarySizes[i]))
             {
                 std::cout << "Failed to load kernel file : " << fileName << std::endl;
-                return 0;
+                return SDK_FAILURE;
             }
         }
         else
@@ -1674,14 +1419,54 @@ SDKCommon::generateBinaryImage(const bifData &binaryData)
     }
 
     status = clReleaseProgram(program);
-    if(!checkVal(status, CL_SUCCESS, "clReleaseProgram failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clReleaseProgram failed.");
 
     status = clReleaseContext(context);
-    if(!checkVal(status, CL_SUCCESS, "clReleaseContext failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clReleaseContext failed.");
 
-    return 1;
+    return SDK_SUCCESS;
+}
+
+int SDKCommon::getDevices(cl_context &context, cl_device_id **devices, cl_int deviceId, bool deviceIdEnabled)
+{
+	/* First, get the size of device list data */
+    size_t deviceListSize = 0;
+	int status = 0;
+	status = clGetContextInfo(
+                 context, 
+                 CL_CONTEXT_DEVICES, 
+                 0, 
+                 NULL, 
+                 &deviceListSize);
+    CHECK_OPENCL_ERROR(status, "clGetContextInfo failed.");
+
+    int deviceCount = (int)(deviceListSize / sizeof(cl_device_id));
+    if(validateDeviceId(deviceId, deviceCount))
+    {
+		std::cout << "Invalid Device Selected";
+        return SDK_FAILURE;
+    }
+
+    /**
+	 * Now allocate memory for device list based on the size we got earlier
+	 * Note that this memory is allocated to a pointer which is a argument
+	 * so it must not be deleted inside this function. The Sample implementer
+	 * has to delete the devices pointer in the host code at clean up
+	 */
+
+    (*devices) = (cl_device_id *)malloc(deviceListSize);
+    CHECK_ALLOCATION((*devices), "Failed to allocate memory (devices).");
+
+    /* Now, get the device list data */
+    status = clGetContextInfo(context, 
+                 CL_CONTEXT_DEVICES, 
+                 deviceListSize, 
+                 (*devices), 
+                 NULL);
+    CHECK_OPENCL_ERROR(status, "clGetGetContextInfo failed.");
+
+	UNUSED(deviceIdEnabled);
+    return SDK_SUCCESS;
 }
 
 int
@@ -1689,15 +1474,13 @@ SDKCommon::getPlatform(cl_platform_id &platform, int platformId, bool platformId
 {
     cl_uint numPlatforms;
     cl_int status = clGetPlatformIDs(0, NULL, &numPlatforms);
-    if(!checkVal(status, CL_SUCCESS, "clGetPlatformIDs failed."))
-        return 0;
+    CHECK_OPENCL_ERROR(status, "clGetPlatformIDs failed.");
 
     if (0 < numPlatforms) 
     {
         cl_platform_id* platforms = new cl_platform_id[numPlatforms];
         status = clGetPlatformIDs(numPlatforms, platforms, NULL);
-        if(!checkVal(status, CL_SUCCESS, "clGetPlatformIDs failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clGetPlatformIDs failed.");
 
         if(platformIdEnabled)
         {
@@ -1713,9 +1496,7 @@ SDKCommon::getPlatform(cl_platform_id &platform, int platformId, bool platformId
                                            sizeof(platformName),
                                            platformName,
                                            NULL);
-
-                if(!checkVal(status, CL_SUCCESS, "clGetPlatformInfo failed."))
-                    return 0;
+				CHECK_OPENCL_ERROR(status, "clGetPlatformInfo failed.");
 
                 platform = platforms[i];
                 if (!strcmp(platformName, "Advanced Micro Devices, Inc.")) 
@@ -1731,15 +1512,15 @@ SDKCommon::getPlatform(cl_platform_id &platform, int platformId, bool platformId
     if(NULL == platform)
     {
         error("NULL platform found so Exiting Application.");
-        return 0;
+        return SDK_FAILURE;
     }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 
 int
-SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, const buildProgramData &buildData)
+SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context& context, const buildProgramData &buildData)
 {
     cl_int status = CL_SUCCESS;
     SDKFile kernelFile;
@@ -1747,10 +1528,10 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
     if(buildData.binaryName.size() != 0)
     {
         kernelPath.append(buildData.binaryName.c_str());
-        if(!kernelFile.readBinaryFromFile(kernelPath.c_str()))
+        if(kernelFile.readBinaryFromFile(kernelPath.c_str()))
         {
             std::cout << "Failed to load kernel file : " << kernelPath << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
 
         const char * binary = kernelFile.source().c_str();
@@ -1762,16 +1543,15 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
                                             (const unsigned char**)&binary,
                                             NULL,
                                             &status);
-        if(!checkVal(status, CL_SUCCESS, "clCreateProgramWithBinary failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clCreateProgramWithBinary failed.");
     }
     else
     {
         kernelPath.append(buildData.kernelName.c_str());
-        if(!kernelFile.open(kernelPath.c_str()))
+        if(!kernelFile.open(kernelPath.c_str()))//bool
         {
             std::cout << "Failed to load kernel file: " << kernelPath << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
         const char * source = kernelFile.source().c_str();
         size_t sourceSize[] = {strlen(source)};
@@ -1780,8 +1560,7 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
                                             &source,
                                             sourceSize,
                                             &status);
-        if(!checkVal(status, CL_SUCCESS, "clCreateProgramWithSource failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clCreateProgramWithSource failed.");
     }
 
     std::string flagsStr = std::string(buildData.flagsStr.c_str());
@@ -1795,7 +1574,7 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
         if(!flagsFile.open(flagsPath.c_str()))
         {
             std::cout << "Failed to load flags file: " << flagsPath << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
         flagsFile.replaceNewlineWithSpaces();
         const char * flags = flagsFile.source().c_str();
@@ -1821,15 +1600,11 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
                             buildLogSize, 
                             buildLog, 
                             &buildLogSize);
-            if(!checkVal(logStatus, CL_SUCCESS, "clGetProgramBuildInfo failed."))
-                return 0;
+            CHECK_OPENCL_ERROR(logStatus, "clGetProgramBuildInfo failed.");
 
             buildLog = (char*)malloc(buildLogSize);
-            if(buildLog == NULL)
-            {
-                error("Failed to allocate host memory. (buildLog)");
-                return 0;
-            }
+            CHECK_ALLOCATION(buildLog, "Failed to allocate host memory. (buildLog)");
+
             memset(buildLog, 0, buildLogSize);
 
             logStatus = clGetProgramBuildInfo (
@@ -1839,10 +1614,10 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
                             buildLogSize, 
                             buildLog, 
                             NULL);
-            if(!checkVal(logStatus, CL_SUCCESS, "clGetProgramBuildInfo failed."))
+            if(checkVal(logStatus, CL_SUCCESS, "clGetProgramBuildInfo failed."))
             {
                 free(buildLog);
-                return 0;
+                return SDK_FAILURE;
             }
 
             std::cout << " \n\t\t\tBUILD LOG\n";
@@ -1852,11 +1627,9 @@ SDKCommon::buildOpenCLProgram(cl_program &program, const cl_context context, con
             free(buildLog);
         }
 
-        if(!checkVal(status, CL_SUCCESS, "clBuildProgram failed."))
-            return 0;
+        CHECK_OPENCL_ERROR(status, "clBuildProgram failed.");
     }
-
-    return 1;
+    return SDK_SUCCESS;
 }
 
 bool
@@ -1929,7 +1702,7 @@ SDKCommon::getLocalThreads(const size_t globalThreads,
         return globalThreads;
     }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int SDKCommon::createTimer()
@@ -1980,12 +1753,12 @@ int SDKCommon::resetTimer(int handle)
     if(handle >= (int)_timers.size())
     {
         error("Cannot reset timer. Invalid handle.");
-        return 0;
+        return -1;
     }
 
     (_timers[handle]->_start) = 0;
     (_timers[handle]->_clocks) = 0;
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int SDKCommon::startTimer(int handle)
@@ -1993,7 +1766,7 @@ int SDKCommon::startTimer(int handle)
     if(handle >= (int)_timers.size())
     {
         error("Cannot reset timer. Invalid handle.");
-        return 0;
+        return SDK_FAILURE;
     }
 
 #ifdef _WIN32
@@ -2004,7 +1777,7 @@ int SDKCommon::startTimer(int handle)
     _timers[handle]->_start = (long long)s.tv_sec * (long long)1.0E3 + (long long)s.tv_usec / (long long)1.0E3;
 #endif
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int SDKCommon::stopTimer(int handle)
@@ -2014,7 +1787,7 @@ int SDKCommon::stopTimer(int handle)
     if(handle >= (int)_timers.size())
     {
         error("Cannot reset timer. Invalid handle.");
-        return 0;
+        return SDK_FAILURE;
     }
 
 #ifdef _WIN32
@@ -2029,7 +1802,7 @@ int SDKCommon::stopTimer(int handle)
     _timers[handle]->_start = 0;
     _timers[handle]->_clocks += n;
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 double SDKCommon::readTimer(int handle)
@@ -2037,7 +1810,7 @@ double SDKCommon::readTimer(int handle)
     if(handle >= (int)_timers.size())
     {
         error("Cannot read timer. Invalid handle.");
-        return 0;
+        return SDK_FAILURE;
     }
 
     double reading = double(_timers[handle]->_clocks);
@@ -2079,7 +1852,7 @@ void SDKCommon::printTable(Table *t)
     }	
 }
 
-bool 
+int 
 SDKCommon::fileToString(std::string &fileName, std::string &str)
 {
     size_t      size;
@@ -2101,7 +1874,7 @@ SDKCommon::fileToString(std::string &fileName, std::string &str)
         buf = new char[size + 1];
         if (!buf) {
             f.close();
-            return  false;
+            return  SDK_FAILURE;
         }
 
         // Read file
@@ -2111,36 +1884,36 @@ SDKCommon::fileToString(std::string &fileName, std::string &str)
 
         str = buf;
 
-        return true;
+        return SDK_SUCCESS;
     }
     else
     {
         error("Converting file to string. Cannot open file.");
         str = "";	
-        return false;
+        return SDK_FAILURE;
     }
 }
 
 void 
-SDKCommon::error(const char* errorMsg) const
+SDKCommon::error(const char* errorMsg)
 {
     std::cout<<"Error: "<<errorMsg<<std::endl;
 }
 
 void 
-SDKCommon::error(std::string errorMsg) const
+SDKCommon::error(std::string errorMsg)
 {
     std::cout<<"Error: "<<errorMsg<<std::endl;
 }
 
 void 
-SDKCommon::expectedError(const char* errorMsg) const
+SDKCommon::expectedError(const char* errorMsg)
 {
     std::cout<<"Expected Error: "<<errorMsg<<std::endl;
 }
 
 void 
-SDKCommon::expectedError(std::string errorMsg) const
+SDKCommon::expectedError(std::string errorMsg)
 {
     std::cout<<"Expected Error: "<<errorMsg<<std::endl;
 }
@@ -2252,17 +2025,19 @@ template
 const char* getOpenCLErrorCodeStr<int>(int input);
 
 template
-int SDKCommon::checkVal<char>(char input, char reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<char>(char input, char reference, std::string message, bool isAPIerror);
 template
-int SDKCommon::checkVal<std::string>(std::string input, std::string reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<bool>(bool input, bool reference, std::string message, bool isAPIerror);
 template
-int SDKCommon::checkVal<short>(short input, short reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<std::string>(std::string input, std::string reference, std::string message, bool isAPIerror);
 template
-int SDKCommon::checkVal<unsigned int>(unsigned int  input, unsigned int  reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<short>(short input, short reference, std::string message, bool isAPIerror);
 template
-int SDKCommon::checkVal<int>(int input, int reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<unsigned int>(unsigned int  input, unsigned int  reference, std::string message, bool isAPIerror);
 template
-int SDKCommon::checkVal<long>(long input, long reference, std::string message, bool isAPIerror) const;
+int SDKCommon::checkVal<int>(int input, int reference, std::string message, bool isAPIerror);
+template
+int SDKCommon::checkVal<long>(long input, long reference, std::string message, bool isAPIerror);
 
 
 template
@@ -2280,3 +2055,5 @@ std::string SDKCommon::toString<float>(float t, std::ios_base &(*r)(std::ios_bas
 template
 std::string SDKCommon::toString<double>(double t, std::ios_base &(*r)(std::ios_base&));
 }
+
+

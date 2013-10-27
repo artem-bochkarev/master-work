@@ -1,24 +1,19 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
 #include "SDKThread.hpp"
-
-#include <stdio.h>
-#include <stdlib.h>
-#ifdef _WIN32
-#include <process.h>
-#endif
-
-// suppress the warning #810 if intel compiler is used.
-#if defined(__INTEL_COMPILER)
-#pragma warning(disable : 810)
-#endif 
-
-//#define PRINT_COND_VAR_ERROR_MSG
-#ifdef PRINT_COND_VAR_ERROR_MSG
-#define PRINT_ERROR_MSG(errorcode, msg) \
-    if(errorcode != 0) \
-        printf("%s \n", msg)
-#else
-#define PRINT_ERROR_MSG(errorcode, msg)    
-#endif // PRINT_COND_VAR_ERROR_MSG
 
 namespace streamsdk
 {
@@ -44,12 +39,7 @@ namespace streamsdk
     }
     #endif
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Constructor
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
+    
     ThreadLock::ThreadLock()
     {
     #ifdef _WIN32
@@ -58,12 +48,6 @@ namespace streamsdk
         pthread_mutex_init(&_lock, NULL);
     #endif
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Destructor
-    //!
-    /////////////////////////////////////////////////////////////////////////
 
     ThreadLock::~ThreadLock()
     {
@@ -74,15 +58,7 @@ namespace streamsdk
     #endif
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Test whether the lock is already acquired
-    //! Return values :
-    //! true (if the lock is already acquired)
-    //! false (if the lock is free)
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
+    
     bool
     ThreadLock::isLocked()
     {
@@ -97,13 +73,6 @@ namespace streamsdk
     #endif
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Try to acquire the lock, wait for the lock if unavailable
-    //! else hold the lock and enter the protected area
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
     void
     ThreadLock::lock()
     {
@@ -113,14 +82,6 @@ namespace streamsdk
         pthread_mutex_lock(&_lock);
     #endif
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Try to acquire the lock, if unavailable the function returns
-    //! false and returns true if available(enters the critical
-    //! section as well in this case).
-    //!
-    /////////////////////////////////////////////////////////////////////////
 
     bool
     ThreadLock::tryLock()
@@ -132,12 +93,6 @@ namespace streamsdk
     #endif
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Unlock the lock
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
     void
     ThreadLock::unlock()
     {
@@ -148,122 +103,17 @@ namespace streamsdk
     #endif
     }
 
-    //////////////////////////////////////////////////////////////
-    //!
-    //! \class Implementation of Condition variable class
-    //! \brief Provides Implementation of condition variable
-    //!
-    //!
-
-    class CondVarImpl
-    {
-        public:
-            //! constructor and destructor. 
-            //! Note that condition variable is not initialized in constructor 
-            //! Separate functions available to initialize and destroy condition variable
-            CondVarImpl();
-            ~CondVarImpl();
-
-            //! Initialize condition variable
-            bool init(unsigned int maxThreadCount);
-
-            //! Destroy condition variable
-            bool destroy();
-
-            //! Synchronize threads
-            void syncThreads();
-
-
-        private:
-
-            /////////////////////////////////////////////////////////////
-            //!
-            //! Private data members and methods
-            //!
-
-           
-            //! Acquires the lock once. 
-            void beginSynchronized();
-
-            //! Releases the lock once. 
-            int endSynchronized();
-
-#ifdef _WIN32
-
-            //! Waits for a notification. 
-            DWORD wait(DWORD dwMillisecondsTimeout = INFINITE, BOOL bAlertable = FALSE);
-
-            //! Notifies the waiting threads 
-            BOOL broadcast();
-
-            //! Creates an initially non-signalled auto-reset event and
-            //! pushes the handle to the event onto the wait set. The
-            //! return value is the event handle. In case of failure,
-            //! NULL is returned.
-            HANDLE _push();
-
-            //! Pops the first handle off the wait set. Returns NULL if the
-            //! wait set was empty.
-            HANDLE _pop();
-
-            //! Checks whether the calling thread is holding the lock.
-            BOOL _lockHeldByCallingThread();
-
-
-            //! STL deque that implements the wait set.
-            std::deque<HANDLE> _deqWaitSet;
-
-            //! Critical section to protect access to wait set.
-            CRITICAL_SECTION _critsecWaitSetProtection;
-
-            //! Critical section for external synchronization.
-            CRITICAL_SECTION _condVarLock;
-
-            //! The monitor must keep track of how many times the lock
-            //! has been acquired, because Win32 does not divulge this
-            //! information to the client programmer.
-            int _nLockCount;
-
- #else
-
-            //! condition variable
-            pthread_cond_t _condVar;
-
-            //! Mutex for condition variable _condVar
-            pthread_mutex_t _condVarLock;
-
-#endif
-
-            //! Maximum threads in a group
-            unsigned int _maxThreads;
-
-            //! Number of threads waiting 
-            unsigned int _count;
-
-    };
-
-    /////////////////////////////////////////////////////////////////////////
-    //! Constructor
-    /////////////////////////////////////////////////////////////////////////
+   
 
     CondVar::CondVar()
     {
         _condVarImpl = new CondVarImpl();
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Destructor
-    /////////////////////////////////////////////////////////////////////////
-
     CondVar::~CondVar()
     {
         delete _condVarImpl;
     }
-
-
-    ////////////////////////////////////////////////////////////////////////
-    //! Initialize condition variable and required locks
-    /////////////////////////////////////////////////////////////////////////
 
     bool
     CondVar::init(unsigned int maxThreadCount)
@@ -271,19 +121,12 @@ namespace streamsdk
         return _condVarImpl->init(maxThreadCount);
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Destroy condition variable state and Lock states
-    /////////////////////////////////////////////////////////////////////////
-
     bool
     CondVar::destroy()
     {
         return _condVarImpl->destroy();
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Synchronize all the threads 
-    /////////////////////////////////////////////////////////////////////////
 
     void 
     CondVar::syncThreads()
@@ -291,28 +134,15 @@ namespace streamsdk
         _condVarImpl->syncThreads();
     }
 
-
-    
-    /////////////////////////////////////////////////////////////////////////
-    //! Constructor
-    /////////////////////////////////////////////////////////////////////////
-
     CondVarImpl::CondVarImpl() : _count(0xFFFFFFFF), _maxThreads(0xFFFFFFFF)
     {
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Destructor
-    /////////////////////////////////////////////////////////////////////////
 
     CondVarImpl::~CondVarImpl()
     {
     }
 
-
-    ////////////////////////////////////////////////////////////////////////
-    //! Initialize condition variable and required locks
-    /////////////////////////////////////////////////////////////////////////
 
     bool
     CondVarImpl::init(unsigned int maxThreadCount)
@@ -349,9 +179,6 @@ namespace streamsdk
         return true;
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Destroy condition variable state and Lock states
-    /////////////////////////////////////////////////////////////////////////
 
     bool
     CondVarImpl::destroy()
@@ -386,10 +213,6 @@ namespace streamsdk
 
         return true;
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    //! Synchronize all the threads 
-    /////////////////////////////////////////////////////////////////////////
 
     void 
     CondVarImpl::syncThreads()
@@ -443,9 +266,6 @@ namespace streamsdk
     }
     #ifdef _WIN32
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Waits for a notification. 
-    /////////////////////////////////////////////////////////////////////////
     DWORD CondVarImpl::wait(DWORD dwMillisecondsTimeout/* = INFINITE*/, BOOL bAlertable/* = FALSE */)
     {
         if(! _lockHeldByCallingThread())
@@ -483,7 +303,7 @@ namespace streamsdk
 
         // If the wait failed, store the last error because it will get
         // overwritten when acquiring the lock.
-        DWORD dwLastError;
+        DWORD dwLastError = 0;
         if(WAIT_FAILED == dwWaitResult)
             dwLastError = ::GetLastError();
 
@@ -506,9 +326,6 @@ namespace streamsdk
     }
 
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Notifies the waiting threads 
-    /////////////////////////////////////////////////////////////////////////
     BOOL CondVarImpl::broadcast()
     {
         // Signal all events on the deque, then clear it. Win32 allows no
@@ -528,12 +345,7 @@ namespace streamsdk
     }
 
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Creates an initially non-signalled auto-reset event and
-    //! pushes the handle to the event onto the wait set. The
-    //! return value is the event handle. In case of failure,
-    //! NULL is returned.
-    /////////////////////////////////////////////////////////////////////////
+    
     HANDLE CondVarImpl::_push()
     {
         // Create the new event.
@@ -556,10 +368,6 @@ namespace streamsdk
     }
 
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Pops the first handle off the wait set. Returns NULL if the
-    //! wait set was empty.
-    /////////////////////////////////////////////////////////////////////////
     HANDLE CondVarImpl::_pop()
     {
         // Pop the first handle off the deque.
@@ -576,9 +384,6 @@ namespace streamsdk
     }
 
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Checks whether the calling thread is holding the lock. 
-    /////////////////////////////////////////////////////////////////////////
     BOOL CondVarImpl::_lockHeldByCallingThread()
     {
         BOOL bTryLockResult = TryEnterCriticalSection(&_condVarLock);
@@ -607,9 +412,7 @@ namespace streamsdk
     }
     #endif //! _WIN32
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Acquires the lock once. 
-    /////////////////////////////////////////////////////////////////////////
+   
     void CondVarImpl::beginSynchronized()
     { 
 
@@ -624,9 +427,6 @@ namespace streamsdk
     #endif // _WIN32
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //! Releases the lock once.  
-    /////////////////////////////////////////////////////////////////////////
     int CondVarImpl::endSynchronized()
     { 
     #ifdef _WIN32
@@ -648,21 +448,11 @@ namespace streamsdk
     }
 
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Constructor
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
     SDKThread::SDKThread() : _tid(0), _data(0)
     {
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Destructor
-    //!
-    /////////////////////////////////////////////////////////////////////////
+    
 
     SDKThread::~SDKThread()
     {
@@ -676,12 +466,7 @@ namespace streamsdk
     }
 
 
-    //////////////////////////////////////////////////////////////
-    //!
-    //! Create a new thread and return the status of the operation
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
+   
     bool
     SDKThread::create(threadFunc func, void *arg)
     {
@@ -715,12 +500,6 @@ namespace streamsdk
         return true;
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Return the thread ID for the current Thread
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
     unsigned int
     SDKThread::getID()
     {
@@ -733,13 +512,7 @@ namespace streamsdk
         
     }
 
-    /////////////////////////////////////////////////////////////////////////
-    //!
-    //! Wait for this thread to join
-    //!
-    /////////////////////////////////////////////////////////////////////////
-
-    bool
+      bool
     SDKThread::join()
     {
         if(_tid)

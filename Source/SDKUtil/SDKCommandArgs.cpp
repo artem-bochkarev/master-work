@@ -1,3 +1,18 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
 #include "SDKCommandArgs.hpp"
 #include <stdio.h>
 
@@ -56,7 +71,7 @@ int SDKCommandArgs::match(char ** argv, int argc)
                 else
                 {
                     std::cout<<"Error. Missing argument for \""<<(*argv)<<"\"\n";
-                    return 0;
+                    return SDK_FAILURE;
                 }
             }
             else if (_options[count]._type == CA_ARG_DOUBLE) 
@@ -70,7 +85,7 @@ int SDKCommandArgs::match(char ** argv, int argc)
                 else
                 {
                     std::cout<<"Error. Missing argument for \""<<(*argv)<<"\"\n";
-                    return 0;
+                    return SDK_FAILURE;
                 }
             }
             else if (_options[count]._type == CA_ARG_INT) 
@@ -84,7 +99,7 @@ int SDKCommandArgs::match(char ** argv, int argc)
                 else
                 {
                     std::cout<<"Error. Missing argument for \""<<(*argv)<<"\"\n";
-                    return 0;
+                    return SDK_FAILURE;
                 }
             }
             else 
@@ -99,7 +114,7 @@ int SDKCommandArgs::match(char ** argv, int argc)
                 else
                 {
                     std::cout<<"Error. Missing argument for \""<<(*argv)<<"\"\n";
-                    return 0;
+                    return SDK_FAILURE;
                 }
             }   
             break;
@@ -123,7 +138,7 @@ int  SDKCommandArgs::parse(char ** p_argv, int p_argc)
     argv = p_argv;
 
     if(argc == 1)
-        return 1;
+        return SDK_FAILURE;
 
     while (argc > 0) 
     {
@@ -171,11 +186,11 @@ int SDKCommandArgs::AddOption(Option* op)
     if(!op)
     {
         std::cout<<"Error. Cannot add option, NULL input";
-        return 0;
+        return -1;
     }
     else
     {
-        Option* save;
+        Option* save = NULL;
         if(_options != NULL)
             save = _options;
         _options = new Option[_numArgs + 1];
@@ -183,7 +198,7 @@ int SDKCommandArgs::AddOption(Option* op)
         {
             std::cout<<"Error. Cannot add option ";
             std::cout<<op->_sVersion<<". Memory allocation error\n";
-            return 0;
+            return SDK_FAILURE;
         }
         if(_options != NULL)
         {
@@ -197,7 +212,7 @@ int SDKCommandArgs::AddOption(Option* op)
         delete []save;
     }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 int SDKCommandArgs::DeleteOption(Option* op)
@@ -206,7 +221,7 @@ int SDKCommandArgs::DeleteOption(Option* op)
     {
         std::cout<<"Error. Cannot delete option." 
             <<"Null pointer or empty option list\n";
-        return 0;
+        return SDK_FAILURE;
     }
 
     for(int i = 0; i < _numArgs; i++)
@@ -222,29 +237,39 @@ int SDKCommandArgs::DeleteOption(Option* op)
         }
     }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
-std::string SDKCommandArgs::help(void)
+void SDKCommandArgs::help(void)
 {
-    std::string result = "-h, --help\tDisplay this information\n";
 
-    for (int count = 0; count < _numArgs; count++) 
-    {
-        std::string line;
+    std::cout <<  "-h, " << std::left << std::setw(15)
+              << "" "--help" << std::left << std::setw(20) <<" "
+              << "Display this information\n";
 
-        if (_options[count]._sVersion.length() > 0) 
+	for (int count = 0; count < _numArgs; count++) 
+	{
+		if (_options[count]._sVersion.length() > 0) 
+		{
+			std::cout<< std::left << std::setw(4) <<  "-" + _options[count]._sVersion + ", ";
+		}
+        else
         {
-            line = "-" + _options[count]._sVersion + ", ";
+            std::cout << "    ";
         }
+		std::cout<< std::left<< std::setw(15) <<  "--" + _options[count]._lVersion;
 
-        line += "--" + _options[count]._lVersion
-        + "\t" 
-        + _options[count]._description + "\n";
+		if(!_options[count]._usage.empty())
+		{
+			std::cout <<std::left <<std::setw(20) << _options[count]._usage ;
+		}
+		else
+		{
+			std::cout <<std::left <<std::setw(20) << ""; 
+		}
 
-        result += line;
-    }
-
-    return result;
+		std::cout<< _options[count]._description + "\n";
+	}
 }
+
 }

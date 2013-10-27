@@ -1,42 +1,63 @@
+/**********************************************************************
+Copyright ©2013 Advanced Micro Devices, Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+•	Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+•	Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+********************************************************************/
+#include <SDKCommon.hpp>
 #include <SDKApplication.hpp>
 
 int 
 SDKSample::initialize()
 {
     sampleCommon = new streamsdk::SDKCommon();
-    int defaultOptions = 9;
+    int defaultOptions = 10;
 
     if(multiDevice)
-        defaultOptions = 8;
+        defaultOptions = 9;
 
     
     streamsdk::Option *optionList = new streamsdk::Option[defaultOptions];
-    if(!optionList)
-    {
-        std::cout<<"Error. Failed to allocate memory (optionList)\n";
-        return 0;
-    }
+    CHECK_ALLOCATION(optionList, "Error. Failed to allocate memory (optionList)\n");
+
     optionList[0]._sVersion = "";
     optionList[0]._lVersion = "device";
     
     if(multiDevice)
-        optionList[0]._description = "Execute the openCL kernel on a device [cpu|gpu|all]";
+	{
+		optionList[0]._description = "Execute the openCL kernel on a device";
+		optionList[0]._usage = "[cpu|gpu|all]";
+	}
     else
-        optionList[0]._description = "Execute the openCL kernel on a device [cpu|gpu]";
-
+    {
+		optionList[0]._description = "Execute the openCL kernel on a device";
+		optionList[0]._usage = "[cpu|gpu]";
+	}
+	
     optionList[0]._type = streamsdk::CA_ARG_STRING;
     optionList[0]._value = &deviceType;
 
     optionList[1]._sVersion = "q";
     optionList[1]._lVersion = "quiet";
     optionList[1]._description = "Quiet mode. Suppress all text output.";
-    optionList[1]._type = streamsdk::CA_NO_ARGUMENT;
+    optionList[1]._usage = "";
+	optionList[1]._type = streamsdk::CA_NO_ARGUMENT;
     optionList[1]._value = &quiet;
 
     optionList[2]._sVersion = "e";
     optionList[2]._lVersion = "verify";
     optionList[2]._description = "Verify results against reference implementation.";
-    optionList[2]._type = streamsdk::CA_NO_ARGUMENT;
+    optionList[2]._usage = "";
+	optionList[2]._type = streamsdk::CA_NO_ARGUMENT;
     optionList[2]._value = &verify;
 
     optionList[3]._sVersion = "t";
@@ -48,70 +69,87 @@ SDKSample::initialize()
     optionList[4]._sVersion = "";
     optionList[4]._lVersion = "dump";
     optionList[4]._description = "Dump binary image for all devices";
+	optionList[4]._usage = "[filename]";
     optionList[4]._type = streamsdk::CA_ARG_STRING;
     optionList[4]._value = &dumpBinary;
 
     optionList[5]._sVersion = "";
     optionList[5]._lVersion = "load";
     optionList[5]._description = "Load binary image and execute on device";
+	optionList[5]._usage = "[filename]";
     optionList[5]._type = streamsdk::CA_ARG_STRING;
     optionList[5]._value = &loadBinary;
 
     optionList[6]._sVersion = "";
     optionList[6]._lVersion = "flags";
-    optionList[6]._description = "Specify compiler flags to build kernel";
+    optionList[6]._description = "Specify filename containing the compiler flags to build kernel";
+	optionList[6]._usage = "[filename]";
     optionList[6]._type = streamsdk::CA_ARG_STRING;
     optionList[6]._value = &flags;
 
     optionList[7]._sVersion = "p";
     optionList[7]._lVersion = "platformId";
     optionList[7]._description = "Select platformId to be used[0 to N-1 where N is number platforms available].";
+	optionList[7]._usage = "[value]";
     optionList[7]._type = streamsdk::CA_ARG_INT;
     optionList[7]._value = &platformId;
 
+    optionList[8]._sVersion = "v";
+    optionList[8]._lVersion = "version";
+    optionList[8]._description = "AMD APP SDK version string.";
+	optionList[8]._usage = "";
+    optionList[8]._type = streamsdk::CA_NO_ARGUMENT;
+    optionList[8]._value = &version;
+
     if(multiDevice == false)
     {
-        optionList[8]._sVersion = "d";
-        optionList[8]._lVersion = "deviceId";
-        optionList[8]._description = "Select deviceId to be used[0 to N-1 where N is number devices available].";
-        optionList[8]._type = streamsdk::CA_ARG_INT;
-        optionList[8]._value = &deviceId;
+        optionList[9]._sVersion = "d";
+        optionList[9]._lVersion = "deviceId";
+        optionList[9]._description = "Select deviceId to be used[0 to N-1 where N is number devices available].";
+		optionList[9]._usage = "[value]";
+        optionList[9]._type = streamsdk::CA_ARG_INT;
+        optionList[9]._value = &deviceId;
     }
 
     sampleArgs = new streamsdk::SDKCommandArgs(defaultOptions, optionList);
-    if(!sampleArgs)
-    {
-        std::cout<<"Failed to allocate memory. (sampleArgs)\n";
-        return 0;
-    }
+    CHECK_ALLOCATION(sampleArgs, "Failed to allocate memory. (sampleArgs)\n");
                 
-    return 1;
+    return SDK_SUCCESS;
 }
 
 void SDKSample::printStats(std::string *statsStr, std::string * stats, int n)
 {
     if(timing)
     {
-        streamsdk::Table sampleStats;
+		int *columnWidth = new int[n];
+		if(columnWidth == NULL)
+			return;
 
-        sampleStats._numColumns = n;
-        sampleStats._numRows = 1;
-        sampleStats._columnWidth = 25;
-        sampleStats._delim = '$';
-        
-        sampleStats._dataItems = "";
-        for(int i=0; i < n; ++i)
-        {
-            sampleStats._dataItems.append( statsStr[i] + "$");
-        }
-        sampleStats._dataItems.append("$");
+		std::cout << std::endl << "|";
+		for(int i=0; i<n; i++)
+		{
+			columnWidth[i] = (int) ((statsStr[i].length() > stats[i].length())?
+							statsStr[i].length() : stats[i].length());
+			std::cout << " " << std::setw(columnWidth[i]+1) << std::left << statsStr[i] << "|";
+		}
 
-        for(int i=0; i < n; ++i)
-        {
-            sampleStats._dataItems.append( stats[i] + "$");
-        }
+		std::cout << std::endl << "|";
+		for(int i=0; i<n; i++)
+		{
+			for(int j=0; j<(columnWidth[i]+2); j++)
+				std::cout << "-";
+			std::cout << "|";
+		}
+		
+		std::cout << std::endl << "|";
+		for(int i=0; i<n; i++)
+		{
+			std::cout << " " << std::setw(columnWidth[i]+1) << std::left << stats[i] << "|";
+		}
 
-        sampleCommon->printTable(&sampleStats);
+		std::cout << std::endl;
+		if(columnWidth)
+			delete[] columnWidth;
     }
 }
 
@@ -120,20 +158,28 @@ int SDKSample::parseCommandLine(int argc, char**argv)
     if(sampleArgs==NULL)
     {
         std::cout<<"Error. Command line parser not initialized.\n";
-        return 0;
+        return SDK_FAILURE;
     }
     else
     {
         if(!sampleArgs->parse(argv,argc))
         {
             usage();
-            return 0;
+            if(sampleArgs->isArgSet("h",true) == true) exit(SDK_SUCCESS); 
+			return SDK_FAILURE;
         }
 
-        if(sampleArgs->isArgSet("h",true))
+        if(sampleArgs->isArgSet("h",true) == true)
         {
             usage();
-            return 1;
+            exit(SDK_SUCCESS);
+        }
+
+        // Print the sdk version and exit the application
+        if(sampleArgs->isArgSet("v", true) || sampleArgs->isArgSet("version", false))
+        {
+            std::cout << "SDK version : " << getSdkVerStr().c_str() << std::endl;
+            exit(0);
         }
 
         if(sampleArgs->isArgSet("p",true) || sampleArgs->isArgSet("platformId",false))
@@ -154,7 +200,7 @@ int SDKSample::parseCommandLine(int argc, char**argv)
             std::cout << "Error. Invalid device options. "
                       << "only \"cpu\" or \"gpu\" or \"all\" supported\n";
             usage();
-            return 0;
+            return SDK_FAILURE;
         }
     }
     else
@@ -164,34 +210,34 @@ int SDKSample::parseCommandLine(int argc, char**argv)
             std::cout << "Error. Invalid device options. "
                       << "only \"cpu\" or \"gpu\" or \"all\" supported\n";
             usage();
-            return 0;
-        }    
+            return SDK_FAILURE;
+        }
     }
 
     if(dumpBinary.size() != 0 && loadBinary.size() != 0)
     {
         std::cout << "Error. --dump and --load options are mutually exclusive\n";
         usage();
-        return 0;
+        return SDK_FAILURE;
     }
 
     if(loadBinary.size() != 0 && flags.size() != 0)
     {
         std::cout << "Error. --flags and --load options are mutually exclusive\n";
         usage();
-        return 0;
+        return SDK_FAILURE;
     }
 
-    if(validatePlatfromAndDeviceOptions() == 0)
+    if(validatePlatformAndDeviceOptions() != SDK_SUCCESS)
     {
         std::cout << "validatePlatfromAndDeviceOptions failed.\n ";
-        return 0;
+        return SDK_FAILURE;
     }
 
-    return 1;
+    return SDK_SUCCESS;
 }
 
-int SDKSample::validatePlatfromAndDeviceOptions()
+int SDKSample::validatePlatformAndDeviceOptions()
 {
     cl_int status = CL_SUCCESS;
     cl_uint numPlatforms;
@@ -201,7 +247,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
     {
         std::cout<<"Error: clGetPlatformIDs failed. Error code : ";
         std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-        return 0;
+        return SDK_FAILURE;
     }
 
     if (0 < numPlatforms) 
@@ -214,7 +260,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
             else
                 std::cout << "platformId should be 0 to " << numPlatforms - 1 << std::endl;
             usage();
-            return 0;
+            return SDK_FAILURE;
         }
 
         // Get selected platform
@@ -224,7 +270,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
         {
             std::cout<<"Error: clGetPlatformIDs failed. Error code : ";
             std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
 
         // Print all platforms
@@ -241,7 +287,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
             {
                 std::cout<<"Error: clGetPlatformInfo failed. Error code : ";
                 std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-                return 0;
+                return SDK_FAILURE;
             }
 
             std::cout << "Platform " << i << " : " << pbuf << std::endl;
@@ -261,7 +307,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
             {
                 std::cout<<"Error: clGetPlatformInfo failed. Error code : ";
                 std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-                return 0;
+                return SDK_FAILURE;
             }
 
             platform = platforms[i];
@@ -287,7 +333,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
         {
             std::cout<<"Error: clGetPlatformInfo failed. Error code : ";
             std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
         if (!strcmp(pbuf, "Advanced Micro Devices, Inc.")) 
             amdPlatform = true; 
@@ -333,7 +379,7 @@ int SDKSample::validatePlatfromAndDeviceOptions()
         {
             std::cout<<"Error: clGetDeviceIDs failed. Error code : ";
             std::cout << streamsdk::getOpenCLErrorCodeStr(status) << std::endl;
-            return 0;
+            return SDK_FAILURE;
         }
 
         // Validate deviceId
@@ -344,12 +390,12 @@ int SDKSample::validatePlatfromAndDeviceOptions()
             else
                 std::cout << "deviceId should be 0 to " << deviceCount - 1 << std::endl;
             usage();
-            return 0;
+            return SDK_FAILURE;
         }
 
         delete[] platforms;
     }
-    return 1;
+    return SDK_SUCCESS;
 }
 
 void SDKSample::usage()
@@ -359,8 +405,43 @@ void SDKSample::usage()
     else
     {
         std::cout<<"Usage\n";
-        std::cout<<sampleArgs->help();
+        sampleArgs->help();
     }
+}
+
+std::string SDKSample::getExactVerStr(std::string clVerStr)
+{
+    std::string finalVerStr("");
+
+    size_t vPos = clVerStr.find_first_of("v");
+    
+    /**
+     * Use CL version string as it is if 'v' is found in 
+     * CL version string
+     */
+    if(vPos == std::string::npos)
+    {
+        // Get the required string from CL version 
+        size_t sPos = clVerStr.find_first_of(" ");
+        sPos = clVerStr.find_first_of(" ", sPos + 1);
+        finalVerStr = clVerStr.substr(0, sPos + 1);
+
+        // Append required string from SDK version string
+        std::string sdkStr = getSdkVerStr();
+        size_t bPos = sdkStr.find_first_of("(");
+
+        finalVerStr.append(sdkStr.substr(0, bPos + 1));
+
+        // Append remaining string from CL version
+        vPos = clVerStr.find_first_of("(");
+        finalVerStr.append(clVerStr.substr(vPos + 1));
+    }
+    else
+    {
+        finalVerStr = clVerStr;
+    }
+
+    return finalVerStr;
 }
 
 SDKSample::SDKSample(std::string sampleName, bool enableMultiDevice)

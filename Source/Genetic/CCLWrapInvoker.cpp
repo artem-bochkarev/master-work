@@ -81,7 +81,7 @@ public:
         }catch( boost::thread_interrupted& ){}
 	}
 
-    virtual threadPtr getThread() const
+    virtual threadPtr getThread()
 	{
 		return threadPtr( new boost::thread( *this ) );
 	}
@@ -107,7 +107,7 @@ void CCLWrapInvoker::operator ()()
 	}
 }
 
-threadPtr CCLWrapInvoker::getThread() const
+threadPtr CCLWrapInvoker::getThread()
 {
 	return threadPtr( new boost::thread( *this ) );
 }

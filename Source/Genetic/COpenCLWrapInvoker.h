@@ -13,7 +13,7 @@ public:
         :strategy( strg ), settings(settings) {}
 
     virtual void operator ()();
-    virtual threadPtr getThread() const;
+    virtual threadPtr getThread();
 private:
 	CCLWrapInvoker();
 };

@@ -1,6 +1,6 @@
 #include "CTimeRunner.h"
 #include <boost/thread/condition.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/chrono.hpp>
 
 const long sleep_time = 100; //millisec
@@ -22,7 +22,7 @@ void CTimeRunner::start()
     if ( !running  )
     {
         running = true;
-        m_pInvoker = m_pTask->getInvoker( );
+        //m_pInvoker = m_pTask->getInvoker( );
         m_pThread = m_pInvoker->getThread();
     }
 }
@@ -71,9 +71,9 @@ void CTimeRunner::writeResult( std::ostream& out ) const
 {
     if ( m_pTimeResult.get() != 0 )
         out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
-    else
-    if ( m_pInvoker != 0 )
-        out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
+    //else
+    //if ( m_pInvoker != 0 )
+    //    out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
     else
         out << "No Invoker - No Result: " << std::endl;
 }

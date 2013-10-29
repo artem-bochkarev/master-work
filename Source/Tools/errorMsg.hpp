@@ -1,7 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include <string>
-#include "Tools/Logger.h"
+#include "Logger.h"
 
 namespace Tools
 {

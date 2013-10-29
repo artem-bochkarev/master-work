@@ -19,6 +19,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <unistd.h>
 #endif
 
+#define CL_CONTEXT_OFFLINE_DEVICES_AMD 0x403F //temp fix
+
 namespace streamsdk
 {
 SDKCommon::SDKCommon()

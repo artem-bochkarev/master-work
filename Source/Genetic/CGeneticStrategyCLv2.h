@@ -6,13 +6,13 @@
 #define __MAX_DEFAULT_VECTOR_SIZE 100
 #include "CL/cl.hpp"
 #include <boost/filesystem.hpp>
-#include "SDKUtil/SDKCustom.hpp"
+#include "SDKUtil/include/SDKCommon.hpp"
 
 
 class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 {
 public:
-    CGeneticStrategyCLv2( const boost::filesystem3::path& source, CStateContainer* states, CActionContainer* actions, 
+    CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer* states, CActionContainer* actions, 
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();
@@ -35,11 +35,12 @@ protected:
     void pushResults();
 private:
     cl_device_type deviceType;
-    streamsdk::PlatformInfo platformInfo;
+    //cl::PlatformInfo platformInfo;
+	streamsdk::SDKDeviceInfo deviceInfo;
 
     void setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand );
     void processString( std::string& str, const std::vector<size_t>& vals ) const;
-    void createProgram( const boost::filesystem3::path& source, const std::string& params );
+    void createProgram( const boost::filesystem::path& source, const std::string& params );
     void countRanges( std::string& options );
     void addGeneration( char* buff, float* results );
 

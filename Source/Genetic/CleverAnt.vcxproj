@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{494896EB-9A10-4E6B-B966-E4DDCEF9B894}</ProjectGuid>
+    <RootNamespace>Genetic</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.20827.3</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(BOOST);$(OPENCL)\include;</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(BOOST);$(SolutionDir);$(SolutionDir)\SDKUtil\include;$(OPENCL)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(BOOST);$(SolutionDir);$(OPENCL)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CActionContainerImpl.cpp" />
+    <ClCompile Include="CAntFitnes.cpp" />
+    <ClCompile Include="CAutomatShortTables.cpp" />
+    <ClCompile Include="CCLWrapInvoker.cpp" />
+    <ClCompile Include="CGeneticStrategyCommon.cpp" />
+    <ClCompile Include="CLaboratoryFactory.cpp" />
+    <ClCompile Include="CLaboratoryMulti.cpp" />
+    <ClCompile Include="CLabResultMulti.cpp" />
+    <ClCompile Include="CMapFactory.cpp" />
+    <ClCompile Include="CMapImpl.cpp" />
+    <ClCompile Include="CRandomImpl.cpp" />
+    <ClCompile Include="CStateContainerImpl.cpp" />
+    <ClCompile Include="CTest.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="CAutomatImpl.cpp" />
+    <ClCompile Include="CGeneticStrategyCL.cpp" />
+    <ClCompile Include="CGeneticStrategyCLv2.cpp" />
+    <ClCompile Include="CGeneticStrategyCLWrap.cpp" />
+    <ClCompile Include="CGeneticStrategyImpl.cpp" />
+    <ClCompile Include="GenCLWrap.cpp" />
+    <ClCompile Include="..\wxWidgetsHello\gen.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CActionContainerImpl.h" />
+    <ClInclude Include="CAntFitnes.h" />
+    <ClInclude Include="CAutomatShortTables.h" />
+    <ClInclude Include="CGeneticStrategyCommon.h" />
+    <ClInclude Include="CLaboratoryFactory.h" />
+    <ClInclude Include="CLaboratoryMulti.h" />
+    <ClInclude Include="CLabResultMulti.h" />
+    <ClInclude Include="CMap.h" />
+    <ClInclude Include="CMapFactory.h" />
+    <ClInclude Include="CMapImpl.h" />
+    <ClInclude Include="COpenCLWrapInvoker.h" />
+    <ClInclude Include="CRandomImpl.h" />
+    <ClInclude Include="CStateContainerImpl.h" />
+    <ClInclude Include="CTest.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="CAutomatImpl.h" />
+    <ClInclude Include="CGeneticStrategyCL.h" />
+    <ClInclude Include="CGeneticStrategyCLv2.h" />
+    <ClInclude Include="CGeneticStrategyCLWrap.h" />
+    <ClInclude Include="CGeneticStrategyImpl.h" />
+    <ClInclude Include="GenCLWrap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\wxWidgetsHello\config.txt" />
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeneticAPI\GeneticAPI.vcxproj">
+      <Project>{d3a5c576-bfcb-4550-a753-9b52ef7b06e6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\SDKUtil\SDKUtil.vcxproj">
+      <Project>{12b84e62-d3d1-43de-81ed-9f97b593aec6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\TimeRun\TimeRun.vcxproj">
+      <Project>{b9c14178-a21f-49a1-ac8c-c80f3543bbb7}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

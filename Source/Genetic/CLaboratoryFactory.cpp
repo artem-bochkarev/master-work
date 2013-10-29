@@ -22,8 +22,8 @@ CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, co
     if ( fileName.length() == 0 )
         fileName = "config.txt";
     std::ifstream in( fileName.c_str() );
-    boost::filesystem3::path source(fileName);
-    if ( !boost::filesystem3::exists(source) )
+    boost::filesystem::path source(fileName);
+    if ( !boost::filesystem::exists(source) )
     {
         int k = 0;
         std::string str = boost::filesystem::current_path().string();
@@ -159,11 +159,11 @@ CGeneticStrategyCommonPtr CLaboratoryFactory::createStrategy( const std::vector<
 CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
         CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
 {
-    boost::filesystem3::path source("gen.cl");
-    if ( !boost::filesystem3::exists(source) )
+    boost::filesystem::path source("gen.cl");
+    if ( !boost::filesystem::exists(source) )
     {
-        source = boost::filesystem3::path("gen.c");
-        if ( !boost::filesystem3::exists(source) )
+        source = boost::filesystem::path("gen.c");
+        if ( !boost::filesystem::exists(source) )
             throw std::runtime_error("[ERROR] Source file not found\n");
     }
     std::ifstream in (source.generic_string().c_str() );

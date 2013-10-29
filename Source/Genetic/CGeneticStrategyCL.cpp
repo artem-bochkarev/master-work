@@ -9,7 +9,6 @@
 #include "CTest.h"
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
-#include "SDKUtil/SDKPlatform.hpp"
 #include <boost/lexical_cast.hpp>
 
 void CGeneticStrategyCL::initMemory()
@@ -167,21 +166,23 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer
 
         for ( size_t i=0; i<platformList.size(); ++i )
         {
-            SDKPlatform platform(platformList[i]);
-            platform.getInfo( CL_PLATFORM_PROFILE, &sProfile );
-            platform.getInfo( CL_PLATFORM_VENDOR, &sVendor );
-            platform.getInfo( CL_PLATFORM_VERSION, &sVersion );
-            platform.getInfo( CL_PLATFORM_NAME, &sName );
+            //SDKPlatform platform(platformList[i]);
+			platformList[i].getInfo(CL_PLATFORM_PROFILE, &sProfile);
+			platformList[i].getInfo(CL_PLATFORM_VENDOR, &sVendor);
+			platformList[i].getInfo(CL_PLATFORM_VERSION, &sVersion);
+			platformList[i].getInfo(CL_PLATFORM_NAME, &sName);
 
             cl_context_properties cprops[3] = 
             {CL_CONTEXT_PLATFORM, 
             (cl_context_properties)(platformList[i])(), 0};
 
-            int n = 0;
+            cl_uint n = 0;
             if ( deviceType == GPU )
-                n = platform.getDevicesCnt( CL_DEVICE_TYPE_GPU );
+				::clGetDeviceIDs(platformList[i](), CL_DEVICE_TYPE_GPU, 0, NULL, &n);
+                //n = platformList[i].getDevices( CL_DEVICE_TYPE_GPU );
             else
-                n = platform.getDevicesCnt( CL_DEVICE_TYPE_CPU );
+				::clGetDeviceIDs(platformList[i](), CL_DEVICE_TYPE_CPU, 0, NULL, &n);
+				//n = platformList[i].getDevices(CL_DEVICE_TYPE_CPU);
             if ( n == 0 )
                 continue;
 

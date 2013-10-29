@@ -5,7 +5,7 @@ bool CActionContainerImpl::addAction( char code, const std::string& name )
 {
     if ( charToStr.find( code ) == charToStr.end() )
     {
-        actions.push_back( code );
+        actions.push_back(code);
         strToChar[name] = code;
         charToStr[code] = name;
         return true;

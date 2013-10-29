@@ -40,7 +40,7 @@ void CGeneticStrategyCLv2::initCLBuffers()
     cachedResults = (float*)malloc( 2*N*M*sizeof(float) );
 }
 
-void CGeneticStrategyCLv2::createProgram( const boost::filesystem3::path& sourceFile, const std::string& params )
+void CGeneticStrategyCLv2::createProgram( const boost::filesystem::path& sourceFile, const std::string& params )
 {
     // build the program from the source in the file
     std::string input;
@@ -127,7 +127,7 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
     options = ss.str();
 }
 
-CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem3::path& source, CStateContainer* states, CActionContainer* actions, 
+CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer* states, CActionContainer* actions, 
                                        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
     :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
@@ -140,9 +140,10 @@ CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem3::path& sour
     try
     {
 		logger << "[INIT] Trying to get specified device.\n";
-        context = streamsdk::getContext( deviceType, platformInfo );
+        context = cl::Context( deviceType, 0 );
         devices = context.getInfo<CL_CONTEXT_DEVICES>();
         queue = cl::CommandQueue( context, devices[0] );
+		deviceInfo.setDeviceInfo(devices[0]());
         std::string options;
         countRanges( options );
 
@@ -332,11 +333,13 @@ CGeneticStrategyCLv2::~CGeneticStrategyCLv2()
 
 std::string CGeneticStrategyCLv2::getDeviceType() const
 {
-    if ( deviceType == CL_DEVICE_TYPE_CPU )
-    {
-        return "OpenCL on CPU, " + platformInfo.sName;
-    }
-    return "OpenCL on GPU, " + platformInfo.sName;
+	std::string res;
+	if (deviceType == CL_DEVICE_TYPE_CPU)
+		res = "OpenCL on CPU, ";
+	else
+		res = "OpenCL on GPU, ";
+	res.append(deviceInfo.name);
+	return res;
 }
 
 const CMapPtr CGeneticStrategyCLv2::getMap( size_t i )

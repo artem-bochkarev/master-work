@@ -21,7 +21,7 @@ Tester::Tester( const char *inFileName, const char *outFileName, Tools::Logger& 
 
 void Tester::run()
 {
-    using namespace boost::filesystem3;
+    using namespace boost::filesystem;
     path config_path("config.txt");
     path config_tmp_path("config_tmp.txt");
     remove( config_tmp_path );
@@ -176,7 +176,7 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 
 bool Tester::setCmd( std::vector<std::string> &args )
 {
-    using namespace boost::filesystem3;
+    using namespace boost::filesystem;
     boost::algorithm::is_iequal iequals;
     if ( args[0] == "TIME" )
     {

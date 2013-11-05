@@ -1,6 +1,6 @@
 #include "generationsViewer.hpp"
 
-generationsViewer::generationsViewer( QWidget *parent, Qt::WFlags flags )
+generationsViewer::generationsViewer( QWidget *parent, Qt::WindowFlags flags )
 : QDialog( parent, flags )
 {
     ui.setupUi(this);

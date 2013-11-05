@@ -22,7 +22,7 @@ void CTimeRunner::start()
     if ( !running  )
     {
         running = true;
-        //m_pInvoker = m_pTask->getInvoker( );
+        m_pInvoker = m_pTask->getInvoker( );
         m_pThread = m_pInvoker->getThread();
     }
 }

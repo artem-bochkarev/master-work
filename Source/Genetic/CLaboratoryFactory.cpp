@@ -89,7 +89,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
     actions->addAction( 2, "turn left" );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
-    CAntFitnesFullTablesCPUPtr fitnesFunctor;
+	CAntFitnesFullTablesCPUPtr fitnesFunctor(new CAntFitnesFullTablesCPU());
     CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
     
     return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
@@ -146,13 +146,13 @@ CGeneticStrategyCommonPtr CLaboratoryFactory::createStrategy( const std::vector<
                     return createCLStrategy( strings, states, actions, labResults, logger );
                 }else
                 {
-                    CAntFitnesFullTablesNonePtr fitnesFunctor;
+					CAntFitnesFullTablesNonePtr fitnesFunctor(new CAntFitnesFullTablesNone());
                     return CGeneticStrategyCommonPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
                 }
             }
         }
     }
-    CAntFitnesFullTablesCPUPtr fitnesFunctor;
+	CAntFitnesFullTablesCPUPtr fitnesFunctor(new CAntFitnesFullTablesCPU());
     return CGeneticStrategyCommonPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
 }
 
@@ -178,7 +178,7 @@ CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vecto
     }
     in.close();
     //ToDo: continue it!
-    CAntFitnesFullTablesNonePtr fitnesFunctor;
+	CAntFitnesFullTablesNonePtr fitnesFunctor(new CAntFitnesFullTablesNone());
     if (version == 1)
         return CGeneticStrategyCommonPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
     else

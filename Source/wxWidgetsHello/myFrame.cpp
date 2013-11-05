@@ -61,7 +61,7 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
     try
     {
-        laboratory = CLaboratoryFactory::getLaboratory( logger );
+        laboratory = CLaboratoryFactory::getLaboratory( logger, "" );
     }catch( std::exception& err )
     {
         OutputDebugStringA( err.what() );
@@ -169,7 +169,7 @@ void MyFrame::OnView(wxCommandEvent& WXUNUSED(event))
 {
     GenerationViewer* viewDialog = new GenerationViewer( this );//, wxT("Ant Viewer"), wxPoint(100, 100), wxSize(600, 600) );
     //viewDialog->runAnt();
-    viewDialog->setLaboratory( static_cast<CLaboratory*> ( laboratory.get() ) );
+    viewDialog->setLaboratory( laboratory.get() );
     viewDialog->ShowModal();
 }
 

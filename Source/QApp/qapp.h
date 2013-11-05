@@ -1,7 +1,7 @@
 #ifndef QAPP_H
 #define QAPP_H
 
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QTimer>
 #include "ui_qapp.h"
 #include "Genetic/CLaboratoryMulti.h"
@@ -20,7 +20,7 @@ class QApp : public QMainWindow
 		RUNNING
 	};
 public:
-    QApp(QWidget *parent = 0, Qt::WFlags flags = 0);
+    QApp(QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~QApp();
     
 protected slots:

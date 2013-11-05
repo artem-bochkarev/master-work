@@ -31,7 +31,7 @@ private:
 
     CStateContainer* states;
     CActionContainer* actions;
-    CLaboratoryPtr laboratory;
+    CLaboratoryMultiPtr laboratory;
     std::vector<CMapPtr> maps;
     wxTimer timer;
     Tools::Logger logger;

@@ -17,7 +17,6 @@
 #include "AntShower.h"
 #include <wx/sharedptr.h>
 #include "CGenerationViewer.h"
-#include "GeneticAPI/CMap.h"
 
 ////@begin XPM images
 ////@end XPM images
@@ -128,14 +127,14 @@ void GenerationViewer::CreateControls()
 	// Add second column 
 	wxListItem col1; 
 	col1.SetId(1); 
-	col1.SetText( _("Score") );
+	col1.SetText( _("MAX") );
 	col1.SetWidth(50);
 	itemListCtrl->InsertColumn(1, col1); 
 
     wxListItem col2; 
-	col1.SetId(2); 
-	col1.SetText( _("AVG") );
-	col1.SetWidth(50);
+	col2.SetId(2); 
+	col2.SetText( _("AVG") );
+	col2.SetWidth(50);
 	itemListCtrl->InsertColumn(2, col2);
 
     int k = itemListCtrl->GetColumnCount();
@@ -182,7 +181,7 @@ wxIcon GenerationViewer::GetIconResource( const wxString& name )
 ////@end GenerationViewer icon retrieval
 }
 
-void GenerationViewer::setLaboratory( CLaboratory* lab )
+void GenerationViewer::setLaboratory( CLaboratoryMulti* lab )
 {
     laboratory = lab;
     for ( size_t i=0; i < lab->getGenerationNumber(); ++i )

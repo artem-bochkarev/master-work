@@ -1,10 +1,10 @@
 #include "qapp.h"
 #include "Genetic/CLaboratoryFactory.h"
-#include <QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include "Genetic/CMapFactory.h"
 #include "generationsViewer.hpp"
 
-QApp::QApp(QWidget *parent, Qt::WFlags flags)
+QApp::QApp(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
 {
     ui.setupUi(this);
@@ -37,7 +37,7 @@ bool QApp::openCmd()
 	{
         try
         {
-            laboratory = CLaboratoryFactory::getLaboratory( logger, std::string(fileName.toAscii()) );
+            laboratory = CLaboratoryFactory::getLaboratory( logger, std::string(fileName.toStdString()) );
 		    if ( laboratory.get() != 0 )
 		    {
 			    mode = STOPPED;

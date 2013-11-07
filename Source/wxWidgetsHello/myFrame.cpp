@@ -8,6 +8,8 @@
 #include "Genetic/CLaboratoryFactory.h"
 #include "Genetic/CMapFactory.h"
 
+#include "Tools/errorMsg.hpp"
+
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
@@ -19,10 +21,11 @@ bool MyApp::OnInit()
 }
 
 MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-       : wxFrame(NULL, -1, title, pos, size), states(0), actions(0)
+: wxFrame(NULL, -1, title, pos, size), states(0), actions(0), broken(false)
 {
     wxMenu* menuFile = new wxMenu();
 
+	menuFile->Append( ID_Open, _("&Open"));
     menuFile->Append( ID_About, _("&About...") );
     menuFile->AppendSeparator();
     menuFile->Append( ID_Quit, _("E&xit") );
@@ -53,35 +56,41 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
     this->Connect( ID_Quit, wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(MyFrame::OnQuit) );
+	this->Connect(ID_Open, wxEVT_COMMAND_MENU_SELECTED,
+		wxCommandEventHandler(MyFrame::OnOpen));
     this->Connect( ID_About, wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(MyFrame::OnAbout) );
 
     this->Connect( ID_View, wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(MyFrame::OnView) );
+	timer.SetOwner(this, ID_Timer);
+	this->Connect(ID_Timer, wxEVT_TIMER, wxTimerEventHandler(MyFrame::onTimer));
+	this->Connect(wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MyFrame::onButton));
+}
 
-    try
-    {
-        laboratory = CLaboratoryFactory::getLaboratory( logger, "" );
-    }catch( std::exception& err )
-    {
-        OutputDebugStringA( err.what() );
-    }
-    CMapPtr map1 = CMapFactory::getMap( "map1.txt" );
-  //  CMap map2( 32, 32, 64 );
-    CMapPtr map3 = CMapFactory::getRandomMap( 32, 32, 64 );
-    
-    maps.push_back( map1 );
-  //  maps.push_back( map2 );
-  //  maps.push_back( map3 );
-    laboratory->setMaps( maps );
-    //laboratory->start();
+void MyFrame::initLaboratory(const std::string fName)
+{
+	try
+	{
+		laboratory = CLaboratoryFactory::getLaboratory(logger, fName);
+		CMapPtr map1 = CMapFactory::getMap("map1.txt");
+		//  CMap map2( 32, 32, 64 );
+		CMapPtr map3 = CMapFactory::getRandomMap(32, 32, 64);
 
-    drawGraph();
-    timer.SetOwner( this, ID_Timer );
-    this->Connect( ID_Timer, wxEVT_TIMER, wxTimerEventHandler( MyFrame::onTimer ) );
-    this->Connect( wxID_OK, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( MyFrame::onButton ) );
-    timer.Start( 250 );
+		maps.clear();
+		maps.push_back(map1);
+		//  maps.push_back( map2 );
+		//  maps.push_back( map3 );
+		laboratory->setMaps(maps);
+		//laboratory->start();
 
+		drawGraph();
+	}
+	catch (std::exception& err)
+	{
+		Tools::printFailed(err.what(), &logger);
+		broken = true;
+	}
 }
 
 void MyFrame::free()
@@ -144,7 +153,17 @@ void MyFrame::drawGraph()
 
 void MyFrame::onTimer(wxTimerEvent& event)
 {
-    drawGraph();
+	try
+	{
+		drawGraph();
+	}
+	catch (std::exception& ex)
+	{
+		Tools::printFailed(ex.what(), &logger);
+		laboratory->pause();
+		timer.Stop();
+		broken = true;
+	}
 }
 
 void MyFrame::OnQuit(wxCommandEvent& WXUNUSED(event))
@@ -165,6 +184,17 @@ void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
                   wxOK | wxICON_INFORMATION, this );
 }
 
+void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
+{
+	wxFileDialog openFileDialog(this, _("Open config file"), "", "config.txt",
+		"", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+	if (openFileDialog.ShowModal() == wxID_CANCEL)
+		return;
+	broken = false;
+	std::string fName = openFileDialog.GetPath();
+	initLaboratory(fName);
+}
+
 void MyFrame::OnView(wxCommandEvent& WXUNUSED(event))
 {
     GenerationViewer* viewDialog = new GenerationViewer( this );//, wxT("Ant Viewer"), wxPoint(100, 100), wxSize(600, 600) );
@@ -175,13 +205,19 @@ void MyFrame::OnView(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::onButton(wxCommandEvent& event)
 {
+	if (broken)
+		return;
+	if (laboratory == 0)
+		return;
     if ( laboratory->isRunning() )
     {
         laboratory->pause();
         button->SetLabel("Start");
+		timer.Stop();
     }else
     {
         laboratory->start();
         button->SetLabel("Pause");
+		timer.Start();
     }
 }

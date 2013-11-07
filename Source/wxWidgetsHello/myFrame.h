@@ -17,6 +17,7 @@ public:
     void free();
 
     void OnQuit(wxCommandEvent& event);
+	void OnOpen(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnView(wxCommandEvent& event);
 
@@ -25,6 +26,7 @@ private:
     void drawGraph();
     void onTimer(wxTimerEvent& event);
     void onButton(wxCommandEvent& event);
+	void initLaboratory(const std::string fName);
 
     wxStaticBitmap* itemStaticBitmap;
     wxButton* button;
@@ -35,6 +37,7 @@ private:
     std::vector<CMapPtr> maps;
     wxTimer timer;
     Tools::Logger logger;
+	bool broken;
 };
 
 enum
@@ -43,6 +46,7 @@ enum
     ID_About,
     ID_View,
     ID_Timer,
-    ID_TEST
+    ID_TEST,
+	ID_Open
 };
 

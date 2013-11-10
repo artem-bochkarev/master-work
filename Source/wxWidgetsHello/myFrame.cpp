@@ -90,6 +90,8 @@ void MyFrame::initLaboratory(const std::string fName)
 	{
 		Tools::printFailed(err.what(), &logger);
 		broken = true;
+		wxMessageBox(_(err.what()), _("Can't load config!"),
+			wxOK | wxICON_INFORMATION, this);
 	}
 }
 
@@ -167,6 +169,8 @@ void MyFrame::onTimer(wxTimerEvent& event)
 		laboratory->pause();
 		timer.Stop();
 		broken = true;
+		wxMessageBox(_(ex.what()), _("Update failed!"),
+			wxOK | wxICON_INFORMATION, this);
 	}
 }
 

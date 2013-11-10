@@ -214,7 +214,7 @@ void CGeneticStrategyCLv2::setFromStrings( const std::vector< std::string >& str
 
 void CGeneticStrategyCLv2::preStart()
 {
-    
+	logger << "[INIT] Trying write buffer to the device\n";
     size_t mapSize = (2 + maps[0]->width()*maps[0]->height() );
     size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
     
@@ -246,10 +246,12 @@ void CGeneticStrategyCLv2::preStart()
     {
         Tools::throwDetailedFailed( "[FAILED] to set arguments", streamsdk::getOpenCLErrorCodeStr( error.err() ), &logger );
     }
+	logger << "[SUCCESS] Buffers was wrtitten to the device\n";
 }
 
 void CGeneticStrategyCLv2::setMaps( std::vector<CMapPtr> maps )
 {
+	getFitnesFunctor()->setMaps(maps);
     this->maps = maps;
 
     size_t mapSize = 2 + maps[0]->width()*maps[0]->height();

@@ -12,7 +12,7 @@ public:
     CGeneticStrategyCommon(CStateContainer* states, CActionContainer* actions, 
         CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
-    //virtual void setMaps( std::vector<CMapPtr> maps );
+    virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
     virtual double getAvgFitness() const;

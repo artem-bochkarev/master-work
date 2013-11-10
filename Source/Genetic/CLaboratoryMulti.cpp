@@ -53,13 +53,14 @@ CLaboratoryMulti::~CLaboratoryMulti()
 
 void CLaboratoryMulti::setMaps( std::vector<CMapPtr> maps )
 {
-    getFitnesFunctor()->setMaps( maps );
+	strategy->setMaps(maps);
 }
 
 const CMapPtr CLaboratoryMulti::getMap( size_t i )
 {
     return getFitnesFunctor()->getMap( i );
 }
+
 size_t CLaboratoryMulti::getMapsCount()
 {
     return getFitnesFunctor()->getMapsCount();

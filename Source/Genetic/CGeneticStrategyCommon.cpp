@@ -61,6 +61,11 @@ const CMapPtr CGeneticStrategyCommon::getMap( size_t i )
     return fitnesFunctor->getMap(i);
 }
 
+void CGeneticStrategyCommon::setMaps(std::vector<CMapPtr> maps)
+{
+	getFitnesFunctor()->setMaps(maps);
+}
+
 size_t CGeneticStrategyCommon::getMapsCount()
 {
     return fitnesFunctor->getMapsCount();

@@ -96,7 +96,11 @@ void MyFrame::initLaboratory(const std::string fName)
 void MyFrame::free()
 {
     timer.Stop();
-    laboratory->pause();
+	if (laboratory != 0)
+	{
+		laboratory->pause();
+		laboratory = 0;
+	}
     if ( actions != 0)
     {
         delete actions;

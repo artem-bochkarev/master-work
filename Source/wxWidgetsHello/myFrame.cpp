@@ -205,6 +205,10 @@ void MyFrame::OnOpen(wxCommandEvent& WXUNUSED(event))
 
 void MyFrame::OnView(wxCommandEvent& WXUNUSED(event))
 {
+	if (broken)
+		return;
+	if (laboratory == 0)
+		return;
     GenerationViewer* viewDialog = new GenerationViewer( this );//, wxT("Ant Viewer"), wxPoint(100, 100), wxSize(600, 600) );
     //viewDialog->runAnt();
     viewDialog->setLaboratory( laboratory.get() );

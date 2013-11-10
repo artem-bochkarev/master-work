@@ -12,9 +12,9 @@ enum EMove
 enum EDirection
 {
     DLeft,
+	DUp,
     DRight,
-    DTop,
-    DBottom
+    DDown
 };
 
 EDirection left( EDirection );

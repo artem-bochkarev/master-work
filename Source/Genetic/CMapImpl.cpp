@@ -114,7 +114,7 @@ void CMapImpl::forwardOf( int& x, int& y, EDirection d) const
         else
             --x;
         break;
-    case(DTop):
+    case(DUp):
         if ( y == 0)
             y = height()-1;
         else
@@ -123,7 +123,7 @@ void CMapImpl::forwardOf( int& x, int& y, EDirection d) const
     case(DRight):
             x = (x+1) % width();
         break;
-    case(DBottom):
+    case(DDown):
             y = (y+1) % height();
         break;
     }

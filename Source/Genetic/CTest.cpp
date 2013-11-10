@@ -9,22 +9,22 @@ EDirection left( EDirection d )
     {
         case (DLeft):
             {
-                return DBottom;
+                return DDown;
             }break;
-        case (DTop):
+        case (DUp):
             {
                 return DLeft;
             }break;
         case (DRight):
             {
-                return DTop;
+                return DUp;
             }break;
-        case (DBottom):
+        case (DDown):
             {
                 return DRight;
             }break;
     }
-    return DTop;
+    return DUp;
 }
 
 EDirection right( EDirection d )
@@ -33,22 +33,22 @@ EDirection right( EDirection d )
     {
         case (DLeft):
             {
-                return DTop;
+                return DUp;
             }break;
-        case (DTop):
+        case (DUp):
             {
                 return DRight;
             }break;
         case (DRight):
             {
-                return DBottom;
+                return DDown;
             }break;
-        case (DBottom):
+        case (DDown):
             {
                 return DLeft;
             }break;
     }
-    return DTop;
+    return DDown;
 }
 
 CTest::CTest( CAutomat* automat, CMap* map, size_t moves, int x, int y, EDirection dir )
@@ -59,7 +59,7 @@ CTest::CTest( CAutomat* automat, CMap* map, size_t moves, int x, int y, EDirecti
 
 bool CTest::makeMove()
 {
-    if ( movesCnt >= moves-1 )
+    if ( movesCnt > moves-1 )
         return false;
     int input[4];
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
@@ -76,13 +76,13 @@ bool CTest::makeMove()
             case(DLeft):
                 x = ( x + map->width() - 1 ) % map->width();
                 break;
-            case(DTop):
+            case(DUp):
                 y = ( y + map->height() - 1 ) % map->height();
                 break;
             case(DRight):
                     x = (x+1) % map->width();
                 break;
-            case(DBottom):
+            case(DDown):
                     y = (y+1) % map->height();
                 break;
             }
@@ -139,13 +139,13 @@ double CTest::run( const CAutomat *automat, CMap *map, size_t moves )
                     case(DLeft):
                         x = ( x + map->width() - 1 ) % map->width();
                         break;
-                    case(DTop):
+                    case(DUp):
                         y = ( y + map->height() - 1 ) % map->height();
                         break;
                     case(DRight):
                         x = (x+1) % map->width();
                         break;
-                    case(DBottom):
+                    case(DDown):
                         y = (y+1) % map->height();
                         break;
                     }

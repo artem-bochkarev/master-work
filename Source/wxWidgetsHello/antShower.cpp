@@ -324,7 +324,7 @@ void AntViewer::drawAnt( wxColor color )
         dc.DrawLine( x-k, y, x+k, y+k );
         dc.DrawLine( x-k, y, x+k, y-k );
         break;
-    case(DTop):
+    case(DUp):
         dc.DrawLine( x, y-k, x+k, y+k );
         dc.DrawLine( x, y-k, x-k, y+k );
         break;
@@ -332,7 +332,7 @@ void AntViewer::drawAnt( wxColor color )
         dc.DrawLine( x+k, y, x-k, y+k );
         dc.DrawLine( x+k, y, x-k, y-k );    
         break;
-    case(DBottom):
+    case(DDown):
         dc.DrawLine( x, y+k, x+k, y-k );
         dc.DrawLine( x, y+k, x-k, y-k );   
         break;

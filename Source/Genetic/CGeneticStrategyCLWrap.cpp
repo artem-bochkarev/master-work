@@ -96,7 +96,13 @@ CGeneticStrategyCLWrap::~CGeneticStrategyCLWrap()
 {
 	if ( buffer != 0 )
 		free( buffer );
-    free( mapsBuffer );
+	if (outBuffer != 0)
+		free(outBuffer);
+	if (tempBuffer != 0)
+		free(tempBuffer);
+
+	free( mapsBuffer );
+	free( mapBuffer );
     free( cache );
     free( sizes );
     free( srands );

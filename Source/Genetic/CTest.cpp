@@ -51,7 +51,7 @@ EDirection right( EDirection d )
     return DDown;
 }
 
-CTest::CTest( CAutomat* automat, CMap* map, size_t moves, int x, int y, EDirection dir )
+CTest::CTest(CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>* automat, CMap* map, size_t moves, int x, int y, EDirection dir)
     :moves(moves), automat(automat), map(map), movesCnt(0), m_foodEaten(0), 
         currentState( automat->getStartState() ), currentDirection( dir ), x(x), y(y)
 {
@@ -116,7 +116,7 @@ std::vector< std::pair<int, int> > CTest::getVisibleCells( const CMap *map, int 
     return map->getVisibleCells( x, y, direct );
 }
 
-double CTest::run( const CAutomat *automat, CMap *map, size_t moves )
+double CTest::run(const CAutomat<COUNTERS_TYPE, COUNTERS_TYPE> *automat, CMap *map, size_t moves)
 {
     int x = 0, y = 0;
     EDirection direct( DRight );

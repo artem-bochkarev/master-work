@@ -1,13 +1,13 @@
 #pragma once
-#include "GeneticAPI/CAutomat.h"
+#include "GeneticParams.h"
 
 class CAutomatShortTables;
 typedef boost::shared_ptr<CAutomatShortTables> CAutomatShortTablesPtr;
 
-class CAutomatShortTables : public CAutomat
+class CAutomatShortTables : public CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>
 {
 public:
-    CAutomatShortTables( CStateContainer* states, CActionContainer* actions, size_t stateSize = 16 );
+	CAutomatShortTables(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, size_t stateSize = 16);
     CAutomatShortTables( const CAutomatShortTables& automat );
     CAutomatShortTables& operator = ( const CAutomatShortTables& automat );
     virtual void generateRandom( CRandom* rand );
@@ -21,18 +21,18 @@ public:
     virtual void mutate( CRandom* rand );
     virtual void crossover( const CAutomat* mother, const CAutomat* father, CRandom* rand );
 
-    static void fillRandom( CStateContainer* states, CActionContainer* actions, char* buff, 
+	static void fillRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, char* buff,
         size_t stSize, CRandom* rand );
-    static char generateRandom( CStateContainer* states, CActionContainer* actions, CRandom* rand );
+	static char generateRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, CRandom* rand);
     //static std::vector<CAutomatImplPtr> cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
-    static CAutomatShortTables createFromBuffer( CStateContainer* states, 
-        CActionContainer* actions, char* buf, size_t stateSize = 16 );
+	static CAutomatShortTablesPtr createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
+		CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize = 16);
 
     virtual ~CAutomatShortTables();
 private:
     CAutomatShortTables() {};
-    CStateContainer* states; 
-    CActionContainer* actions;
-    size_t statesCount, stateSize, startState;
+	CStateContainer<COUNTERS_TYPE>* states;
+	CActionContainer<COUNTERS_TYPE>* actions;
+    size_t statesCount, stateSize, startState, currentState;
     char * buffer;
 };

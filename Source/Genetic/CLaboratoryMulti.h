@@ -1,5 +1,6 @@
 #pragma once
-#include "../GeneticAPI/CLaboratory.h"
+#include "GeneticParams.h"
+#include "GeneticAPI/CLaboratory.h"
 #include "CLabResultMulti.h"
 #include "CGeneticStrategyCommon.h"
 #include "CAntFitnes.h"

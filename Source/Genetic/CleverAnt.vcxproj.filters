@@ -19,15 +19,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\ShortTables">
+      <UniqueIdentifier>{b9779444-b810-427a-919c-d88d39d6d581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ShortTables">
+      <UniqueIdentifier>{ec0c6537-c61e-4afa-bfd9-cb49d7cf1725}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CActionContainerImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CAntFitnes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CAutomatShortTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CCLWrapInvoker.cpp">
@@ -84,15 +87,15 @@
     <ClCompile Include="..\wxWidgetsHello\gen.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="CAutomatShortTables.cpp">
+      <Filter>Source Files\ShortTables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CActionContainerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CAntFitnes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CAutomatShortTables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CGeneticStrategyCommon.h">
@@ -151,6 +154,12 @@
     </ClInclude>
     <ClInclude Include="GenCLWrap.h">
       <Filter>Header Files\FullTables</Filter>
+    </ClInclude>
+    <ClInclude Include="CAutomatShortTables.h">
+      <Filter>Header Files\ShortTables</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneticParams.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,14 +1,15 @@
 #pragma once
-#include "../GeneticAPI/CAutomat.h"
+#include "GeneticParams.h"
+#include "GeneticAPI/CAutomat.h"
 #include "CMap.h"
 
 class CTest
 {
 public:
-    CTest( CAutomat* automat, CMap* map, size_t moves = 100, int x = 0, int y = 0, 
+	CTest(CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>* automat, CMap* map, size_t moves = 100, int x = 0, int y = 0,
            EDirection start = DRight );
     bool makeMove();
-    static double run( const CAutomat* automat, CMap* map, size_t moves = 100 );
+	static double run(const CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>* automat, CMap* map, size_t moves = 100);
     const CMap* getArena() const;
     size_t movesMaked() const;
     size_t foodEaten() const;
@@ -21,7 +22,7 @@ public:
 private:
     size_t moves, movesCnt;
     int x, y;
-    CAutomat* automat;
+	CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>* automat;
     CMap* map;
     char currentState;
     size_t m_foodEaten;

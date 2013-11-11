@@ -1,8 +1,9 @@
 #pragma once
+#include "GeneticParams.h"
 #include <map>
-#include "../GeneticAPI/CState.h"
+#include "GeneticAPI/CState.h"
 
-class CStateContainerImpl : public CStateContainer
+class CStateContainerImpl : public CStateContainer<COUNTERS_TYPE>
 {
 public:
     CStateContainerImpl() {};

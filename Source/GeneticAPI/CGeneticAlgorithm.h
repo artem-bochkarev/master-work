@@ -7,13 +7,13 @@
 
 class CInvoker;
 
-class CGeneticAlgorithm : public CTask
+template< typename NUMBERS_TYPE, typename INPUT_TYPE > class CGeneticAlgorithm : public CTask
 {
 public:
     virtual void nextGeneration( CRandom* rand )  = 0;
     virtual double getAvgFitness() const  = 0;
     virtual double getMaxFitness() const  = 0;
-    CAutomatPtr getBestIndivid() const {};
+    CAutomat<NUMBERS_TYPE, INPUT_TYPE>* getBestIndivid() const {};
 
     virtual std::string getDeviceType() const = 0;
     virtual std::string getPoolInfo() const = 0;
@@ -24,4 +24,3 @@ public:
     virtual const boost::exception_ptr& getError() const = 0;
 };
 
-typedef boost::shared_ptr<CGeneticAlgorithm> CGeneticAlgorithmPtr;

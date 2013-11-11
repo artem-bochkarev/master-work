@@ -1,5 +1,5 @@
 #pragma once
-#include "CAutomat.h"
+class CAutomat;
 
 template< typename FITNESS_TYPE > class CFitnesCounter
 {

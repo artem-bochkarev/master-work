@@ -10,7 +10,7 @@
 class CGeneticStrategyCLWrap : public CGeneticStrategyCommon
 {
 public:
-    CGeneticStrategyCLWrap(CStateContainer* states, CActionContainer* actions, 
+    CGeneticStrategyCLWrap(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
         CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();

@@ -12,7 +12,7 @@
 class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 {
 public:
-    CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer* states, CActionContainer* actions, 
+    CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();

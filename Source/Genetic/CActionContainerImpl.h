@@ -1,8 +1,9 @@
 #pragma once
+#include "GeneticParams.h"
 #include <map>
 #include "../GeneticAPI/CAction.h"
 
-class CActionContainerImpl : public CActionContainer
+class CActionContainerImpl : public CActionContainer<COUNTERS_TYPE>
 {
 public:
     CActionContainerImpl() {};

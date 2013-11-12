@@ -13,7 +13,7 @@ double CLaboratoryMulti::getAvgFitness( size_t i ) const
     return results->getAvgFitnes( i );
 }
 
-CAutomatPtr CLaboratoryMulti::getBestInd( size_t i ) const
+CAutomat<COUNTERS_TYPE, INPUT_TYPE>* CLaboratoryMulti::getBestInd(size_t i) const
 {
     boost::mutex& mutex = results->getMutex();
     boost::mutex::scoped_lock lock(mutex);
@@ -66,19 +66,19 @@ size_t CLaboratoryMulti::getMapsCount()
     return getFitnesFunctor()->getMapsCount();
 }
 
-const CGeneticAlgorithmPtr CLaboratoryMulti::getStrategy() const
+const CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>* CLaboratoryMulti::getStrategy() const
 {
-    return strategy;
+    return strategy.get();
 }
 
-const CStateContainerPtr CLaboratoryMulti::getStates() const
+const CStateContainer<COUNTERS_TYPE>* CLaboratoryMulti::getStates() const
 {
-    return states;
+    return states.get();
 }
 
-const CActionContainerPtr CLaboratoryMulti::getActions() const
+const CActionContainer<COUNTERS_TYPE>* CLaboratoryMulti::getActions() const
 {
-    return actions;
+    return actions.get();
 }
 
 CAntFitnes* CLaboratoryMulti::getFitnesFunctor()

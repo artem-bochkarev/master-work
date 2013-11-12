@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CAutomatShortTables.h"
 
-size_t CAutomatShortTables::countIndex(int* mas) const
+/*size_t CAutomatShortTables::countIndex(int* mas) const
 {
 	int* mask = buffer + currentState * stateSize;
 	int index = 0, k = 1, j = 0;
@@ -31,4 +31,4 @@ char CAutomatShortTables::getAction(char currentState, int* input) const
 	char * ptrActions = ptrStates + stateSize;
 	char action = *(ptrActions + index);
 	return action;
-}
+}*/

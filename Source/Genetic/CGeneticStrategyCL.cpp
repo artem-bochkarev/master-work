@@ -147,7 +147,7 @@ void CGeneticStrategyCL::createProgram( const std::vector<size_t>& vals )
     
 }
 
-CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
+CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
                                        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {

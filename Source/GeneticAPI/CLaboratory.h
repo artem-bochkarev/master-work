@@ -15,7 +15,7 @@ public:
 	virtual const CStateContainer<NUMBERS_TYPE>* getStates() const = 0;
 	virtual const CActionContainer<NUMBERS_TYPE>* getActions() const = 0;
 
-	virtual void writeInfo(std::ostream&) const
+	virtual void writeInfo(std::ostream& ost) const
 	{
 		ost << getStrategy()->getDeviceType() <<
 			", states count: " << getStates()->size() << ", " << getStrategy()->getPoolInfo() << std::endl;

@@ -1,15 +1,15 @@
 #pragma once
-
+#include "GeneticParams.h"
 #include "GeneticAPI/CGeneticAlgorithm.h"
 #include "CMap.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 #include "CAntFitnes.h"
 
-class CGeneticStrategyCommon : public CGeneticAlgorithm
+class CGeneticStrategyCommon : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-    CGeneticStrategyCommon(CStateContainer* states, CActionContainer* actions, 
+	CGeneticStrategyCommon(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions,
         CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
     virtual void setMaps( std::vector<CMapPtr> maps );
@@ -31,8 +31,8 @@ public:
 protected:
     virtual void pushResults();
 
-    CStateContainer* states;
-    CActionContainer* actions;
+	CStateContainer<COUNTERS_TYPE>* states;
+	CActionContainer<COUNTERS_TYPE>* actions;
     CAntFitnesPtr fitnesFunctor;
 
     int N, M;

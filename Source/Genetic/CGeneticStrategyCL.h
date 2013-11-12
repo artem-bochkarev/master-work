@@ -24,7 +24,7 @@ class CGeneticStrategyCL : public CGeneticStrategyCommon
         NEW
     };
 public:
-    CGeneticStrategyCL(CStateContainer* states, CActionContainer* actions, 
+    CGeneticStrategyCL(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();

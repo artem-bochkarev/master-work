@@ -1,13 +1,12 @@
 #pragma once
+#include "GeneticParams.h"
 #include "GeneticAPI/CFitnessCounter.h"
 #include "CMap.h"
 
-typedef double ANT_FITNES_TYPE;
-
-class CAntFitnes : public CFitnesCounter<ANT_FITNES_TYPE>
+class CAntFitnes : public CFitnesCounter<ANT_FITNESS_TYPE, COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const = 0;
+	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;
 
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -21,7 +20,7 @@ typedef boost::shared_ptr<CAntFitnes> CAntFitnesPtr;
 class CAntFitnesFullTablesCPU : public CAntFitnes
 {
 public:
-    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
+	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
 };
 typedef boost::shared_ptr<CAntFitnesFullTablesCPU> CAntFitnesFullTablesCPUPtr;
 
@@ -29,6 +28,6 @@ typedef boost::shared_ptr<CAntFitnesFullTablesCPU> CAntFitnesFullTablesCPUPtr;
 class CAntFitnesFullTablesNone : public CAntFitnes
 {
 public:
-    virtual ANT_FITNES_TYPE fitnes( const CAutomat* automat ) const;
+	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
 };
 typedef boost::shared_ptr<CAntFitnesFullTablesNone> CAntFitnesFullTablesNonePtr;

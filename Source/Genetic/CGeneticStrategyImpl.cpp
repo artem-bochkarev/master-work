@@ -113,7 +113,7 @@ public:
 };
 
 
-CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
+CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
                                            CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {

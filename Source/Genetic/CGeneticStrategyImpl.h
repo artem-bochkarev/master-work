@@ -13,7 +13,7 @@ class CGeneticStrategyImpl : public CGeneticStrategyCommon
 public:
     friend class CLocalInvoker;
     friend class CMainInvoker;
-    CGeneticStrategyImpl(CStateContainer* states, CActionContainer* actions, 
+    CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
         CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();

@@ -4,7 +4,7 @@
 class CAutomatShortTables;
 typedef boost::shared_ptr<CAutomatShortTables> CAutomatShortTablesPtr;
 
-class CAutomatShortTables : public CAutomat<COUNTERS_TYPE, COUNTERS_TYPE>
+class CAutomatShortTables : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
 	CAutomatShortTables(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, size_t stateSize = 16);
@@ -34,5 +34,5 @@ private:
 	CStateContainer<COUNTERS_TYPE>* states;
 	CActionContainer<COUNTERS_TYPE>* actions;
     size_t statesCount, stateSize, startState, currentState;
-    char * buffer;
+	COUNTERS_TYPE * buffer;
 };

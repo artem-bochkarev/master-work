@@ -1,11 +1,12 @@
 #pragma once
 #include "../GeneticAPI/CLaboratoryResult.h"
+#include "GeneticParams.h"
 #include "CLabResultMulti.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
 
-class CLabResultMulti : public CLaboratoryResult
+class CLabResultMulti : public CLaboratoryResult<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
     friend class CGeneticStrategyCommon;
@@ -16,8 +17,8 @@ public:
 	friend class CGeneticStrategyCLWrap;
     CLabResultMulti();
     virtual size_t getGenerationsNumber() const;
-    virtual CAutomatPtr getBestInd( size_t i ) const;
-    virtual CAutomatPtr getLastInd() const;
+    virtual CAutomat<COUNTERS_TYPE, INPUT_TYPE>* getBestInd( size_t i ) const;
+	virtual CAutomat<COUNTERS_TYPE, INPUT_TYPE>* getLastInd() const;
     virtual double getMaxFitnes( size_t i ) const;
     virtual double getAvgFitnes( size_t i ) const;
     virtual size_t getRunCount() const;

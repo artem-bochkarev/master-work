@@ -3,7 +3,7 @@
 #include <cmath>
 #include <boost/assert.hpp>
 
-CAutomatImpl::CAutomatImpl( CStateContainer* states, CActionContainer* actions, size_t stateSize )
+CAutomatImpl::CAutomatImpl( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, size_t stateSize )
 //:CAutomat( states, actions )
 :startState(0), stateSize( stateSize )
 {
@@ -50,7 +50,7 @@ void CAutomatImpl::generateRandom( CRandom* rand )
     startState = rand->nextUINT()%statesCount; //rand;
 }
 
-void CAutomatImpl::fillRandom( CStateContainer* states, CActionContainer* actions, 
+void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
                               char* buffer, size_t stSize, CRandom* rand )
 {
     size_t statesCount = states->size();
@@ -244,13 +244,13 @@ char CAutomatImpl::getStartState() const
     return (char)startState;
 }
 
-char CAutomatImpl::generateRandom( CStateContainer* states, CActionContainer* actions, CRandom* rand )
+char CAutomatImpl::generateRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, CRandom* rand)
 {
     return (char)rand->nextUINT()%states->size();
 }
 
-CAutomatImpl CAutomatImpl::createFromBuffer( CStateContainer* states, 
-        CActionContainer* actions, char* buf, size_t stateSize )
+CAutomatImpl CAutomatImpl::createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
+	CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize)
 {
     CAutomatImpl impl( states, actions, stateSize );
     impl.startState = *buf;

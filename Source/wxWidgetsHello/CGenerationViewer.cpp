@@ -198,9 +198,9 @@ void GenerationViewer::OnButton1Click( wxCommandEvent& event )
     if ( item != -1 )
     {
         CMapPtr arena( laboratory->getMap( 0 ) );
-        CAutomatPtr automat = laboratory->getBestInd( laboratory->getGenerationNumber() - item - 1 );
+        CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat = laboratory->getBestInd( laboratory->getGenerationNumber() - item - 1 );
         
-        wxSharedPtr<CTest> antTester( new CTest( automat.get(), arena.get() ) );
+        wxSharedPtr<CTest> antTester( new CTest( automat, arena.get() ) );
         wxSharedPtr<AntViewer> viewDialog( new AntViewer( this ) );
         viewDialog->setTester( antTester );
         viewDialog->ShowModal();

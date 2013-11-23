@@ -15,18 +15,21 @@ Logger::Logger( const std::string& str)
 Logger& Logger::operator <<(int n)
 {
 	ofs << n;
+	ofs.flush();
 	return *this;
 }
 
 Logger& Logger::operator <<(const std::string & str)
 {
 	ofs << str.c_str();
+	ofs.flush();
 	return *this;
 }
 
 Logger& Logger::operator <<(const char * str)
 {
 	ofs << str;
+	ofs.flush();
 	return *this;
 }
 

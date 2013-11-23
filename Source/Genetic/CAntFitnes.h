@@ -17,17 +17,17 @@ protected:
 
 typedef boost::shared_ptr<CAntFitnes> CAntFitnesPtr;
 
-class CAntFitnesFullTablesCPU : public CAntFitnes
+class CAntFitnesCPU : public CAntFitnes
 {
 public:
 	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
 };
-typedef boost::shared_ptr<CAntFitnesFullTablesCPU> CAntFitnesFullTablesCPUPtr;
+typedef boost::shared_ptr<CAntFitnesCPU> CAntFitnesCPUPtr;
 
 
-class CAntFitnesFullTablesNone : public CAntFitnes
+class CAntFitnesNone : public CAntFitnes
 {
 public:
 	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
 };
-typedef boost::shared_ptr<CAntFitnesFullTablesNone> CAntFitnesFullTablesNonePtr;
+typedef boost::shared_ptr<CAntFitnesNone> CAntFitnesNonePtr;

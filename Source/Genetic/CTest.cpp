@@ -122,14 +122,15 @@ double CTest::run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE> *automat, CMap *map,
     EDirection direct( DRight );
     double cnt = 0;
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
-    const CAutomatImpl* autImpl = static_cast<const CAutomatImpl*>(automat);
+    //const CAutomatImpl* autImpl = static_cast<const CAutomatImpl*>(automat);
     char curState = automat->getStartState();
     for ( size_t i=0; i<moves; ++i )
     {
-        int input[4];
-        mapImpl->getInput( x, y, direct, input );
-        char action = autImpl->getAction( curState, input );
-        curState = autImpl->getNextState( curState, input );
+        //int input[4];
+		std::vector<INPUT_TYPE> input(4);
+        mapImpl->getInput( x, y, direct, input.data() );
+        char action = automat->getAction( curState, &input );
+        curState = automat->getNextState( curState, &input );
         switch (action)
         {
             case 0:

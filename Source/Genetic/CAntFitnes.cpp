@@ -20,7 +20,7 @@ size_t CAntFitnes::getMapsCount()
 }
 
  
-ANT_FITNESS_TYPE CAntFitnesFullTablesCPU::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat ) const
+ANT_FITNESS_TYPE CAntFitnesCPU::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat ) const
 {
     ANT_FITNESS_TYPE result = 0.0;
     for ( std::vector<CMapPtr>::const_iterator it = maps.begin(); it != maps.end(); ++it )
@@ -31,7 +31,7 @@ ANT_FITNESS_TYPE CAntFitnesFullTablesCPU::fitnes( const CAutomat<COUNTERS_TYPE, 
     return result;
 }
 
-ANT_FITNESS_TYPE CAntFitnesFullTablesNone::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat ) const
+ANT_FITNESS_TYPE CAntFitnesNone::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat ) const
 {
     BOOST_ASSERT_MSG( 0, "Not allowed. Implement it in your code or use CPU version" );
     return 0.0;

@@ -24,7 +24,6 @@ public:
 
 	static void fillRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, char* buff,
         size_t stSize, CRandom* rand );
-	static char generateRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, CRandom* rand);
     static std::vector<CAutomatImplPtr> cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
 	static CAutomatImpl createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
 		CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize = 16);

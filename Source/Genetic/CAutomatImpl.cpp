@@ -244,11 +244,6 @@ char CAutomatImpl::getStartState() const
     return (char)startState;
 }
 
-char CAutomatImpl::generateRandom(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, CRandom* rand)
-{
-    return (char)rand->nextUINT()%states->size();
-}
-
 CAutomatImpl CAutomatImpl::createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
 	CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize)
 {

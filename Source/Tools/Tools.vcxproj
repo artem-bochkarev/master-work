@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="errorMsg.hpp" />
+    <ClInclude Include="binFunc.hpp" />
     <ClInclude Include="helper.hpp" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="StringProcessor.h" />

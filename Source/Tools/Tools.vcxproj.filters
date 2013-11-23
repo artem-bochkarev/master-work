@@ -38,5 +38,8 @@
     <ClInclude Include="StringProcessorSimple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="binFunc.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

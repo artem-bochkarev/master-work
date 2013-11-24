@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CStateContainerImpl.h"
 
-bool CStateContainerImpl::addState( char code, const std::string& name )
+bool CStateContainerImpl::addState(COUNTERS_TYPE code, const std::string& name)
 {
     if ( charToStr.find( code ) == charToStr.end() )
     {
@@ -16,15 +16,16 @@ bool CStateContainerImpl::addState( char code, const std::string& name )
     return false;
 }
 
-const std::vector<char>& CStateContainerImpl::getStates() const
+const std::vector<COUNTERS_TYPE>& CStateContainerImpl::getStates() const
 {
     return states;
 }
 
-char CStateContainerImpl::randomState( CRandom* rand )
+COUNTERS_TYPE CStateContainerImpl::randomState(CRandom* rand)
 {
-    int i = rand->nextUINT() % size();
-    return states[i];
+    size_t i = rand->nextUINT() % size();
+    //return states[i];
+	return static_cast<COUNTERS_TYPE>(i);
 }
 
 size_t CStateContainerImpl::size() const

@@ -49,7 +49,7 @@ private:
     void preStart();
     void swapBuffers();
     CGeneticStrategyCLv2();
-    CGeneticStrategyCLv2( const CGeneticStrategyImpl& );
+	CGeneticStrategyCLv2(const CGeneticStrategyCLv2&);
     void freeIndivids();
     void fillCache() const;
 

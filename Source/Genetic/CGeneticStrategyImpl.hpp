@@ -9,15 +9,16 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "CAntFitnes.h"
 
+template<class AUTOMAT_TYPE>
 class CLocalInvoker
 {
-    CGeneticStrategyImpl* strategy;
+	CGeneticStrategyImpl<AUTOMAT_TYPE>* strategy;
     size_t start, finish;
-    CAutomatImpl*** newIndivids;
+    AUTOMAT_TYPE*** newIndivids;
     boost::barrier& barrier;
     mutable CRandomImpl rand;
 public:
-    CLocalInvoker( CGeneticStrategyImpl* strg, size_t start, 
+	CLocalInvoker(CGeneticStrategyImpl<AUTOMAT_TYPE>* strg, size_t start,
             size_t finish, boost::barrier& barrier )
         :strategy( strg ), start(start), finish(finish),
         barrier(barrier), rand( std::clock() ) {}
@@ -43,19 +44,20 @@ public:
         CLocalInvoker& operator=( const CLocalInvoker& );
 };
 
+template<class AUTOMAT_TYPE>
 class CMainInvoker : public CInvoker
 {
-    CAutomatImpl*** newIndivids;
+    AUTOMAT_TYPE*** newIndivids;
     size_t cnt;
 public:
-    CMainInvoker( CGeneticStrategyImpl* strg, size_t threadCount, CRandomPtr rand, boost::exception_ptr & error )
-        :CInvoker(strg, error), cnt(threadCount) {}
+	CMainInvoker(CGeneticStrategyImpl<AUTOMAT_TYPE>* strg, size_t threadCount, CRandomPtr rand, boost::exception_ptr & error)
+		:CInvoker(strg, error), cnt(threadCount) {}
 
     void operator ()() const
     {
         try
         {
-            CGeneticStrategyImpl* strg = dynamic_cast<CGeneticStrategyImpl*>(m_pTask);
+            CGeneticStrategyImpl<AUTOMAT_TYPE>* strg = dynamic_cast<CGeneticStrategyImpl<AUTOMAT_TYPE>* >(m_pTask);
 
             boost::thread_group group;
             size_t N = strg->getN();
@@ -73,7 +75,7 @@ public:
             {
                 if ( i == counter - 1 )
                     next = N;
-                CLocalInvoker invoker( static_cast<CGeneticStrategyImpl*>(m_pTask), prev, next, 
+				CLocalInvoker<AUTOMAT_TYPE> invoker(static_cast<CGeneticStrategyImpl<AUTOMAT_TYPE>*>(m_pTask), prev, next,
                     firstBarrier );
                 group.create_thread( invoker );
                 prev = next;
@@ -109,27 +111,27 @@ public:
     {
         return threadPtr( new boost::thread( *this ) );
     }
-
 };
 
 
-CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
+template<class AUTOMAT_TYPE>
+CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions,
                                            CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
     m_pRandom = CRandomPtr( new CRandomImpl() );
     setFromStrings( strings, m_pRandom );
-    individs = new CAutomatImpl**[N];
-    newIndivids = new CAutomatImpl**[N];
+	individs = new AUTOMAT_TYPE**[N];
+	newIndivids = new AUTOMAT_TYPE**[N];
     cachedResult = new double*[N];
     for ( int i=0; i< N; ++i)
     {
-        individs[i] = new CAutomatImpl*[M];
-        newIndivids[i] = new CAutomatImpl*[M];
+		individs[i] = new AUTOMAT_TYPE*[M];
+		newIndivids[i] = new AUTOMAT_TYPE*[M];
         cachedResult[i] = new double[M];
         for ( int j=0; j < M; ++j )
         {
-            individs[i][j] = new CAutomatImpl( states, actions );
+			individs[i][j] = new AUTOMAT_TYPE(states, actions);
             individs[i][j]->generateRandom( m_pRandom.get() );
             newIndivids[i][j] = 0;
             cachedResult[i][j] = 0;
@@ -138,7 +140,8 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* state
     //invoker = new CInvoker( this, rand );
 }
 
-void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& strings, CRandomPtr rand )
+template <class AUTOMAT_TYPE>
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::setFromStrings(const std::vector< std::string >& strings, CRandomPtr rand)
 {
     size_t flowsCnt = 5;
     M = N = 0;
@@ -179,7 +182,7 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
         invoker = new CInvoker( this, error );
     }else
     {
-        invoker = new CMainInvoker( this, flowsCnt, rand, error );
+        invoker = new CMainInvoker<AUTOMAT_TYPE>( this, flowsCnt, rand, error );
     }
 
     if (( M == 0 ) || ( N == 0 ))
@@ -188,7 +191,8 @@ void CGeneticStrategyImpl::setFromStrings( const std::vector< std::string >& str
     }
 }
 
-double CGeneticStrategyImpl::getAvgFitness() const
+template<class AUTOMAT_TYPE>
+double CGeneticStrategyImpl<AUTOMAT_TYPE>::getAvgFitness() const
 {
     if ( !isCacheValid )
         fillCache();
@@ -200,7 +204,8 @@ double CGeneticStrategyImpl::getAvgFitness() const
     return sum;
 }
 
-CAutomatPtr CGeneticStrategyImpl::getBestIndivid() const
+template<class AUTOMAT_TYPE>
+CAutomatPtr CGeneticStrategyImpl<AUTOMAT_TYPE>::getBestIndivid() const
 {
     if ( !isCacheValid )
         fillCache();
@@ -217,10 +222,11 @@ CAutomatPtr CGeneticStrategyImpl::getBestIndivid() const
                 y = j;
             }
         }
-    return CAutomatPtr( new CAutomatImpl( *(individs[x][y]) ) ); 
+		return CAutomatPtr(new AUTOMAT_TYPE(*(individs[x][y])));
 }
 
-double CGeneticStrategyImpl::getMaxFitness() const
+template <class AUTOMAT_TYPE>
+double CGeneticStrategyImpl<AUTOMAT_TYPE>::getMaxFitness() const
 {
     if ( !isCacheValid )
         fillCache();       
@@ -233,7 +239,8 @@ double CGeneticStrategyImpl::getMaxFitness() const
     return max;    
 }
 
-void CGeneticStrategyImpl::fillCache() const
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::fillCache() const
 {
     if ( isCacheValid )
         return;
@@ -251,19 +258,20 @@ void CGeneticStrategyImpl::fillCache() const
     isCacheValid = true;
 }
 
-void CGeneticStrategyImpl::run()
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::run()
 {
     nextGeneration( m_pRandom.get() );
 }
-
-void CGeneticStrategyImpl::nextGeneration( size_t start, size_t finish, CRandom* rand )
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::nextGeneration(size_t start, size_t finish, CRandom* rand)
 {
     for ( size_t i=start; i < finish; ++i)
     {
         for ( int j=0; j < M; ++j )
         {
-            CAutomatImpl a[5] = { CAutomatImpl(states, actions), CAutomatImpl(states, actions),
-                        CAutomatImpl(states, actions), CAutomatImpl(states, actions), CAutomatImpl(*individs[i][j]) };
+			AUTOMAT_TYPE a[5] = { AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(states, actions),
+				AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(*individs[i][j]) };
 
             a[0].crossover( individs[i][j], individs[ i ][ (j + 1)%M ], rand );
             a[2].crossover( individs[i][j], individs[ (i + 1)%N ][ j ], rand );
@@ -282,12 +290,13 @@ void CGeneticStrategyImpl::nextGeneration( size_t start, size_t finish, CRandom*
             cachedResult[i][j] = r[k];
             if ( newIndivids[i][j] != 0 )
                 delete newIndivids[i][j];
-            newIndivids[i][j] = new CAutomatImpl( a[k] );
+			newIndivids[i][j] = new AUTOMAT_TYPE(a[k]);
         }
     }
 }
 
-void CGeneticStrategyImpl::preGeneration()
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::preGeneration()
 {
     if ( cnt % 10 == 0 )
     {
@@ -296,9 +305,10 @@ void CGeneticStrategyImpl::preGeneration()
     isCacheValid = false;
 }
 
-void CGeneticStrategyImpl::postGeneration()
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::postGeneration()
 {
-    CAutomatImpl*** tmp = newIndivids;
+	AUTOMAT_TYPE*** tmp = newIndivids;
     newIndivids = individs;
     individs = tmp;
 
@@ -307,14 +317,16 @@ void CGeneticStrategyImpl::postGeneration()
     ++cnt;
 }
 
-void CGeneticStrategyImpl::nextGeneration( CRandom* rand )
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::nextGeneration(CRandom* rand)
 {
     preGeneration();
     nextGeneration( 0, N, rand );
     postGeneration();
 }
 
-void CGeneticStrategyImpl::freeIndivids( CAutomatImpl*** ind )
+template < class AUTOMAT_TYPE >
+void CGeneticStrategyImpl<AUTOMAT_TYPE>::freeIndivids(AUTOMAT_TYPE*** ind)
 {
     if ( ind != 0 )
     {
@@ -333,7 +345,8 @@ void CGeneticStrategyImpl::freeIndivids( CAutomatImpl*** ind )
     }
 }
 
-CGeneticStrategyImpl::~CGeneticStrategyImpl()
+template < class AUTOMAT_TYPE >
+CGeneticStrategyImpl<AUTOMAT_TYPE>::~CGeneticStrategyImpl()
 {
     freeIndivids( individs );
     freeIndivids( newIndivids );
@@ -347,7 +360,8 @@ CGeneticStrategyImpl::~CGeneticStrategyImpl()
         delete invoker;
 }
 
-std::string CGeneticStrategyImpl::getDeviceType() const
+template < class AUTOMAT_TYPE >
+std::string CGeneticStrategyImpl<AUTOMAT_TYPE>::getDeviceType() const
 {
     return "C++ on CPU";
 }

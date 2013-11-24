@@ -13,10 +13,6 @@ private:
     static  CLaboratoryMultiPtr noFile( Tools::Logger& logger );
     static  CActionContainerPtr createActions( const std::vector< std::string >& strings );
     static  CStateContainerPtr createStates( const std::vector< std::string >& strings );
-    static  CGeneticStrategyCommonPtr createStrategy( const std::vector< std::string >& strings,
-        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
-    static CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
-        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger );
 
     static  CLaboratoryMultiPtr createLaboratory( CStateContainerPtr states, 
         CActionContainerPtr actions, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults );
@@ -30,7 +26,14 @@ class CStrategyFactory
 {
 public:
     static CGeneticAlgorithmPtr getStrategy();
+	static  CGeneticStrategyCommonPtr createStrategy(const std::vector< std::string >& strings,
+		CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger);
 private:
-    static CGeneticAlgorithmPtr noFile();
+	static CGeneticStrategyCommonPtr createStrategyCL(const std::vector< std::string >& strings,
+		CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger);
+	static CGeneticStrategyCommonPtr createStrategyCPU(const std::vector< std::string >& strings,
+		CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger);
+	static CGeneticStrategyCommonPtr createStrategyWRAP(const std::vector< std::string >& strings,
+		CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger);
     CStrategyFactory();
 };

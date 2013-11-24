@@ -10,10 +10,12 @@
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
 #include "CMapFactory.h"
+#include "CAutomatShortTables.h"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/assert.hpp>
 #include <fstream>
  
 CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, const std::string& fileNameM )
@@ -46,7 +48,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, co
     CActionContainerPtr actions = createActions( strings );
     CLabResultMultiPtr labResults( new CLabResultMulti() );
 
-    CGeneticStrategyCommonPtr strategy = createStrategy( strings, states, actions, labResults, logger );
+    CGeneticStrategyCommonPtr strategy = CStrategyFactory::createStrategy( strings, states, actions, labResults, logger );
     return createLaboratory( states, actions, strategy, labResults );
 }
 
@@ -90,7 +92,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
 	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
-    CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
+    CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl<CAutomatImpl>( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
     
     return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
 }
@@ -127,66 +129,109 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
     return states;
 }
 
-CGeneticStrategyCommonPtr CLaboratoryFactory::createStrategy( const std::vector< std::string >& strings,
-        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
-{
-    for ( size_t i=0; i < strings.size(); ++i )
-    {
-        const std::string& str = strings[i];
-        if ( boost::starts_with( str, "strategy" ) )
-        {
-            int b = str.find( "=" );
-            ++b;
-            int e = str.find( ";" );
-            const std::string tmp( str.substr( b, e ) );
-            if ( tmp[0] == 'C' )
-            {
-                if ( str.find("Wrap") == -1 )
-                {
-                    return createCLStrategy( strings, states, actions, labResults, logger );
-                }else
-                {
-					CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
-                    return CGeneticStrategyCommonPtr( new CGeneticStrategyCLWrap( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
-                }
-            }
-        }
-    }
-	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
-    return CGeneticStrategyCommonPtr( new CGeneticStrategyImpl( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
-}
-
-CGeneticStrategyCommonPtr CLaboratoryFactory::createCLStrategy( const std::vector< std::string >& strings,
-        CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger )
-{
-    boost::filesystem::path source("gen.cl");
-    if ( !boost::filesystem::exists(source) )
-    {
-        source = boost::filesystem::path("gen.c");
-        if ( !boost::filesystem::exists(source) )
-            throw std::runtime_error("[ERROR] Source file not found\n");
-    }
-    std::ifstream in (source.generic_string().c_str() );
-    char buf[500];
-    in.getline( buf, 490 );
-    std::string str(buf);
-    int version = 1;
-    if ( str.find("#version=") != -1 )
-    {
-        str = str.substr(str.find("=")+1, str.length()-str.find("=") );
-        version = boost::lexical_cast<int>( str );
-    }
-    in.close();
-    //ToDo: continue it!
-	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
-    if (version == 1)
-        return CGeneticStrategyCommonPtr( new CGeneticStrategyCL( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
-    else
-        return CGeneticStrategyCommonPtr( new CGeneticStrategyCLv2( source, states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
-}
-
 CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 
         CActionContainerPtr actions, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults )
 {
     return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
+}
+
+//-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=
+
+CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< std::string >& strings,
+	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+{
+	for (size_t i = 0; i < strings.size(); ++i)
+	{
+		const std::string& str = strings[i];
+		if (boost::starts_with(str, "strategy"))
+		{
+			int b = str.find("=");
+			++b;
+			int e = str.find(";");
+			const std::string tmp(str.substr(b, e));
+			if (tmp[0] == 'C')
+			{
+				if (str.find("Wrap") == -1)
+				{
+					return createStrategyCL(strings, states, actions, labResults, logger);
+				}
+				else
+				{
+					return createStrategyWRAP(strings, states, actions, labResults, logger);
+				}
+			}
+		}
+	}
+	return createStrategyCPU(strings, states, actions, labResults, logger);
+}
+
+CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector< std::string >& strings,
+	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+{
+	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
+	for (size_t i = 0; i < strings.size(); ++i)
+	{
+		const std::string& str = strings[i];
+		if (boost::starts_with(str, "transition"))
+		{
+			int b = str.find("=");
+			++b;
+			int e = str.find(";");
+			const std::string type(str.substr(b, e));
+			
+			if (boost::starts_with(type, "Short") || boost::starts_with(type, "short"))
+			{
+				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatShortTables>(states.get(),
+					actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+			}
+			else
+			if (boost::starts_with(type, "Decision") || boost::starts_with(type, "decision"))
+			{
+				BOOST_ASSERT_MSG(0, "Decision trees not implemented yet, use full tables instead");
+			}else
+			if (boost::starts_with(type, "Full") || boost::starts_with(type, "full"))
+			{
+				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(states.get(),
+					actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+			}
+		}
+	}
+	return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(states.get(),
+		actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+}
+
+CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< std::string >& strings,
+	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+{
+	boost::filesystem::path source("gen.cl");
+	if (!boost::filesystem::exists(source))
+	{
+		source = boost::filesystem::path("gen.c");
+		if (!boost::filesystem::exists(source))
+			throw std::runtime_error("[ERROR] Source file not found\n");
+	}
+	std::ifstream in(source.generic_string().c_str());
+	char buf[500];
+	in.getline(buf, 490);
+	std::string str(buf);
+	int version = 1;
+	if (str.find("#version=") != -1)
+	{
+		str = str.substr(str.find("=") + 1, str.length() - str.find("="));
+		version = boost::lexical_cast<int>(str);
+	}
+	in.close();
+	//ToDo: continue it!
+	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
+	if (version == 1)
+		return CGeneticStrategyCommonPtr(new CGeneticStrategyCL(states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+	else
+		return CGeneticStrategyCommonPtr(new CGeneticStrategyCLv2(source, states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+}
+
+CGeneticStrategyCommonPtr CStrategyFactory::createStrategyWRAP(const std::vector< std::string >& strings,
+	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+{
+	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
+	return CGeneticStrategyCommonPtr(new CGeneticStrategyCLWrap(states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
 }

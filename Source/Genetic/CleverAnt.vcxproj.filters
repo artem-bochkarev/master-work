@@ -78,9 +78,6 @@
     <ClCompile Include="CGeneticStrategyCLWrap.cpp">
       <Filter>Source Files\FullTables</Filter>
     </ClCompile>
-    <ClCompile Include="CGeneticStrategyImpl.cpp">
-      <Filter>Source Files\FullTables</Filter>
-    </ClCompile>
     <ClCompile Include="GenCLWrap.cpp">
       <Filter>Source Files\FullTables</Filter>
     </ClCompile>
@@ -89,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="CAutomatShortTables.cpp">
       <Filter>Source Files\ShortTables</Filter>
+    </ClCompile>
+    <ClCompile Include="CGeneticStrategyImpl.hpp">
+      <Filter>Source Files\FullTables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

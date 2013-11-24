@@ -11,7 +11,7 @@ class CLabResultMulti : public CLaboratoryResult<COUNTERS_TYPE, INPUT_TYPE>
 public:
     friend class CGeneticStrategyCommon;
     friend class CLaboratoryMulti;
-    friend class CGeneticStrategyImpl;
+    //friend class CGeneticStrategyImpl;
     friend class CGeneticStrategyCL;
     friend class CGeneticStrategyCLv2;
 	friend class CGeneticStrategyCLWrap;

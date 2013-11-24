@@ -97,7 +97,10 @@
     <ClCompile Include="CGeneticStrategyCL.cpp" />
     <ClCompile Include="CGeneticStrategyCLv2.cpp" />
     <ClCompile Include="CGeneticStrategyCLWrap.cpp" />
-    <ClCompile Include="CGeneticStrategyImpl.cpp" />
+    <ClCompile Include="CGeneticStrategyImpl.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GenCLWrap.cpp" />
     <ClCompile Include="..\wxWidgetsHello\gen.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

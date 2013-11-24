@@ -1,10 +1,92 @@
 #include "stdafx.h"
 #include "CAutomatShortTables.h"
 #include "Tools\binFunc.hpp"
+#include <boost\assert.hpp>
 
-size_t CAutomatShortTables::countIndex(std::vector<INPUT_TYPE>* mas) const
+CStateContainer<COUNTERS_TYPE>* CAutomatShortTables::states = nullptr;
+CActionContainer<COUNTERS_TYPE>* CAutomatShortTables::actions = nullptr;
+
+size_t CAutomatShortTables::commonDataSize = 4;
+size_t CAutomatShortTables::statesCount = 5;
+size_t CAutomatShortTables::maskSize = INPUT_PARAMS_COUNT;
+size_t CAutomatShortTables::tableSize = 2*(1 << SHORT_TABLE_COLUMNS);
+size_t CAutomatShortTables::stateSize = tableSize + maskSize;
+
+CAutomatShortTables::CAutomatShortTables(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions)
 {
-	COUNTERS_TYPE* currentMask = buffer + currentState * (tableSize + maskSize);
+	startState = 0;
+	buffer = new COUNTERS_TYPE[commonDataSize + statesCount*stateSize];
+	this->states = states;
+	this->actions = actions;
+}
+
+CAutomatShortTables::~CAutomatShortTables()
+{
+	delete[] buffer;
+}
+
+CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
+{
+	startState = automat.startState;
+	size_t size = commonDataSize + statesCount*stateSize;
+	buffer = new COUNTERS_TYPE[size];
+	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
+}
+
+CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables& automat)
+{
+	startState = automat.startState;
+	size_t size = commonDataSize + statesCount*stateSize;
+	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
+	return *this;
+}
+
+void CAutomatShortTables::generateRandom(CRandom* rand)
+{
+	startState = states->randomState(rand);
+	buffer[0] = startState;
+	for (size_t currentState = 0; currentState < statesCount; ++currentState)
+	{
+		COUNTERS_TYPE* maskPtr = buffer + commonDataSize + currentState*stateSize;
+		randomMask(maskPtr, rand);
+		COUNTERS_TYPE* tablePtr = maskPtr + maskSize;
+		randomTable(tablePtr, rand);
+	}
+}
+
+void CAutomatShortTables::randomMask(COUNTERS_TYPE* mask, CRandom* rand)
+{
+	size_t alreadyEnabled = 0;
+	BOOST_ASSERT(maskSize == INPUT_PARAMS_COUNT);
+	for (size_t i = 0; i < maskSize; ++i)
+	{
+		mask[i] = 0;
+		double prob = (MAX_PARAMETERS*2.0) / (3.0*maskSize);
+		if ((rand->nextUINT() & 255) < 256 * prob)
+		{
+			if (alreadyEnabled < MAX_PARAMETERS)
+			{
+				++alreadyEnabled;
+				mask[i] = 1;
+			}
+		}
+	}
+}
+
+void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand)
+{
+	size_t maxIndex = Tools::twoPow(MAX_PARAMETERS);
+	BOOST_ASSERT(maxIndex*recordSize <= tableSize);
+	for (size_t index = 0; index < maxIndex; ++index)
+	{
+		table[index*recordSize + stateShift] = states->randomState(rand);
+		table[index*recordSize + actionShift] = actions->randomAction(rand);
+	}
+}
+
+size_t CAutomatShortTables::countIndex(std::vector<INPUT_TYPE>* mas, size_t currentState ) const
+{
+	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (tableSize + maskSize);
 	int index = 0, k = 1, j = 0;
 	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
 	{
@@ -17,18 +99,24 @@ size_t CAutomatShortTables::countIndex(std::vector<INPUT_TYPE>* mas) const
 	return index;
 }
 
+COUNTERS_TYPE CAutomatShortTables::getStartState() const
+{
+	BOOST_ASSERT(buffer[0] == startState);
+	return startState;
+}
+
 COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const
 {
-	size_t index = countIndex(input);
-	COUNTERS_TYPE * currentTable = buffer + currentState * (tableSize + maskSize) + maskSize;
+	size_t index = countIndex(input, currentState);
+	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
 	COUNTERS_TYPE state = *(currentTable + recordSize*index + stateShift);
 	return state;
 }
 
 COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const
 {
-	size_t index = countIndex(input);
-	COUNTERS_TYPE * currentTable = buffer + currentState * (tableSize + maskSize) + maskSize;
+	size_t index = countIndex(input, currentState);
+	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
 	COUNTERS_TYPE action = *(currentTable + recordSize*index + actionShift);
 	return action;
 }
@@ -37,9 +125,9 @@ void CAutomatShortTables::mutate(CRandom* rand)
 {
 	for (size_t currentState = 0; currentState < statesCount; ++currentState)
 	{
-		COUNTERS_TYPE* currentMask = buffer + currentState * (tableSize + maskSize);
+		COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (stateSize);
 		mutateMask(currentMask, rand);
-		COUNTERS_TYPE * currentTable = buffer + currentState * (tableSize + maskSize) + maskSize;
+		COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize) + maskSize;
 		mutateTable(currentTable, rand);
 	}
 
@@ -94,9 +182,9 @@ void CAutomatShortTables::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* m
 
 	for (size_t currentState = 0; currentState < statesCount; ++currentState)
 	{
-		COUNTERS_TYPE* motherMask = motherPtr->buffer + currentState * (tableSize + maskSize);
-		COUNTERS_TYPE* fatherMask = fatherPtr->buffer + currentState * (tableSize + maskSize);
-		COUNTERS_TYPE* childMask = buffer + currentState * (tableSize + maskSize);
+		COUNTERS_TYPE* motherMask = motherPtr->buffer + commonDataSize + currentState * (stateSize);
+		COUNTERS_TYPE* fatherMask = fatherPtr->buffer + commonDataSize + currentState * (stateSize);
+		COUNTERS_TYPE* childMask = buffer + commonDataSize + currentState * (stateSize);
 
 		crossMasks(childMask, motherMask, fatherMask, rand);
 		crossTables(childMask, motherMask, fatherMask, rand);

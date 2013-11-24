@@ -84,7 +84,7 @@ void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand)
 	}
 }
 
-size_t CAutomatShortTables::countIndex(std::vector<INPUT_TYPE>* mas, size_t currentState ) const
+size_t CAutomatShortTables::countIndex(const std::vector<INPUT_TYPE>& mas, size_t currentState ) const
 {
 	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (tableSize + maskSize);
 	int index = 0, k = 1, j = 0;
@@ -92,7 +92,7 @@ size_t CAutomatShortTables::countIndex(std::vector<INPUT_TYPE>* mas, size_t curr
 	{
 		if (currentMask[i])
 		{
-			index += k*mas->at(j++);
+			index += k*mas[j++];
 			k *= 2;
 		}
 	}
@@ -105,7 +105,7 @@ COUNTERS_TYPE CAutomatShortTables::getStartState() const
 	return startState;
 }
 
-COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const
+COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
 	size_t index = countIndex(input, currentState);
 	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
@@ -113,7 +113,7 @@ COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, std:
 	return state;
 }
 
-COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const
+COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
 	size_t index = countIndex(input, currentState);
 	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;

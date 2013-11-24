@@ -129,8 +129,8 @@ double CTest::run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE> *automat, CMap *map,
         //int input[4];
 		std::vector<INPUT_TYPE> input(4);
         mapImpl->getInput( x, y, direct, input.data() );
-        char action = automat->getAction( curState, &input );
-        curState = automat->getNextState( curState, &input );
+        char action = automat->getAction( curState, input );
+        curState = automat->getNextState( curState, input );
         switch (action)
         {
             case 0:

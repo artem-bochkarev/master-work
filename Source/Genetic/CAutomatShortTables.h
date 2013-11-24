@@ -15,8 +15,8 @@ public:
     CAutomatShortTables( const CAutomatShortTables& automat );
     CAutomatShortTables& operator = ( const CAutomatShortTables& automat );
     virtual void generateRandom( CRandom* rand ) override;
-	virtual COUNTERS_TYPE getNextState(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const override;
-	virtual COUNTERS_TYPE getAction(COUNTERS_TYPE currentState, std::vector<INPUT_TYPE>* input) const override;
+	virtual COUNTERS_TYPE getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
+	virtual COUNTERS_TYPE getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
 	virtual COUNTERS_TYPE getStartState() const override;
 
 	virtual void mutate(CRandom* rand) override;
@@ -31,7 +31,7 @@ public:
 
     virtual ~CAutomatShortTables();
 protected:
-	size_t countIndex(std::vector<INPUT_TYPE>* input, size_t currentsState) const;
+	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
 	static void toParent(size_t* toMother, const size_t* myMas, const COUNTERS_TYPE* motherMask);
 	static void crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);
 	static void crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);

@@ -51,7 +51,7 @@ void CAutomatImpl::generateRandom( CRandom* rand )
 }
 
 void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
-                              char* buffer, size_t stSize, CRandom* rand )
+	COUNTERS_TYPE* buffer, size_t stSize, CRandom* rand)
 {
     size_t statesCount = states->size();
     size_t stateSize = stSize;
@@ -76,7 +76,7 @@ void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionCo
     }
 }
 
-size_t CAutomatImpl::countIndex( int* mas ) const
+size_t CAutomatImpl::countIndex(INPUT_TYPE* mas) const
 {
     size_t index = 0;//, power = 0;
     for ( int i=0; i<4; ++i)
@@ -86,7 +86,7 @@ size_t CAutomatImpl::countIndex( int* mas ) const
     return index;// % stateSize;
 }
 
-char CAutomatImpl::getNextState( char currentState, int* input ) const
+char CAutomatImpl::getNextState(char currentState, INPUT_TYPE* input) const
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -94,7 +94,7 @@ char CAutomatImpl::getNextState( char currentState, int* input ) const
     return state;
 }
 
-char CAutomatImpl::getAction( char currentState, int* input ) const
+char CAutomatImpl::getAction(char currentState, INPUT_TYPE* input) const
 {
     size_t index = countIndex( input );
     char * ptrStates = buffer + currentState*2*stateSize;
@@ -103,21 +103,32 @@ char CAutomatImpl::getAction( char currentState, int* input ) const
     return action;
 }
 
-size_t CAutomatImpl::countIndex( std::vector<int>* input ) const
+size_t CAutomatImpl::countIndex(const std::vector<INPUT_TYPE>& input) const
 {
-    BOOST_ASSERT(0);
-    return 0;// % stateSize;
+	size_t index = 0;//, power = 0;
+	BOOST_ASSERT(input.size() == 4);
+	for (int i = 0; i < 4; ++i)
+	{
+		index += (input[i] << i);
+	}
+	return index;// % stateSize;
 }
 
-char CAutomatImpl::getNextState( char currentState, std::vector<int>* input ) const
+char CAutomatImpl::getNextState(char currentState, const std::vector<INPUT_TYPE>& input) const
 {
-    BOOST_ASSERT(0);
-    return 0;
+	size_t index = countIndex(input);
+	char * ptrStates = buffer + currentState * 2 * stateSize;
+	char state = *(ptrStates + index);
+	return state;
 }
 
-char CAutomatImpl::getAction( char currentState, std::vector<int>* input ) const
+char CAutomatImpl::getAction(char currentState, const std::vector<INPUT_TYPE>& input) const
 {
-    BOOST_ASSERT(0);
+	size_t index = countIndex(input);
+	char * ptrStates = buffer + currentState * 2 * stateSize;
+	char * ptrActions = ptrStates + stateSize;
+	char action = *(ptrActions + index);
+	return action;
     return 0;
 }
 

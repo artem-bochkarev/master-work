@@ -161,7 +161,7 @@ CGeneticStrategyCL::CGeneticStrategyCL(CStateContainer<COUNTERS_TYPE>* states, C
     try
     {
 		logger << "[INIT] Trying to get specified device.\n";
-        cl::vector< cl::Platform > platformList;
+        std::vector< cl::Platform > platformList;
         cl::Platform::get(&platformList);
 
         for ( size_t i=0; i<platformList.size(); ++i )

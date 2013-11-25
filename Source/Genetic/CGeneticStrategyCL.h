@@ -4,7 +4,6 @@
 #include "CMap.h"
 #include "CAutomatImpl.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
-#define __NO_STD_VECTOR //no std vector
 #define __MAX_DEFAULT_VECTOR_SIZE 100
 #include "CL/cl.hpp"
 #include "CLabResultMulti.h"
@@ -86,7 +85,7 @@ private:
     cl::Context context;
     cl::CommandQueue queue;
     //cl::Device device;
-    cl::vector<cl::Device> devices;
+    std::vector<cl::Device> devices;
     cl::NDRange globalRange;
     cl::NDRange localRange;
 

@@ -5,8 +5,6 @@
 static const size_t recordSize = 2;
 static const size_t stateShift = 0;
 static const size_t actionShift = 1;
-static const size_t MAX_PARAMETERS = SHORT_TABLE_COLUMNS;
-
 
 class CAutomatShortTables final : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
@@ -42,9 +40,7 @@ protected:
 	static size_t createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand);
 private:
     CAutomatShortTables() {};
-	static CStateContainer<COUNTERS_TYPE>* states;
-	static CActionContainer<COUNTERS_TYPE>* actions;
-	static size_t commonDataSize, statesCount, stateSize, maskSize, tableSize;
+	static size_t commonDataSize, stateSize, maskSize, tableSize;
 	COUNTERS_TYPE startState;
 	COUNTERS_TYPE * buffer;
 };

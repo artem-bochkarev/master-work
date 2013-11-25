@@ -8,7 +8,7 @@ typedef boost::shared_ptr<CAutomatImpl> CAutomatImplPtr;
 class CAutomatImpl : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CAutomatImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, size_t stateSize = 16);
+	CAutomatImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions);
     CAutomatImpl( const CAutomatImpl& automat );
     CAutomatImpl& operator = ( const CAutomatImpl& automat );
     virtual void generateRandom( CRandom* rand ) override;
@@ -31,8 +31,6 @@ public:
     virtual ~CAutomatImpl();
 private:
     CAutomatImpl() {};
-	CStateContainer<COUNTERS_TYPE>* states;
-	CActionContainer<COUNTERS_TYPE>* actions;
-    size_t statesCount, stateSize, startState;
+	size_t stateSize, startState;
 	COUNTERS_TYPE * buffer;
 };

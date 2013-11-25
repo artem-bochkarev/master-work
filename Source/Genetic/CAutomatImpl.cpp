@@ -3,51 +3,45 @@
 #include <cmath>
 #include <boost/assert.hpp>
 
-CAutomatImpl::CAutomatImpl( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, size_t stateSize )
+CAutomatImpl::CAutomatImpl( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions )
 //:CAutomat( states, actions )
-:startState(0), stateSize( stateSize )
+:startState(0)
 {
-    this->states = states;
-    this->actions = actions;
-    statesCount = states->size();
-    //stateSize = 1 << statesCount;
-    buffer = (char*)malloc( 2*statesCount*stateSize );
+	BOOST_ASSERT(ant_common::states == states);
+	BOOST_ASSERT(ant_common::actions == actions);
+	stateSize = 1 << ant_common::statesCount;
+	buffer = (char*)malloc(2 * ant_common::statesCount*stateSize);
 }
 
 CAutomatImpl::CAutomatImpl(const CAutomatImpl &automat)
-:startState(automat.startState), stateSize( automat.stateSize ), statesCount( automat.statesCount )
+:startState(automat.startState), stateSize( automat.stateSize )
 {
-    this->states = automat.states;
-    this->actions = automat.actions;
-    buffer = (char*)malloc( 2*statesCount*stateSize );
-    memcpy( buffer, automat.buffer, 2*statesCount*stateSize );
+	buffer = (char*)malloc(2 * ant_common::statesCount * stateSize);
+	memcpy(buffer, automat.buffer, 2 * ant_common::statesCount * stateSize);
 }
 
 CAutomatImpl& CAutomatImpl::operator =(const CAutomatImpl &automat)
 {
-    this->states = automat.states;
-    this->actions = automat.actions;
-    statesCount = automat.statesCount;
     stateSize = automat.stateSize;
-    buffer = (char*)malloc( 2*statesCount*stateSize );
-    memcpy( buffer, automat.buffer, 2*statesCount*stateSize );
+	buffer = (char*)malloc(2 * ant_common::statesCount * stateSize);
+	memcpy(buffer, automat.buffer, 2 * ant_common::statesCount * stateSize);
     startState = automat.startState;
     return *this;
 }
 
 void CAutomatImpl::generateRandom( CRandom* rand )
 {
-    for ( size_t i=0; i<statesCount; ++i)
+	for (size_t i = 0; i < ant_common::statesCount; ++i)
     {
         char * ptrStates = buffer + i*2*stateSize;
         char * ptrActions = ptrStates + stateSize;
         for ( size_t j=0; j<stateSize; ++j )
         {
-            *(ptrStates + j) = states->randomState( rand );
-            *(ptrActions + j) = actions->randomAction( rand );
+			*(ptrStates + j) = ant_common::states->randomState(rand);
+			*(ptrActions + j) = ant_common::actions->randomAction(rand);
         }
     }
-    startState = rand->nextUINT()%statesCount; //rand;
+	startState = rand->nextUINT()%ant_common::statesCount; //rand;
 }
 
 void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
@@ -139,16 +133,16 @@ CAutomatImpl::~CAutomatImpl()
 
 void CAutomatImpl::mutate( CRandom* rand )
 {
-    int i = rand->nextUINT()%statesCount;
+	int i = rand->nextUINT()%ant_common::statesCount;
     char * ptrStates = buffer + i*2*stateSize;
     char * ptrActions = ptrStates + stateSize;
     for ( size_t j=0; j<stateSize; ++j )
     {
-        *(ptrStates + j) = states->randomState( rand );
-        *(ptrActions + j) = actions->randomAction( rand );
+		*(ptrStates + j) = ant_common::states->randomState(rand);
+		*(ptrActions + j) = ant_common::actions->randomAction(rand);
     }
     if ( rand->nextUINT()%100 > 15 )
-        startState = rand->nextUINT()%statesCount;
+		startState = rand->nextUINT()%ant_common::statesCount;
 }
 
 void CAutomatImpl::crossover( const CAutomat* mother, const CAutomat* father, CRandom* rand )
@@ -174,7 +168,7 @@ void CAutomatImpl::crossover( const CAutomat* mother, const CAutomat* father, CR
         }
     }*/
     int k;
-    for ( size_t i=0; i < statesCount*2*stateSize; ++i)
+	for (size_t i = 0; i < ant_common::statesCount * 2 * stateSize; ++i)
     {
         k = rand->nextUINT()%100;
 
@@ -197,13 +191,12 @@ std::vector<CAutomatImplPtr> CAutomatImpl::cross( const CAutomat* mother,
     const CAutomatImpl* moth = static_cast<const CAutomatImpl*>( mother );
     const CAutomatImpl* fath = static_cast<const CAutomatImpl*>( father );
 
-    CAutomatImplPtr a1( new CAutomatImpl( moth->states, moth->actions ) );
-    CAutomatImplPtr a2( new CAutomatImpl( moth->states, moth->actions ) );
+    CAutomatImplPtr a1( new CAutomatImpl() );
+    CAutomatImplPtr a2( new CAutomatImpl() );
  
-    size_t statesCount = fath->statesCount;
     size_t stateSize = fath->stateSize;
 
-    for ( size_t i=0; i<statesCount; ++i)
+	for (size_t i = 0; i < ant_common::statesCount; ++i)
     {
         char * ptrStates1 = a1->buffer + i*2*stateSize;
         char * ptrActions1 = ptrStates1 + stateSize;
@@ -258,9 +251,10 @@ char CAutomatImpl::getStartState() const
 CAutomatImpl CAutomatImpl::createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
 	CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize)
 {
-    CAutomatImpl impl( states, actions, stateSize );
+	BOOST_ASSERT(stateSize == (1 << ant_common::statesCount));
+	CAutomatImpl impl(states, actions);
     impl.startState = *buf;
     buf += 4;
-    memcpy( impl.buffer, buf, 2*impl.statesCount*impl.stateSize );
+	memcpy(impl.buffer, buf, 2 * ant_common::statesCount*impl.stateSize);
     return impl;
 }

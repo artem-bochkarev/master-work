@@ -90,6 +90,9 @@
     <ClCompile Include="CGeneticStrategyImpl.hpp">
       <Filter>Source Files\FullTables</Filter>
     </ClCompile>
+    <ClCompile Include="GeneticParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CActionContainerImpl.h">

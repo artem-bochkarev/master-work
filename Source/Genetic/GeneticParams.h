@@ -14,3 +14,10 @@ typedef boost::shared_ptr< CLaboratoryResult<COUNTERS_TYPE, INPUT_TYPE> > CLabor
 
 static const size_t SHORT_TABLE_COLUMNS = 3;
 static const size_t INPUT_PARAMS_COUNT = 4;
+
+namespace ant_common
+{
+	extern CStateContainer<COUNTERS_TYPE>* states;
+	extern CActionContainer<COUNTERS_TYPE>* actions;
+	extern size_t statesCount;
+}

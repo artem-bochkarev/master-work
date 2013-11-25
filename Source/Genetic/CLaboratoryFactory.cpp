@@ -122,6 +122,7 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
             rez = std::atoi( tmp.c_str() );
         }
     }
+	ant_common::statesCount = rez;
     for ( char i=0; i<rez; ++i )
     {
         states->addState( i );
@@ -140,6 +141,8 @@ CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr sta
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< std::string >& strings,
 	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
+	ant_common::states = states.get();
+	ant_common::actions = actions.get();
 	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];

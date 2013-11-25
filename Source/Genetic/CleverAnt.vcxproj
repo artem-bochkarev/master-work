@@ -89,6 +89,7 @@
     <ClCompile Include="CRandomImpl.cpp" />
     <ClCompile Include="CStateContainerImpl.cpp" />
     <ClCompile Include="CTest.cpp" />
+    <ClCompile Include="GeneticParams.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

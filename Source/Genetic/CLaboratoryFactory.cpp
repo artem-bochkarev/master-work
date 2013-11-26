@@ -86,7 +86,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
     
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
-	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
+	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU(DEFAULT_STEPS_COUNT));
     CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl<CAutomatImpl>( antCommon, labResults.get(), fitnesFunctor, strings, logger ) );
     
     return CLaboratoryMultiPtr( new CLaboratoryMulti( antCommon, strategy, labResults ) );
@@ -189,7 +189,8 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< st
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector< std::string >& strings,
 	AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
-	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
+	//size_t ste
+	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU(DEFAULT_STEPS_COUNT));
 	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];

@@ -19,6 +19,26 @@ size_t CAntFitnes::getMapsCount()
     return maps.size();
 }
 
+size_t CAntFitnes::steps() const
+{
+	return m_steps;
+}
+
+CAntFitnes::CAntFitnes(size_t steps)
+:m_steps(steps) {}
+
+CAntFitnesCPU::CAntFitnesCPU()
+:CAntFitnes(DEFAULT_STEPS_COUNT) {}
+
+CAntFitnesCPU::CAntFitnesCPU(size_t steps)
+:CAntFitnes(steps) {}
+
+CAntFitnesNone::CAntFitnesNone()
+: CAntFitnes(DEFAULT_STEPS_COUNT) {}
+
+CAntFitnesNone::CAntFitnesNone(size_t steps)
+: CAntFitnes(steps) {}
+
  
 ANT_FITNESS_TYPE CAntFitnesCPU::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat ) const
 {
@@ -26,7 +46,7 @@ ANT_FITNESS_TYPE CAntFitnesCPU::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE
     for ( std::vector<CMapPtr>::const_iterator it = maps.begin(); it != maps.end(); ++it )
     {
         CMapImpl tmpMap( it->get() );
-        result +=  CTest::run( automat,  &tmpMap );
+        result +=  CTest::run( automat,  &tmpMap, m_steps );
     }
     return result;
 }

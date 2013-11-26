@@ -12,12 +12,10 @@ public:
 	virtual CAutomat<NUMBERS_TYPE, INPUT_TYPE>* getBestInd(size_t i) const = 0;
     
 	virtual const CGeneticAlgorithm<NUMBERS_TYPE, INPUT_TYPE>* getStrategy() const = 0;
-	virtual const CStateContainer<NUMBERS_TYPE>* getStates() const = 0;
 	virtual const CActionContainer<NUMBERS_TYPE>* getActions() const = 0;
 
 	virtual void writeInfo(std::ostream& ost) const
 	{
-		ost << getStrategy()->getDeviceType() <<
-			", states count: " << getStates()->size() << ", " << getStrategy()->getPoolInfo() << std::endl;
+		ost << getStrategy()->getDeviceType() << getStrategy()->getPoolInfo() << std::endl;
 	}
 };

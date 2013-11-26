@@ -8,7 +8,7 @@
 class CLaboratoryMulti : public CLaboratory<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-    CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
+    CLaboratoryMulti(AntCommonPtr antCommonPtr, 
         CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult );
     
     /*virtual void start();
@@ -26,7 +26,6 @@ public:
     virtual const CMapPtr getMap( size_t i );
     virtual size_t getMapsCount();
 
-	virtual const CStateContainer<COUNTERS_TYPE>* getStates() const;
 	virtual const CActionContainer<COUNTERS_TYPE>* getActions() const;
 
     CAntFitnes* getFitnesFunctor();
@@ -38,8 +37,8 @@ private:
     mutable CLabResultMultiPtr results;
     CGeneticStrategyCommonPtr strategy;
 
-    CStateContainerPtr states;
-    CActionContainerPtr actions;
+    //CActionContainerPtr actions;
+	AntCommonPtr antCommonPtr;
 };
 
 typedef boost::shared_ptr<CLaboratoryMulti> CLaboratoryMultiPtr;

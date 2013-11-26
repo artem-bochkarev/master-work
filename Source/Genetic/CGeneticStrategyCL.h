@@ -23,8 +23,8 @@ class CGeneticStrategyCL : public CGeneticStrategyCommon
         NEW
     };
 public:
-    CGeneticStrategyCL(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
-		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
+	CGeneticStrategyCL(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+		const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();
 
@@ -90,7 +90,7 @@ private:
     cl::NDRange localRange;
 
     std::vector<CMapPtr> maps;
-    size_t statesCount, stateSize, gensToCount;
+    size_t stateSize, gensToCount;
 
     CRandomPtr m_pRandom;
 };

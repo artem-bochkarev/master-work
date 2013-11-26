@@ -31,7 +31,6 @@ private:
     wxStaticBitmap* itemStaticBitmap;
     wxButton* button;
 
-    CStateContainer<COUNTERS_TYPE>* states;
 	CActionContainer<COUNTERS_TYPE>* actions;
     CLaboratoryMultiPtr laboratory;
     std::vector<CMapPtr> maps;

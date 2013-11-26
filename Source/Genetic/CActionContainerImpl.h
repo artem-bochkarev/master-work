@@ -7,12 +7,12 @@ class CActionContainerImpl : public CActionContainer<COUNTERS_TYPE>
 {
 public:
     CActionContainerImpl() {};
-    bool addAction( char code, const std::string& name );
-    const std::vector<char>& getActions() const;
-    char randomAction( CRandom* rand );
+	bool addAction(COUNTERS_TYPE code, const std::string& name);
+	const std::vector<COUNTERS_TYPE>& getActions() const;
+	COUNTERS_TYPE randomAction(CRandom* rand);
     size_t size() const;
 private:
-    std::vector<char> actions;
-    std::map< std::string, char > strToChar;
-    std::map< char, std::string > charToStr;
+	std::vector<COUNTERS_TYPE> actions;
+	std::map< std::string, COUNTERS_TYPE > strToChar;
+	std::map< COUNTERS_TYPE, std::string > charToStr;
 };

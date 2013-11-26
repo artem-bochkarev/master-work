@@ -19,15 +19,16 @@ void CGeneticStrategyCLv2::initMemory()
 
 void CGeneticStrategyCLv2::initCLBuffers()
 {
-    size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
+	
+	size_t bufSize = (2 * pAntCommon->statesCount() * stateSize + 4)*N*M;
     buffer = (char*)malloc( bufSize );
     buffer2 = (char*)malloc( bufSize );
 
     CRandomImpl rand;
     for ( int i=0; i < N*M; ++i )
     {
-        char * buf = buffer + i*(2*statesCount*stateSize + 4);
-        CAutomatImpl::fillRandom( states, actions, buf, stateSize, &rand );
+		char * buf = buffer + i*(2 * pAntCommon->statesCount() * stateSize + 4);
+        CAutomatImpl::fillRandom( pAntCommon.get(), buf, stateSize, &rand );
     }
 
     statesBufCL1 = cl::Buffer(context, CL_MEM_READ_WRITE, bufSize);
@@ -73,7 +74,7 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
     devices[0].getInfo( CL_DEVICE_MAX_WORK_GROUP_SIZE, &val );
     cl_ulong lMemSize;
     devices[0].getInfo( CL_DEVICE_LOCAL_MEM_SIZE, &lMemSize );
-    cl_ulong autSize = 4 + 2*16*statesCount;
+	cl_ulong autSize = 4 + 2 * 16 * pAntCommon->statesCount();
     cl_ulong nMemSize = val * autSize;
     localRange = cl::NullRange;
     globalRange = cl::NDRange( N, M );
@@ -127,14 +128,13 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
     options = ss.str();
 }
 
-CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
+CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem::path& source, AntCommonPtr pAntCommon, 
                                        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
-    :CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
+    :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticStrategyCLv2.\n";
     m_pRandom = CRandomPtr( new CRandomImpl() );
     setFromStrings( strings, m_pRandom );
-    statesCount = states->size();
     stateSize = 16;//1 << statesCount;
     initMemory();
     try
@@ -216,7 +216,7 @@ void CGeneticStrategyCLv2::preStart()
 {
 	logger << "[INIT] Trying write buffer to the device\n";
     size_t mapSize = (2 + maps[0]->width()*maps[0]->height() );
-    size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
+	size_t bufSize = (2 * pAntCommon->statesCount() * stateSize + 4)*N*M;
     
     try
     {
@@ -229,7 +229,7 @@ void CGeneticStrategyCLv2::preStart()
         kernelGen.setArg( 6, resultCache );
         kernelGen.setArg( 7, globalTmpBuffer );
 
-        sizes[0] = statesCount;
+		sizes[0] = pAntCommon->statesCount();
         sizes[1] = stateSize;
         sizes[3] = gensToCount;
 
@@ -272,7 +272,7 @@ void CGeneticStrategyCLv2::run()
 
 void CGeneticStrategyCLv2::nextGeneration( CRandom* rand )
 {
-    size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
+	size_t bufSize = (2 * pAntCommon->statesCount() * stateSize + 4)*N*M;
     size_t cacheSize = N*M*sizeof(float);
     try
     {
@@ -313,9 +313,9 @@ void CGeneticStrategyCLv2::addGeneration( char* buff, float* results )
             if (results[i*M + j] > results[bestPos])
                 bestPos = i*M + j;
         }
-    size_t autSize = ( 2*statesCount*stateSize + 4);
+		size_t autSize = (2 * pAntCommon->statesCount() * stateSize + 4);
     result->addGeneration( CAutomatPtr( 
-                new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, buff + bestPos*autSize ) ) )
+		new CAutomatImpl(CAutomatImpl::createFromBuffer(pAntCommon.get(), buff + bestPos*autSize)))
                 , results[bestPos], sum/(N*M) );
 }
 

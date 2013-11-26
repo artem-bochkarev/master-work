@@ -8,12 +8,11 @@ size_t CAutomatShortTables::maskSize = INPUT_PARAMS_COUNT;
 size_t CAutomatShortTables::tableSize = 2*(1 << SHORT_TABLE_COLUMNS);
 size_t CAutomatShortTables::stateSize = tableSize + maskSize;
 
-CAutomatShortTables::CAutomatShortTables(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions)
+CAutomatShortTables::CAutomatShortTables(AntCommon* pAntCommon)
+:pAntCommon(pAntCommon)
 {
 	startState = 0;
-	buffer = new COUNTERS_TYPE[commonDataSize + ant_common::statesCount*stateSize];
-	BOOST_ASSERT(ant_common::states == states);
-	BOOST_ASSERT(ant_common::actions == actions);
+	buffer = new COUNTERS_TYPE[commonDataSize + pAntCommon->statesCount()*stateSize];
 }
 
 CAutomatShortTables::~CAutomatShortTables()
@@ -24,7 +23,7 @@ CAutomatShortTables::~CAutomatShortTables()
 CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
 {
 	startState = automat.startState;
-	size_t size = commonDataSize + ant_common::statesCount*stateSize;
+	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
 	buffer = new COUNTERS_TYPE[size];
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
 }
@@ -32,16 +31,16 @@ CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
 CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables& automat)
 {
 	startState = automat.startState;
-	size_t size = commonDataSize + ant_common::statesCount*stateSize;
+	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
 	return *this;
 }
 
 void CAutomatShortTables::generateRandom(CRandom* rand)
 {
-	startState = ant_common::states->randomState(rand);
+	startState = pAntCommon->randomState(rand);
 	buffer[0] = startState;
-	for (size_t currentState = 0; currentState < ant_common::statesCount; ++currentState)
+	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* maskPtr = buffer + commonDataSize + currentState*stateSize;
 		randomMask(maskPtr, rand);
@@ -75,8 +74,8 @@ void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand)
 	BOOST_ASSERT(maxIndex*recordSize <= tableSize);
 	for (size_t index = 0; index < maxIndex; ++index)
 	{
-		table[index*recordSize + stateShift] = ant_common::states->randomState(rand);
-		table[index*recordSize + actionShift] = ant_common::actions->randomAction(rand);
+		table[index*recordSize + stateShift] = pAntCommon->randomState(rand);
+		table[index*recordSize + actionShift] = pAntCommon->randomAction(rand);
 	}
 }
 
@@ -119,7 +118,7 @@ COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, const s
 
 void CAutomatShortTables::mutate(CRandom* rand)
 {
-	for (size_t currentState = 0; currentState < ant_common::statesCount; ++currentState)
+	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (stateSize);
 		mutateMask(currentMask, rand);
@@ -128,7 +127,7 @@ void CAutomatShortTables::mutate(CRandom* rand)
 	}
 
 	if ((rand->nextUINT() & 255) < 30)
-		startState = rand->nextUINT()%ant_common::statesCount;
+		startState = rand->nextUINT()%pAntCommon->statesCount();
 }
 
 void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand)
@@ -137,9 +136,9 @@ void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand
 	{
 		uint a = rand->nextUINT() & 255;
 		if (a == 100)
-			currentTable[i + stateShift] = ant_common::states->randomState(rand);
+			currentTable[i + stateShift] = pAntCommon->randomState(rand);
 		if ((a >= 100) && (a <= 104))
-			currentTable[i + actionShift] = ant_common::actions->randomAction(rand);
+			currentTable[i + actionShift] = pAntCommon->randomAction(rand);
 	}
 }
 
@@ -176,7 +175,7 @@ void CAutomatShortTables::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* m
 	const CAutomatShortTables* motherPtr = static_cast<const CAutomatShortTables*>(mother);
 	const CAutomatShortTables* fatherPtr = static_cast<const CAutomatShortTables*>(father);
 
-	for (size_t currentState = 0; currentState < ant_common::statesCount; ++currentState)
+	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* motherMask = motherPtr->buffer + commonDataSize + currentState * (stateSize);
 		COUNTERS_TYPE* fatherMask = fatherPtr->buffer + commonDataSize + currentState * (stateSize);

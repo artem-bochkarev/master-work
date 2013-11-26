@@ -36,10 +36,9 @@ double CLaboratoryMulti::getMaxFitness( size_t i ) const
     return results->getMaxFitnes( i );
 }
 
-CLaboratoryMulti::CLaboratoryMulti( CStateContainerPtr states, CActionContainerPtr actions, 
+CLaboratoryMulti::CLaboratoryMulti( AntCommonPtr antCommonPtr,
                                    CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult )
-:states(states), actions(actions), strategy(strategy), 
-    results(labResult)
+:antCommonPtr(antCommonPtr), strategy(strategy), results(labResult)
 {
     m_pTask = strategy;
     //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyImpl( states, actions, &results ));
@@ -71,14 +70,9 @@ const CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>* CLaboratoryMulti::getStrateg
     return strategy.get();
 }
 
-const CStateContainer<COUNTERS_TYPE>* CLaboratoryMulti::getStates() const
-{
-    return states.get();
-}
-
 const CActionContainer<COUNTERS_TYPE>* CLaboratoryMulti::getActions() const
 {
-    return actions.get();
+    return antCommonPtr->actions();
 }
 
 CAntFitnes* CLaboratoryMulti::getFitnesFunctor()

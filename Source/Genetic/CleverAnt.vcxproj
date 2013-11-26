@@ -87,7 +87,6 @@
     <ClCompile Include="CMapFactory.cpp" />
     <ClCompile Include="CMapImpl.cpp" />
     <ClCompile Include="CRandomImpl.cpp" />
-    <ClCompile Include="CStateContainerImpl.cpp" />
     <ClCompile Include="CTest.cpp" />
     <ClCompile Include="GeneticParams.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -121,7 +120,6 @@
     <ClInclude Include="CMapImpl.h" />
     <ClInclude Include="COpenCLWrapInvoker.h" />
     <ClInclude Include="CRandomImpl.h" />
-    <ClInclude Include="CStateContainerImpl.h" />
     <ClInclude Include="CTest.h" />
     <ClInclude Include="GeneticParams.h" />
     <ClInclude Include="stdafx.h" />

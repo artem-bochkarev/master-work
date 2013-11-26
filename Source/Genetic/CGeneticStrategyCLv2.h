@@ -11,7 +11,7 @@
 class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 {
 public:
-    CGeneticStrategyCLv2( const boost::filesystem::path& source, CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
+	CGeneticStrategyCLv2(const boost::filesystem::path& source, AntCommonPtr pAntCommon,
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();
@@ -72,6 +72,6 @@ private:
     cl::NDRange localRange;
 
     std::vector<CMapPtr> maps;
-    size_t statesCount, stateSize, gensToCount;
+    size_t stateSize, gensToCount;
     CRandomPtr m_pRandom;
 };

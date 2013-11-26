@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CActionContainerImpl.h"
 
-bool CActionContainerImpl::addAction( char code, const std::string& name )
+bool CActionContainerImpl::addAction(COUNTERS_TYPE code, const std::string& name)
 {
     if ( charToStr.find( code ) == charToStr.end() )
     {
@@ -13,7 +13,7 @@ bool CActionContainerImpl::addAction( char code, const std::string& name )
     return false;
 }
 
-const std::vector<char>& CActionContainerImpl::getActions() const
+const std::vector<COUNTERS_TYPE>& CActionContainerImpl::getActions() const
 {
     return actions;
 }
@@ -23,7 +23,7 @@ size_t CActionContainerImpl::size() const
     return actions.size();
 }
 
-char CActionContainerImpl::randomAction( CRandom* rand )
+COUNTERS_TYPE CActionContainerImpl::randomAction(CRandom* rand)
 {
     int i = rand->nextUINT() % size();
     return actions[i];

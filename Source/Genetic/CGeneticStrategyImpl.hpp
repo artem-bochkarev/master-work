@@ -115,9 +115,9 @@ public:
 
 
 template<class AUTOMAT_TYPE>
-CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions,
-                                           CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
-:CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
+CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes, 
+	const std::vector< std::string >& strings, Tools::Logger& logger )
+:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
     m_pRandom = CRandomPtr( new CRandomImpl() );
     setFromStrings( strings, m_pRandom );
@@ -131,7 +131,7 @@ CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CStateContainer<COUNTER
         cachedResult[i] = new double[M];
         for ( int j=0; j < M; ++j )
         {
-			individs[i][j] = new AUTOMAT_TYPE(states, actions);
+			individs[i][j] = new AUTOMAT_TYPE(pAntCommon.get());
             individs[i][j]->generateRandom( m_pRandom.get() );
             newIndivids[i][j] = 0;
             cachedResult[i][j] = 0;
@@ -270,21 +270,26 @@ void CGeneticStrategyImpl<AUTOMAT_TYPE>::nextGeneration(size_t start, size_t fin
     {
         for ( int j=0; j < M; ++j )
         {
-			AUTOMAT_TYPE a[5] = { AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(states, actions),
-				AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(states, actions), AUTOMAT_TYPE(*individs[i][j]) };
+			AUTOMAT_TYPE a[5] = { AUTOMAT_TYPE(pAntCommon.get()), AUTOMAT_TYPE(pAntCommon.get()),
+				AUTOMAT_TYPE(pAntCommon.get()), AUTOMAT_TYPE(pAntCommon.get()), AUTOMAT_TYPE(*individs[i][j]) };
+			size_t k = rand->nextUINT() & 255;
 
-            a[0].crossover( individs[i][j], individs[ i ][ (j + 1)%M ], rand );
-            a[2].crossover( individs[i][j], individs[ (i + 1)%N ][ j ], rand );
-            a[1].crossover( individs[i][j], individs[ i ][ (j + N - 1)%M ], rand );
-            a[3].crossover( individs[i][j], individs[ (i + N - 1)%N ][ j ], rand );
+			AUTOMAT_TYPE curr(*individs[i][j]);
+			if (k <= 128)
+				curr.mutate(rand);
+
+            a[0].crossover( &curr, individs[ i ][ (j + 1)%M ], rand );
+            a[2].crossover( &curr, individs[ (i + 1)%N ][ j ], rand );
+            a[1].crossover( &curr, individs[ i ][ (j + N - 1)%M ], rand );
+            a[3].crossover( &curr, individs[ (i + N - 1)%N ][ j ], rand );
             double r[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
             for ( int z=0; z<5; ++z )
             {
                 r[z] = fitnesFunctor->fitnes( &a[z] );
             }
 
-            int k = 0;
-            for ( int z=1; z<4; ++z )
+            k = 0;
+            for ( size_t z=1; z<4; ++z )
                 if ( r[z] > r[k] )
                     k = z;
             cachedResult[i][j] = r[k];

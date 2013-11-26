@@ -3,51 +3,50 @@
 #include <cmath>
 #include <boost/assert.hpp>
 
-CAutomatImpl::CAutomatImpl( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions )
+CAutomatImpl::CAutomatImpl( AntCommon* pAntCommon )
 //:CAutomat( states, actions )
-:startState(0)
+:startState(0), pAntCommon(pAntCommon)
 {
-	BOOST_ASSERT(ant_common::states == states);
-	BOOST_ASSERT(ant_common::actions == actions);
-	stateSize = 1 << ant_common::statesCount;
-	buffer = (char*)malloc(2 * ant_common::statesCount*stateSize);
+	stateSize = 1 << pAntCommon->statesCount();
+	buffer = (char*)malloc(2 * pAntCommon->statesCount()*stateSize);
 }
 
 CAutomatImpl::CAutomatImpl(const CAutomatImpl &automat)
-:startState(automat.startState), stateSize( automat.stateSize )
+:startState(automat.startState), stateSize(automat.stateSize), pAntCommon(automat.pAntCommon)
 {
-	buffer = (char*)malloc(2 * ant_common::statesCount * stateSize);
-	memcpy(buffer, automat.buffer, 2 * ant_common::statesCount * stateSize);
+	buffer = (char*)malloc(2 * pAntCommon->statesCount() * stateSize);
+	memcpy(buffer, automat.buffer, 2 * pAntCommon->statesCount() * stateSize);
 }
 
 CAutomatImpl& CAutomatImpl::operator =(const CAutomatImpl &automat)
 {
     stateSize = automat.stateSize;
-	buffer = (char*)malloc(2 * ant_common::statesCount * stateSize);
-	memcpy(buffer, automat.buffer, 2 * ant_common::statesCount * stateSize);
+	pAntCommon = automat.pAntCommon;
+	buffer = (char*)malloc(2 * pAntCommon->statesCount() * stateSize);
+	memcpy(buffer, automat.buffer, 2 * pAntCommon->statesCount() * stateSize);
     startState = automat.startState;
     return *this;
 }
 
 void CAutomatImpl::generateRandom( CRandom* rand )
 {
-	for (size_t i = 0; i < ant_common::statesCount; ++i)
+	for (size_t i = 0; i < pAntCommon->statesCount(); ++i)
     {
         char * ptrStates = buffer + i*2*stateSize;
         char * ptrActions = ptrStates + stateSize;
         for ( size_t j=0; j<stateSize; ++j )
         {
-			*(ptrStates + j) = ant_common::states->randomState(rand);
-			*(ptrActions + j) = ant_common::actions->randomAction(rand);
+			*(ptrStates + j) = pAntCommon->randomState(rand);
+			*(ptrActions + j) = pAntCommon->randomAction(rand);
         }
     }
-	startState = rand->nextUINT()%ant_common::statesCount; //rand;
+	startState = rand->nextUINT()%pAntCommon->statesCount(); //rand;
 }
 
-void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
+void CAutomatImpl::fillRandom( AntCommon* pAntCommon, 
 	COUNTERS_TYPE* buffer, size_t stSize, CRandom* rand)
 {
-    size_t statesCount = states->size();
+	size_t statesCount = pAntCommon->statesCount();
     size_t stateSize = stSize;
     *buffer = (char)( rand->nextUINT()%statesCount );
     ++buffer;
@@ -63,8 +62,8 @@ void CAutomatImpl::fillRandom( CStateContainer<COUNTERS_TYPE>* states, CActionCo
         char * ptrActions = ptrStates + stateSize;
         for ( size_t j=0; j<stateSize; ++j )
         {
-            *(ptrStates + j) = states->randomState( rand );
-            char action = actions->randomAction( rand );
+			*(ptrStates + j) = pAntCommon->randomState(rand);
+			char action = pAntCommon->randomAction(rand);
             *(ptrActions + j) = action;
         }
     }
@@ -133,16 +132,37 @@ CAutomatImpl::~CAutomatImpl()
 
 void CAutomatImpl::mutate( CRandom* rand )
 {
-	int i = rand->nextUINT()%ant_common::statesCount;
-    char * ptrStates = buffer + i*2*stateSize;
-    char * ptrActions = ptrStates + stateSize;
-    for ( size_t j=0; j<stateSize; ++j )
-    {
-		*(ptrStates + j) = ant_common::states->randomState(rand);
-		*(ptrActions + j) = ant_common::actions->randomAction(rand);
-    }
-    if ( rand->nextUINT()%100 > 15 )
-		startState = rand->nextUINT()%ant_common::statesCount;
+	size_t k = rand->nextUINT();
+	int i = rand->nextUINT()%pAntCommon->statesCount();
+	char * ptrStates = buffer + i * 2 * stateSize;
+	char * ptrActions = ptrStates + stateSize;
+	if (k < 32)
+	{
+		for (size_t j = 0; j < stateSize; ++j)
+		{
+			*(ptrStates + j) = pAntCommon->randomState(rand);
+			*(ptrActions + j) = pAntCommon->randomAction(rand);
+		}
+	}
+	else if (k < 128)
+	{
+		size_t j = rand->nextUINT()%stateSize;
+		*(ptrStates + j) = pAntCommon->randomState(rand);
+		*(ptrActions + j) = pAntCommon->randomAction(rand);
+	}
+	else
+	{
+		for (size_t i = 0; i < pAntCommon->statesCount(); ++i)
+		{
+			char * ptrStates = buffer + i * 2 * stateSize;
+			char * ptrActions = ptrStates + stateSize;
+			size_t j = rand->nextUINT()%stateSize;
+			*(ptrStates + j) = pAntCommon->randomState(rand);
+			*(ptrActions + j) = pAntCommon->randomAction(rand);
+		}
+	}
+	//if ( rand->nextUINT()%100 > 15 )
+	//	startState = rand->nextUINT()%pAntCommon->statesCount();
 }
 
 void CAutomatImpl::crossover( const CAutomat* mother, const CAutomat* father, CRandom* rand )
@@ -168,7 +188,7 @@ void CAutomatImpl::crossover( const CAutomat* mother, const CAutomat* father, CR
         }
     }*/
     int k;
-	for (size_t i = 0; i < ant_common::statesCount * 2 * stateSize; ++i)
+	for (size_t i = 0; i < pAntCommon->statesCount() * 2 * stateSize; ++i)
     {
         k = rand->nextUINT()%100;
 
@@ -196,7 +216,7 @@ std::vector<CAutomatImplPtr> CAutomatImpl::cross( const CAutomat* mother,
  
     size_t stateSize = fath->stateSize;
 
-	for (size_t i = 0; i < ant_common::statesCount; ++i)
+	for (size_t i = 0; i < moth->pAntCommon->statesCount(); ++i)
     {
         char * ptrStates1 = a1->buffer + i*2*stateSize;
         char * ptrActions1 = ptrStates1 + stateSize;
@@ -248,13 +268,11 @@ char CAutomatImpl::getStartState() const
     return (char)startState;
 }
 
-CAutomatImpl CAutomatImpl::createFromBuffer(CStateContainer<COUNTERS_TYPE>* states,
-	CActionContainer<COUNTERS_TYPE>* actions, char* buf, size_t stateSize)
+CAutomatImpl CAutomatImpl::createFromBuffer(AntCommon* pAntCommon, char* buf)
 {
-	BOOST_ASSERT(stateSize == (1 << ant_common::statesCount));
-	CAutomatImpl impl(states, actions);
+	CAutomatImpl impl(pAntCommon);
     impl.startState = *buf;
     buf += 4;
-	memcpy(impl.buffer, buf, 2 * ant_common::statesCount*impl.stateSize);
+	memcpy(impl.buffer, buf, 2 * pAntCommon->statesCount()*impl.stateSize);
     return impl;
 }

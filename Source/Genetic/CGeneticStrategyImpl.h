@@ -18,8 +18,8 @@ class CGeneticStrategyImpl : public CGeneticStrategyCommon
 public:
 	friend class CLocalInvoker<AUTOMAT_TYPE>;
 	friend class CMainInvoker<AUTOMAT_TYPE>;
-    CGeneticStrategyImpl(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
-        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& );
+	CGeneticStrategyImpl(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes, 
+		const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();
 
@@ -51,7 +51,6 @@ private:
     std::vector<CMapPtr> maps;
 
     int cnt;
-
     CRandomPtr m_pRandom;
 };
 

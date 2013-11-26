@@ -4,7 +4,6 @@
 #include <wx/sharedptr.h>
 
 #include "Genetic/CActionContainerImpl.h"
-#include "Genetic/CStateContainerImpl.h"
 #include "Genetic/CLaboratoryFactory.h"
 #include "Genetic/CMapFactory.h"
 
@@ -21,7 +20,7 @@ bool MyApp::OnInit()
 }
 
 MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-: wxFrame(NULL, -1, title, pos, size), states(0), actions(0), broken(false)
+: wxFrame(NULL, -1, title, pos, size), actions(0), broken(false)
 {
     wxMenu* menuFile = new wxMenu();
 
@@ -107,12 +106,6 @@ void MyFrame::free()
     {
         delete actions;
         actions = 0;
-    }
-
-    if ( states != 0)
-    {
-        delete states;
-        states = 0;
     }
 }
 

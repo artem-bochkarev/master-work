@@ -21,7 +21,7 @@ void CGeneticStrategyCLWrap::initMemory()
     sizes = (uint*)malloc( 5*4 );
     srands = (uint*)malloc( 5*4 );
 
-	size_t bufSize = ( 2*statesCount*stateSize + 4 )*N*M;
+	size_t bufSize = ( 2*pAntCommon->statesCount()*stateSize + 4 )*N*M;
     buffer     = (uint*)malloc( bufSize );
     outBuffer  = (uint*)malloc( bufSize );
     tempBuffer = (uint*)malloc( bufSize );
@@ -32,18 +32,17 @@ void CGeneticStrategyCLWrap::initMemory()
     CRandomImpl rand;
     for ( int i=0; i < N*M; ++i )
     {
-        char * buf = (char*)buffer + i*(2*statesCount*stateSize + 4);
-        CAutomatImpl::fillRandom( states, actions, buf, stateSize, &rand );
+        char * buf = (char*)buffer + i*(2*pAntCommon->statesCount()*stateSize + 4);
+        CAutomatImpl::fillRandom( pAntCommon.get(), buf, stateSize, &rand );
     }
 }
 
-CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions, 
-                                       CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
-:CGeneticStrategyCommon(states, actions, res, fitnes, strings, logger), mapsBuffer(0), mapBuffer(0), buffer(0)
+CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	const std::vector< std::string >& strings, Tools::Logger& logger )
+:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), mapBuffer(0), buffer(0)
 {
     m_pRandom = CRandomPtr( new CRandomImpl() );
     setFromStrings( strings, m_pRandom );
-    statesCount = states->size();
     stateSize = 16;//1 << statesCount;
     initMemory();
 }
@@ -124,7 +123,7 @@ void CGeneticStrategyCLWrap::preStart()
     settings.cache = cache;
 	settings.flowsCnt = gensToCount;
 
-	sizes[0] = statesCount;
+	sizes[0] = pAntCommon->statesCount();
 	sizes[1] = stateSize;
 	sizes[3] = 1;
 
@@ -169,11 +168,11 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
     }
     avgResult /= M*N;
     bestResult = cache[bestPos];
-    size_t autSize = ( 2*statesCount*stateSize + 4);
+	size_t autSize = (2 * pAntCommon->statesCount()*stateSize + 4);
 
     boost::this_thread::disable_interruption di;
     curIndivid = CAutomatPtr( 
-                new CAutomatImpl( CAutomatImpl::createFromBuffer(states, actions, (char*)outBuffer + bestPos*autSize ) ) );
+                new CAutomatImpl( CAutomatImpl::createFromBuffer(pAntCommon.get(), (char*)outBuffer + bestPos*autSize ) ) );
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
     result->addGeneration( curIndivid, bestResult, avgResult ); 

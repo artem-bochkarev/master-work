@@ -1,6 +1,5 @@
 #pragma once
 #include "CAction.h"
-#include "CState.h"
 
 class CRandom;
 

@@ -9,8 +9,8 @@
 class CGeneticStrategyCommon : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CGeneticStrategyCommon(CStateContainer<COUNTERS_TYPE>* states, CActionContainer<COUNTERS_TYPE>* actions,
-        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
+	CGeneticStrategyCommon(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+		const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
     virtual void setMaps( std::vector<CMapPtr> maps );
     virtual const CMapPtr getMap( size_t i );
@@ -31,8 +31,7 @@ public:
 protected:
     virtual void pushResults();
 
-	CStateContainer<COUNTERS_TYPE>* states;
-	CActionContainer<COUNTERS_TYPE>* actions;
+	AntCommonPtr pAntCommon;
     CAntFitnesPtr fitnesFunctor;
 
     int N, M;

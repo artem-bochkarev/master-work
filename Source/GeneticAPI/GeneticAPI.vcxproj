@@ -86,7 +86,6 @@
     <ClInclude Include="CLaboratory.h" />
     <ClInclude Include="CLaboratoryResult.h" />
     <ClInclude Include="CRandom.h" />
-    <ClInclude Include="CState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

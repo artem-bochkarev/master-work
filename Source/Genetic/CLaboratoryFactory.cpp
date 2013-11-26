@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <fstream>
 #include "CLaboratoryFactory.h"
-#include "CStateContainerImpl.h"
 #include "CActionContainerImpl.h"
 #include "CLabResultMulti.h"
 #include "CGeneticStrategyImpl.h"
@@ -44,12 +43,11 @@ CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, co
         strings.push_back( tmp );
     }
     
-    CStateContainerPtr states = createStates( strings );
-    CActionContainerPtr actions = createActions( strings );
+    AntCommonPtr antCommon = createAntCommon(strings);
     CLabResultMultiPtr labResults( new CLabResultMulti() );
 
-    CGeneticStrategyCommonPtr strategy = CStrategyFactory::createStrategy( strings, states, actions, labResults, logger );
-    return createLaboratory( states, actions, strategy, labResults );
+    CGeneticStrategyCommonPtr strategy = CStrategyFactory::createStrategy( strings, antCommon, labResults, logger );
+    return createLaboratory( antCommon, strategy, labResults );
 }
 
 CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std::vector<std::string> &args )
@@ -80,24 +78,21 @@ CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std:
 
 CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 {
-    CStateContainerPtr states( new CStateContainerImpl() );
-    for ( char i=0; i<5; ++i )
-    {
-        states->addState( i );
-    }
-    CActionContainerPtr actions( new CActionContainerImpl() );
-    actions->addAction( 0, "move forward" );
-    actions->addAction( 1, "turn right" );
-    actions->addAction( 2, "turn left" );
+	CActionContainerPtr actions(new CActionContainerImpl());
+	actions->addAction(0, "move forward");
+	actions->addAction(1, "turn right");
+	actions->addAction(2, "turn left");
+	AntCommonPtr antCommon(new AntCommon(4, actions));
+    
     CLabResultMultiPtr labResults( new CLabResultMulti() );
     std::vector< std::string > strings;
 	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
-    CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl<CAutomatImpl>( states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger ) );
+    CGeneticStrategyCommonPtr strategy( new CGeneticStrategyImpl<CAutomatImpl>( antCommon, labResults.get(), fitnesFunctor, strings, logger ) );
     
-    return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
+    return CLaboratoryMultiPtr( new CLaboratoryMulti( antCommon, strategy, labResults ) );
 }
 
-CActionContainerPtr CLaboratoryFactory::createActions( const std::vector< std::string >& strings )
+/*CActionContainerPtr CLaboratoryFactory::createActions( const std::vector< std::string >& strings )
 {
     CActionContainerPtr actions( new CActionContainerImpl() );
     actions->addAction( 0, "move forward" );
@@ -128,21 +123,44 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
         states->addState( i );
     }
     return states;
+}*/
+
+AntCommonPtr CLaboratoryFactory::createAntCommon(const std::vector<std::string>& strings)
+{
+	CActionContainerPtr actions(new CActionContainerImpl());
+	actions->addAction(0, "move forward");
+	actions->addAction(1, "turn right");
+	actions->addAction(2, "turn left");
+
+	int statesCount = 0;
+	for (size_t i = 0; i < strings.size(); ++i)
+	{
+		const std::string& str = strings[i];
+		if (boost::starts_with(str, "states"))
+		{
+			int b = str.find("=");
+			++b;
+			int e = str.find(";");
+			const std::string tmp(str.substr(b, e));
+			statesCount = std::atoi(tmp.c_str());
+		}
+	}
+	AntCommonPtr a(new AntCommon(statesCount, actions));
+	return a;
 }
 
-CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( CStateContainerPtr states, 
-        CActionContainerPtr actions, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults )
+CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory( AntCommonPtr antCommon, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults )
 {
-    return CLaboratoryMultiPtr( new CLaboratoryMulti( states, actions, strategy, labResults ) );
+    return CLaboratoryMultiPtr( new CLaboratoryMulti( antCommon, strategy, labResults ) );
 }
 
 //-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< std::string >& strings,
-	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
-	ant_common::states = states.get();
-	ant_common::actions = actions.get();
+	/*ant_common::states = states.get();
+	ant_common::actions = actions.get();*/
 	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
@@ -156,20 +174,20 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< st
 			{
 				if (str.find("Wrap") == -1)
 				{
-					return createStrategyCL(strings, states, actions, labResults, logger);
+					return createStrategyCL(strings, antCommon, labResults, logger);
 				}
 				else
 				{
-					return createStrategyWRAP(strings, states, actions, labResults, logger);
+					return createStrategyWRAP(strings, antCommon, labResults, logger);
 				}
 			}
 		}
 	}
-	return createStrategyCPU(strings, states, actions, labResults, logger);
+	return createStrategyCPU(strings, antCommon, labResults, logger);
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector< std::string >& strings,
-	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
 	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU());
 	for (size_t i = 0; i < strings.size(); ++i)
@@ -184,8 +202,8 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector<
 			
 			if (boost::starts_with(type, "Short") || boost::starts_with(type, "short"))
 			{
-				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatShortTables>(states.get(),
-					actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatShortTables>(antCommon,
+					labResults.get(), fitnesFunctor, strings, logger));
 			}
 			else
 			if (boost::starts_with(type, "Decision") || boost::starts_with(type, "decision"))
@@ -194,17 +212,17 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector<
 			}else
 			if (boost::starts_with(type, "Full") || boost::starts_with(type, "full"))
 			{
-				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(states.get(),
-					actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+				return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(antCommon,
+					labResults.get(), fitnesFunctor, strings, logger));
 			}
 		}
 	}
-	return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(states.get(),
-		actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+	return CGeneticStrategyCommonPtr(new CGeneticStrategyImpl<CAutomatImpl>(antCommon,
+		labResults.get(), fitnesFunctor, strings, logger));
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< std::string >& strings,
-	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
 	boost::filesystem::path source("gen.cl");
 	if (!boost::filesystem::exists(source))
@@ -227,14 +245,14 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< 
 	//ToDo: continue it!
 	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
 	if (version == 1)
-		return CGeneticStrategyCommonPtr(new CGeneticStrategyCL(states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+		return CGeneticStrategyCommonPtr(new CGeneticStrategyCL(antCommon, labResults.get(), fitnesFunctor, strings, logger));
 	else
-		return CGeneticStrategyCommonPtr(new CGeneticStrategyCLv2(source, states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+		return CGeneticStrategyCommonPtr(new CGeneticStrategyCLv2(source, antCommon, labResults.get(), fitnesFunctor, strings, logger));
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyWRAP(const std::vector< std::string >& strings,
-	CStateContainerPtr states, CActionContainerPtr actions, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
 {
 	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
-	return CGeneticStrategyCommonPtr(new CGeneticStrategyCLWrap(states.get(), actions.get(), labResults.get(), fitnesFunctor, strings, logger));
+	return CGeneticStrategyCommonPtr(new CGeneticStrategyCLWrap(antCommon, labResults.get(), fitnesFunctor, strings, logger));
 }

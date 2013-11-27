@@ -61,12 +61,12 @@ bool CTest::makeMove()
 {
     if ( movesCnt > moves-1 )
         return false;
-    int input[4];
-    CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
-    CAutomatImpl* autImpl = static_cast<CAutomatImpl*>(automat);
-    mapImpl->getInput( x, y, currentDirection, input );
-    char action = autImpl->getAction( currentState, input );
-    currentState = autImpl->getNextState( currentState, input );
+    //int input[4];
+    //CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
+    //CAutomatImpl* autImpl = static_cast<CAutomatImpl*>(automat);
+    //mapImpl->getInput( x, y, currentDirection, input );
+    char action = automat->getAction( currentState, map->getInput(x, y, currentDirection) );
+	currentState = automat->getNextState(currentState, map->getInput(x, y, currentDirection));
     switch (action)
     {
         case 0:

@@ -13,6 +13,7 @@ CAutomatShortTables::CAutomatShortTables(AntCommon* pAntCommon)
 {
 	startState = 0;
 	buffer = new COUNTERS_TYPE[commonDataSize + pAntCommon->statesCount()*stateSize];
+	memset(buffer, 0, sizeof(COUNTERS_TYPE)*(commonDataSize + pAntCommon->statesCount()*stateSize));
 }
 
 CAutomatShortTables::~CAutomatShortTables()
@@ -21,8 +22,8 @@ CAutomatShortTables::~CAutomatShortTables()
 }
 
 CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
+:pAntCommon(automat.pAntCommon), startState(automat.startState)
 {
-	startState = automat.startState;
 	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
 	buffer = new COUNTERS_TYPE[size];
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
@@ -30,6 +31,7 @@ CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
 
 CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables& automat)
 {
+	pAntCommon = automat.pAntCommon;
 	startState = automat.startState;
 	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
@@ -221,6 +223,8 @@ void CAutomatShortTables::crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TY
 void CAutomatShortTables::crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand)
 {
 	size_t myMas[SHORT_TABLE_COLUMNS], j = 0;
+	memset(myMas, 0, SHORT_TABLE_COLUMNS*sizeof(size_t));
+	
 	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
 	{
 		if (childMask[i])

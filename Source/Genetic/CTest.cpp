@@ -85,6 +85,8 @@ bool CTest::makeMove()
             case(DDown):
                     y = (y+1) % map->height();
                 break;
+			default:
+				BOOST_ASSERT(0);
             }
             m_foodEaten += map->eatFood( x, y );
         }break;
@@ -96,6 +98,8 @@ bool CTest::makeMove()
         {
             currentDirection = left( currentDirection );
         }break;
+		default:
+			BOOST_ASSERT(0);
     }
     movesCnt++;
     return true;

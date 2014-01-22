@@ -84,10 +84,13 @@
     <ClCompile Include="CAutomatShortTables.cpp">
       <Filter>Source Files\ShortTables</Filter>
     </ClCompile>
-    <ClCompile Include="CGeneticStrategyImpl.hpp">
-      <Filter>Source Files\FullTables</Filter>
-    </ClCompile>
     <ClCompile Include="GeneticParams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGeneticStrategyImpl.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGeneticStrategyCLv3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,9 +149,6 @@
     <ClInclude Include="CGeneticStrategyCLWrap.h">
       <Filter>Header Files\FullTables</Filter>
     </ClInclude>
-    <ClInclude Include="CGeneticStrategyImpl.h">
-      <Filter>Header Files\FullTables</Filter>
-    </ClInclude>
     <ClInclude Include="GenCLWrap.h">
       <Filter>Header Files\FullTables</Filter>
     </ClInclude>
@@ -156,6 +156,12 @@
       <Filter>Header Files\ShortTables</Filter>
     </ClInclude>
     <ClInclude Include="GeneticParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGeneticStrategyImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGeneticStrategyCLv3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

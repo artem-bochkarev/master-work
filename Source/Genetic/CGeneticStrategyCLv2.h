@@ -2,7 +2,6 @@
 
 #include "CGeneticStrategyCommon.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
-#define __MAX_DEFAULT_VECTOR_SIZE 100
 #include "CL/cl.hpp"
 #include <boost/filesystem.hpp>
 #include "SDKUtil/include/SDKCommon.hpp"

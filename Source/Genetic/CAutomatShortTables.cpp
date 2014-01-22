@@ -38,16 +38,39 @@ CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables&
 	return *this;
 }
 
+CAutomatShortTablesPtr CAutomatShortTables::createFromBuffer(AntCommon* pAntCommon, COUNTERS_TYPE* buf)
+{
+	CAutomatShortTablesPtr aut(new CAutomatShortTables(pAntCommon));
+	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
+	aut->startState = buf[0];
+	memcpy(aut->buffer, buf, size*sizeof(COUNTERS_TYPE));
+	return aut;
+}
+
+
 void CAutomatShortTables::generateRandom(CRandom* rand)
 {
-	startState = pAntCommon->randomState(rand);
+	startState = 0;// pAntCommon->randomState(rand);
 	buffer[0] = startState;
 	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* maskPtr = buffer + commonDataSize + currentState*stateSize;
 		randomMask(maskPtr, rand);
 		COUNTERS_TYPE* tablePtr = maskPtr + maskSize;
-		randomTable(tablePtr, rand);
+		randomTable(tablePtr, rand, pAntCommon);
+	}
+}
+
+void CAutomatShortTables::fillRandom(AntCommon* pAntCommon, char* buff, CRandom* rand)
+{
+	COUNTERS_TYPE startState = 0;// pAntCommon->randomState(rand);
+	buff[0] = startState;
+	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
+	{
+		COUNTERS_TYPE* maskPtr = buff + commonDataSize + currentState*stateSize;
+		randomMask(maskPtr, rand);
+		COUNTERS_TYPE* tablePtr = maskPtr + maskSize;
+		randomTable(tablePtr, rand, pAntCommon);
 	}
 }
 
@@ -70,26 +93,26 @@ void CAutomatShortTables::randomMask(COUNTERS_TYPE* mask, CRandom* rand)
 	}
 }
 
-void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand)
+void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand, AntCommon* antCommon)
 {
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
 	BOOST_ASSERT(maxIndex*recordSize <= tableSize);
 	for (size_t index = 0; index < maxIndex; ++index)
 	{
-		table[index*recordSize + stateShift] = pAntCommon->randomState(rand);
-		table[index*recordSize + actionShift] = pAntCommon->randomAction(rand);
+		table[index*recordSize + stateShift] = antCommon->randomState(rand);
+		table[index*recordSize + actionShift] = antCommon->randomAction(rand);
 	}
 }
 
 size_t CAutomatShortTables::countIndex(const std::vector<INPUT_TYPE>& mas, size_t currentState ) const
 {
-	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (tableSize + maskSize);
-	int index = 0, k = 1, j = 0;
+	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * stateSize;
+	int index = 0, k = 1;
 	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
 	{
 		if (currentMask[i])
 		{
-			index += k*mas[j++];
+			index += k*mas[i];
 			k *= 2;
 		}
 	}
@@ -105,7 +128,7 @@ COUNTERS_TYPE CAutomatShortTables::getStartState() const
 COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
 	size_t index = countIndex(input, currentState);
-	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
+	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * stateSize + maskSize;
 	COUNTERS_TYPE state = *(currentTable + recordSize*index + stateShift);
 	return state;
 }
@@ -122,14 +145,22 @@ void CAutomatShortTables::mutate(CRandom* rand)
 {
 	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
+		uint a = rand->nextUINT() & 255;
+		if (a < 16 || a > 64)
+			continue;
 		COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (stateSize);
-		mutateMask(currentMask, rand);
+		a = rand->nextUINT() & 255;
+		if ((a > 31) && (a < 50))
+			//small probaility to change mask
+			mutateMask(currentMask, rand);
 		COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize) + maskSize;
-		mutateTable(currentTable, rand);
+		a = rand->nextUINT() & 255;
+		if ((a > 31) && (a < 90))
+			mutateTable(currentTable, rand);
 	}
 
-	if ((rand->nextUINT() & 255) < 30)
-		startState = rand->nextUINT()%pAntCommon->statesCount();
+	//if ((rand->nextUINT() & 255) < 30)
+	//	startState = rand->nextUINT()%pAntCommon->statesCount();
 }
 
 void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand)
@@ -137,38 +168,34 @@ void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand
 	for (size_t i = 0; i < tableSize; i += recordSize)
 	{
 		uint a = rand->nextUINT() & 255;
-		if (a == 100)
+		if (a < 32)
 			currentTable[i + stateShift] = pAntCommon->randomState(rand);
-		if ((a >= 100) && (a <= 104))
+		a = rand->nextUINT() & 255;
+		if ((a >= 100) && (a <= 140))
 			currentTable[i + actionShift] = pAntCommon->randomAction(rand);
 	}
 }
 
 void CAutomatShortTables::mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand)
 {
-	uint a = rand->nextUINT() & 255;
-	if ((a > 31) && (a < 38))
-		//small probaility to change mask
+	uint alreadyEnabledCnt = 0;
+	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
+	if (currentMask[i])
+		++alreadyEnabledCnt;
+	uint toDel = rand->nextUINT()%INPUT_PARAMS_COUNT;
+	uint toAdd = rand->nextUINT()%INPUT_PARAMS_COUNT;
+	if (alreadyEnabledCnt == SHORT_TABLE_COLUMNS)
 	{
-		uint alreadyEnabledCnt = 0;
-		for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
-		if (currentMask[i])
-			++alreadyEnabledCnt;
-		uint toDel = rand->nextUINT()%INPUT_PARAMS_COUNT;
-		uint toAdd = rand->nextUINT()%INPUT_PARAMS_COUNT;
-		if (alreadyEnabledCnt == SHORT_TABLE_COLUMNS)
-		{
-			if (currentMask[toDel])
-			{
-				currentMask[toDel] = 0;
-				currentMask[toAdd] = 1;
-			}
-		}
-		else
+		if (currentMask[toDel])
 		{
 			currentMask[toDel] = 0;
 			currentMask[toAdd] = 1;
 		}
+	}
+	else
+	{
+		currentMask[toDel] = 0;
+		currentMask[toAdd] = 1;
 	}
 }
 
@@ -253,14 +280,12 @@ void CAutomatShortTables::crossTables(COUNTERS_TYPE* childMask, const COUNTERS_T
 size_t CAutomatShortTables::createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand)
 {
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
-	size_t parentIndex = rand->nextUINT()&(maxIndex - 1);
+	size_t parentIndex = index;// rand->nextUINT()&(maxIndex - 1);
 	for (size_t i = 0; i < SHORT_TABLE_COLUMNS; ++i)
 	{
-		//change toGetBit
 		size_t myBit = Tools::checkBit(index, myArray[i]);
 		if (toParent[i])
 		{
-			//change to SteBit
 			if (myBit)
 				Tools::setBit(parentIndex, toParent[i] - 1);
 			else

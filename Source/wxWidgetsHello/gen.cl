@@ -1,5 +1,14 @@
 //#version=2
+//#type=shortTables
 //version 2.0
+
+#define SHORT_TABLE_COLUMNS 4
+#define INPUT_PARAMS_COUNT 4
+#define MASK_SIZE INPUT_PARAMS_COUNT
+#define STATES_COUNT 4
+#define STATE_SIZE_BYTES 20
+#define STATE_SIZE_UINTS 5
+#define COMMON_DATA_SIZE 1
 
 
 // rand like in MSVC
@@ -12,16 +21,36 @@ __constant uint mutation_probability = 0;
 __constant uint actions_count = 3;
 
 #define c_x_size 32
-#define c_y_size 32 
+#define c_y_size 32
 #define m_x_size 31
 #define m_y_size 31
 
-uint nextInt( uint x )
+void setBit(uint* value, uint pos)
+{
+	*value |= (1 << pos);
+}
+
+void clearBit(uint* value, uint pos)
+{
+	*value &= ~(1 << pos);
+}
+
+void toogleBit(uint* value, uint pos)
+{
+	*value ^= (1 << pos);
+}
+
+uint checkBit(uint value, uint pos)
+{
+	return value & (1 << pos);
+}
+
+uint nextUInt( uint x )
 {
     return ( rand_a*x + rand_c );
 }
 
-char16 nextUChar16( char16 x )
+char16 nextChar16( char16 x )
 {
     char16 a = (char16)(17);
     char16 b = (char16)(31);
@@ -75,75 +104,84 @@ uint moveY( uint y, uint direction )
 
 uint moveXa( uint x, uint direction, uint action )
 {
-    uint x1 = moveX(x, direction);
-	uint res = select( x, x1, (action == 0) );
-	return res;
+    int a = (direction ) & 1;
+    int c = ( (a) | action );
+    int b = select( (int)direction - 1, 0, c );
+	return ( x + b ) & m_x_size;
 }
 
 uint moveYa( uint y, uint direction, uint action )
 {
-	uint y1 = moveY(y, direction);
-	uint res = select( y, y1, (action == 0) );
-	return res;
+    int a = (direction + 1) & 1;
+    int c = ( (a) | action );
+    int b = select( (int)direction - 2, 0, c );
+	return ( y + b ) & m_y_size;
 }
 
-#ifndef CPU_VERSION
-uint4 getInput( uint x, uint y, uint direction, const __global int* map )
-#else
+//#ifndef CPU_VERSION
+//uint4 getInput( uint x, uint y, uint direction, const __global int* map )
+//#else
 void getInput( uint* answ, uint x, uint y, uint direction, const __global int* map )
-#endif
+//#endif
 {
     const __global int * myMap = map + 2;
     int x1 = x, y1 = y;
     x1 = moveX( x, direction );
     y1 = moveY( y, direction );
-	#ifndef CPU_VERSION
+	/*#ifndef CPU_VERSION
 		uint4 out;
 		out.x = myMap[x1 + c_x_size*y1];
 		out.y = myMap[ moveX( x1, left( direction ) ) + c_x_size*moveY( y1, left( direction ) ) ];
 		out.z = myMap[ moveX( x1, right( direction ) ) + c_x_size*moveY( y1, right( direction ) ) ];
 		out.w = myMap[ moveX( x1, direction ) + c_x_size*moveY( y1, direction ) ];
 		return out;
-	#else
+	#else*/
 		answ[0] = myMap[x1 + c_x_size*y1];
 		answ[1] = myMap[ moveX( x1, left( direction ) ) + c_x_size*moveY( y1, left( direction ) ) ];
 		answ[2] = myMap[ moveX( x1, right( direction ) ) + c_x_size*moveY( y1, right( direction ) ) ];
 		answ[3] = myMap[ moveX( x1, direction ) + c_x_size*moveY( y1, direction ) ];
-	#endif
+	//#endif
 }
 
-#ifndef CPU_VERSION
-uint countIndex( uint4 in, uint stateSize )
-#else
-uint countIndex( uint* in, uint stateSize )
-#endif
+uint getMask( const __check_space uint* maskPtr, uint index)
 {
-	#ifndef CPU_VERSION
-		uint res = mad_sat( (uint)2, in.y, in.x );
-		res = mad_sat( (uint)4, in.z, res );
-		res = mad_sat( (uint)8, in.w, res );
-	#else
-		uint res = mad_sat( (uint)2, in[1], in[0] );
-		res = mad_sat( (uint)4, in[2], res );
-		res = mad_sat( (uint)8, in[3], res );
-	#endif
-    return res;//%stateSize;
+	uint k = index/4;
+	uint res = maskPtr[k];
+	uint diff = index - k*4;
+	return (k >> 8*diff)&0x000000FF;
+}
+
+uint countIndex( const uint* in, const __check_space uint* maskPtr )
+{
+	uint k = 1;
+	uint index = 0;
+	for (uint i=0; i<INPUT_PARAMS_COUNT; ++i)
+	{
+		uint maskVal = getMask(maskPtr, i);
+		uint a = select( (uint)0, k, maskVal );
+		a = select((uint)0, k, in[i]);
+		index += k;
+		k = select(k, 2*k, getMask(maskPtr, i));
+	}
+    return index;
 }
 
 uint2 getNext( uint index, uint curState, const __check_space uint* ind )
 {
     uint2 next;
-    uint diff = 8*curState;
-	uint step = index/4;
-	uint shift = index - step*4;
+    uint diff = COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState + MASK_SIZE;
+	uint step = index/2;
+	uint shift = index - step*2;
 	next.x = ind[ diff + step ];
-	next.y = ind[ diff + step + 4 ];
-	diff = shift*8;
-    next = (next >> diff)&0x000000FF;
+	next.y = ind[ diff + step ];
+	diff = shift*16;
+    next.x = (next.x >> diff)&0x000000FF;
+	diff += 8;
+	next.y = (next.y >> diff)&0x000000FF;
     return next;
 }
 
-float run( __check_space uint* ind, const uint statesCount, const uint stateSize, __global int* map )
+float run( __check_space uint* ind, __global int* map )
 {
     __global int * myMap = map + 2;
     uint x = 0, y = 0;
@@ -151,16 +189,13 @@ float run( __check_space uint* ind, const uint statesCount, const uint stateSize
     uint curState = (*ind)&0x000000FF;
     ind++;
     float cnt = 0.0f;
+	uint diff = COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState;
 
     for ( uint i=0; i<100; ++i )
     {
-		#ifndef CPU_VERSION
-			uint4 input = getInput( x, y, direction, map );
-		#else
-			uint input[4];
-			getInput( input, x, y, direction, map );
-		#endif
-		uint index = countIndex( input, stateSize );
+		uint input[4];
+		getInput( input, x, y, direction, map );
+		uint index = countIndex( input, ind + diff );
         uint2 nex = getNext( index, curState, ind );
         uint action = nex.y;
         curState = nex.x;
@@ -234,7 +269,7 @@ void memcpy_to_local( __check_space uint* to, const __global uint* from, uint co
         ptrTo[i] = ptrFrom[i];
 }
 
-#ifndef CPU_VERSION
+/*#ifndef CPU_VERSION
 uint crossThem( uint bufSize, uint myBuf, uint myBufLocal, __check_space uint* tempBuffer, 
               uint hisBuf, __global uint* inBuffer, uint random_value, char16 random16 )
 			  {
@@ -255,21 +290,131 @@ uint crossThem( uint bufSize, uint myBuf, uint myBufLocal, __check_space uint* t
 	}
     return random_value;
 }
-#else
+#else*/
+
+uint createParentIndex(const uint* toParent, const uint* myArray, uint index)
+{
+	uint maxIndex = 1 << SHORT_TABLE_COLUMNS;
+	uint parentIndex = index;// rand->nextUINT()&(maxIndex - 1);
+	for (uint i = 0; i < SHORT_TABLE_COLUMNS; ++i)
+	{
+		uint myBit = checkBit(index, myArray[i]);
+		if (toParent[i])
+		{
+			if (myBit)
+				setBit(&parentIndex, toParent[i] - 1);
+			else
+				clearBit(&parentIndex, toParent[i] - 1);
+		}
+	}
+	return parentIndex;
+}
+
+void toParent(uint* toParent, const uint* myMas, const __check_space uint* parentMask)
+{
+	for (uint i = 0; i < SHORT_TABLE_COLUMNS; ++i)
+		toParent[i] = 0;
+	uint j = 1, k = 0;
+	for (uint i = 0; i < INPUT_PARAMS_COUNT; ++i)
+	{
+		k = select(k, k+1, (i > myMas[k] && k < SHORT_TABLE_COLUMNS) );
+		toParent[k] = select( toParent[k], j, (getMask(parentMask, i) && (myMas[k]==i)) );
+		j = select( j, j+1, getMask(parentMask, i) );
+	}
+}
+
+uint crossMasks(__check_space uint* childMask, const __check_space uint* motherMask, const __check_space uint* fatherMask, uint random_value)
+{
+	uint oneEnabled = 0, enabled = 0;
+	for (uint i = 0; i < INPUT_PARAMS_COUNT; ++i)
+	{
+		childMask[i] = select( 0, 1, (motherMask[i] && fatherMask[i]) );
+		enabled = select( enabled, enabled + 1, (motherMask[i] && fatherMask[i]) );
+		//oneEnabled = ( oneEnabled, oneEnabled + 1, (motherMask[i] || fatherMask[i]) );
+	}
+	uint bothEnabled = enabled;
+
+	for (uint i = 0; i < INPUT_PARAMS_COUNT; ++i)
+	{
+		uint res = ((random_value & 255) < (255 / (SHORT_TABLE_COLUMNS - bothEnabled + 1))) ? 1 : 0;
+		random_value = nextUInt(random_value);
+		uint b = ((childMask[i] == 0) && (motherMask[i] || fatherMask[i]) && (enabled < SHORT_TABLE_COLUMNS) && res);
+		enabled = select( enabled, enabled + 1, b );
+		childMask[i] = select( 0, 1, b );
+	}
+	return random_value;
+}
+
+void setRecord( __check_space uint* childTable, const __check_space uint* parentTable, uint childIndex, uint parentIndex )
+{
+	uint ci = childIndex / 2;
+	uint pi = parentIndex / 2;
+	uint newVal = select( 0x0000FFFF & parentTable[pi], 0x0000FFFF & (parentTable[pi] >> 16), parentIndex & 2 );
+	uint tmp = select( (childTable[ci] & 0x0000FFFF) | (newVal << 16), (childTable[ci] & 0xFFFF0000) | newVal, childIndex & 2 );
+	childTable[ci] = tmp;
+}
+
+uint crossTables(__check_space uint* childMask, const __check_space uint* motherMask, const __check_space uint* fatherMask, uint random_value)
+{
+	uint myMas[SHORT_TABLE_COLUMNS], j = 0;
+	for (uint i = 0; i < SHORT_TABLE_COLUMNS; ++i)
+		myMas[i] = 0;
+	
+	for (uint i = 0; i < INPUT_PARAMS_COUNT; ++i)
+	{
+		if (childMask[i])
+			myMas[j++] = i;
+	}
+
+	uint toMother[SHORT_TABLE_COLUMNS], toFather[SHORT_TABLE_COLUMNS];
+	toParent(toMother, myMas, motherMask);
+	toParent(toFather, myMas, fatherMask);
+
+	uint maxIndex = 1 << SHORT_TABLE_COLUMNS;
+	for (uint index = 0; index < maxIndex; ++index)
+	{
+		uint motherIndex = createParentIndex(toMother, myMas, index);
+		uint fatherIndex = createParentIndex(toFather, myMas, index);
+		__check_space uint * childTable = childMask + MASK_SIZE;
+		const __check_space uint * motherTable = motherMask + MASK_SIZE;
+		const __check_space uint * fatherTable = fatherMask + MASK_SIZE;
+		const __check_space uint* parentTable = (const __check_space uint*)select((uint)motherTable, (uint)fatherTable, (random_value&255)>127);
+		uint parentIndex = select((uint)motherIndex, (uint)fatherIndex, (random_value&255)>127);
+		random_value = nextUInt(random_value);
+		setRecord(childTable, parentTable, index,  parentIndex );
+	}
+	return random_value;
+}
+
+uint crossover( __check_space uint* buffer, const __check_space uint* motherPtr, const __check_space uint* fatherPtr, uint random_value)
+{
+	for (size_t currentState = 0; currentState < STATES_COUNT; ++currentState)
+	{
+		const __check_space uint* motherMask = motherPtr + COMMON_DATA_SIZE + currentState * (STATE_SIZE_UINTS);
+		const __check_space uint* fatherMask = fatherPtr + COMMON_DATA_SIZE + currentState * (STATE_SIZE_UINTS);
+		__check_space uint* childMask  = buffer + COMMON_DATA_SIZE + currentState * (STATE_SIZE_UINTS);
+
+		random_value = crossMasks(childMask, motherMask, fatherMask, random_value);
+		random_value = crossTables(childMask, motherMask, fatherMask, random_value);
+	}
+	return random_value;
+}
+
 uint crossThem( uint bufSize, uint myBuf, uint myBufLocal, __check_space uint* tempBuffer, 
               uint hisBuf, __global uint* inBuffer, uint random_value )
 {
-	for ( uint i=0; i < bufSize; ++i )
+	/*for ( uint i=0; i < bufSize; ++i )
     {
         random_value = nextInt( random_value );
         uint res = select( myBuf, hisBuf, (random_value & 512) ); 
         tempBuffer[ myBuf + i ] = inBuffer[ res + i ];
-    }
+    }*/
+	//crossover( tempBuffer + myBuf, inBuffer + hisBuf, inBuffer + myBuf, random_value);
 	return random_value;
 }
-#endif
+//#endif
 
-float tryHim( uint bufSize, uint myBuf, uint myBufLocal, uint statesCount, uint stateSize, __check_space uint* tempBuffer, 
+float tryHim( uint bufSize, uint myBuf, uint myBufLocal, __check_space uint* tempBuffer, 
              float bestResult, __global int* myMaps, __global uint* outBuffer, __constant int* maps )
 {
     //make copy of a map
@@ -283,7 +428,7 @@ float tryHim( uint bufSize, uint myBuf, uint myBufLocal, uint statesCount, uint 
         vstore16( tmp, i, to );
     }
 
-    float result = run( tempBuffer + myBufLocal, statesCount, stateSize, myMaps );
+    float result = run( tempBuffer + myBufLocal, myMaps );
     if ( result > bestResult )
     {
         bestResult = result;
@@ -315,19 +460,15 @@ __kernel void genetic_2d( __global uint* inBuffer, __global uint* outBuffer,
 	coord_local.x = get_local_id(0);
     coord_local.y = get_local_id(1);
 
-    uint statesCount = constSizes[0];
-    uint stateSize = constSizes[1];
     uint mapSize = constSizes[2];
-
-    uint sizeInBytes = 4 + 2 * statesCount * stateSize;
-	uint bufSize = sizeInBytes / 4;
+	uint bufSize = COMMON_DATA_SIZE + STATE_SIZE_UINTS * STATES_COUNT;
 
     uint myPos = coord_global.x*size_global.y + coord_global.y;
 	uint myPosLocal = coord_local.x*size_local.y + coord_local.y;
     uint myBuf = myPos * bufSize;
 	uint myBufLocal = myPosLocal * bufSize;
     uint srand = varValues[0];
-    uint random_value = nextInt( srand+(srand*coord_global.x - srand*coord_global.y)%(size_global.x*size_global.y) );
+    uint random_value = nextUInt( srand+(srand*coord_global.x - srand*coord_global.y)%(size_global.x*size_global.y) );
 	
 	#ifndef CPU_VERSION
 		uint4 rand;
@@ -372,46 +513,46 @@ __kernel void genetic_2d( __global uint* inBuffer, __global uint* outBuffer,
         // myMapsPtr += mapSize;
         hisPos = coord_global.x*size_global.y + ( coord_global.y + size_global.y - 1)%size_global.y;
         hisBuf = hisPos * bufSize;
-		#ifndef CPU_VERSION 
-			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
-		#else
+		#ifdef CPU_VERSION 
 			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
+		#else
+			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
 		#endif
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         // with up of him
         hisPos = (( coord_global.x + size_global.x - 1)%size_global.x)*size_global.y + coord_global.y;
         hisBuf = hisPos * bufSize;
-        #ifndef CPU_VERSION 
-			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
-		#else
+        #ifdef CPU_VERSION 
 			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
+		#else
+			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
 		#endif
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         //with right of him
         hisPos = coord_global.x*size_global.y + ( coord_global.y + 1)%size_global.y;
         hisBuf = hisPos * bufSize;
-        #ifndef CPU_VERSION 
-			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
-		#else
+        #ifdef CPU_VERSION 
 			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
+		#else
+			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
 		#endif
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
         //with down of him
         hisPos = (( coord_global.x + 1)%size_global.x)*size_global.y + coord_global.y;
         hisBuf = hisPos * bufSize;
-        #ifndef CPU_VERSION 
-			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
-		#else
+        #ifdef CPU_VERSION 
 			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value );
+		#else
+			random_value = crossThem( bufSize, myBuf, myBufLocal, tempBuffer, hisBuf, inputBuffer, random_value, random16 );
 		#endif
         //random_value = mutateHim( statesCount, stateSize, tempBuffer + myBuf, random_value );
-        result = tryHim( bufSize, myBuf, myBufLocal, statesCount, stateSize, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
+        result = tryHim( bufSize, myBuf, myBufLocal, tempBuffer, result, myMapsPtr, outputBuffer, maps );    
 
 
         cache[myPosLocal] = result;

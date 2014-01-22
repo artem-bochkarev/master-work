@@ -22,10 +22,9 @@ public:
     virtual void mutate( CRandom* rand ) override;
     virtual void crossover( const CAutomat* mother, const CAutomat* father, CRandom* rand ) override;
 
-	static void fillRandom(AntCommon* pAntCommon, char* buff,
-        size_t stSize, CRandom* rand );
+	static void fillRandom(AntCommon* pAntCommon, char* buff, CRandom* rand );
     static std::vector<CAutomatImplPtr> cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
-	static CAutomatImpl createFromBuffer(AntCommon* pAntCommon, char* buf);
+	static CAutomatImplPtr createFromBuffer(AntCommon* pAntCommon, char* buf);
 
     virtual ~CAutomatImpl();
 private:

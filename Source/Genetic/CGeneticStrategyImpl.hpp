@@ -275,13 +275,15 @@ void CGeneticStrategyImpl<AUTOMAT_TYPE>::nextGeneration(size_t start, size_t fin
 			size_t k = rand->nextUINT() & 255;
 
 			AUTOMAT_TYPE curr(*individs[i][j]);
-			if (k <= 128)
-				curr.mutate(rand);
+			//if (k <= 128)
+				//curr.mutate(rand);
 
             a[0].crossover( &curr, individs[ i ][ (j + 1)%M ], rand );
             a[2].crossover( &curr, individs[ (i + 1)%N ][ j ], rand );
             a[1].crossover( &curr, individs[ i ][ (j + N - 1)%M ], rand );
             a[3].crossover( &curr, individs[ (i + N - 1)%N ][ j ], rand );
+			for (size_t i = 0; i < 4; ++i)
+				a[i].mutate(rand);
             double r[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
             for ( int z=0; z<5; ++z )
             {

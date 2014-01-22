@@ -176,6 +176,12 @@ wxIcon AntViewer::GetIconResource( const wxString& name )
 }
 
 
+int AntViewer::ShowModal()
+{
+	int res = wxDialog::ShowModal();
+	draw();
+	return res;
+}
 /*
  * wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON
  */
@@ -233,6 +239,7 @@ void AntViewer::onTimer(wxTimerEvent &event)
 
 void AntViewer::OnCheckboxClick( wxCommandEvent& event )
 {
+	draw();
     if ( itemCheckBox->IsChecked() == true )
     {
         buttonMode = 0;
@@ -363,11 +370,11 @@ void AntViewer::drawVisibleCells( wxColor color )
         int y = pair.second;
         dc.DrawRectangle( dx*x, dy*y, dx, dy );
     }
-    
+	dc.SetPen(wxNullPen);
 }
 
 void AntViewer::setTester(wxSharedPtr<CTest> ptr)
 {
     antArena = ptr;
-    drawMap();
+    draw();
 }

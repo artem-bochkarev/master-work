@@ -28,7 +28,7 @@ void CGeneticStrategyCLv2::initCLBuffers()
     for ( int i=0; i < N*M; ++i )
     {
 		char * buf = buffer + i*(2 * pAntCommon->statesCount() * stateSize + 4);
-        CAutomatImpl::fillRandom( pAntCommon.get(), buf, stateSize, &rand );
+        CAutomatImpl::fillRandom( pAntCommon.get(), buf, &rand );
     }
 
     statesBufCL1 = cl::Buffer(context, CL_MEM_READ_WRITE, bufSize);
@@ -314,8 +314,7 @@ void CGeneticStrategyCLv2::addGeneration( char* buff, float* results )
                 bestPos = i*M + j;
         }
 		size_t autSize = (2 * pAntCommon->statesCount() * stateSize + 4);
-    result->addGeneration( CAutomatPtr( 
-		new CAutomatImpl(CAutomatImpl::createFromBuffer(pAntCommon.get(), buff + bestPos*autSize)))
+    result->addGeneration( CAutomatImpl::createFromBuffer(pAntCommon.get(), buff + bestPos*autSize)
                 , results[bestPos], sum/(N*M) );
 }
 

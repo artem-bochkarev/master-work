@@ -4,8 +4,7 @@
 #include "CActionContainerImpl.h"
 #include "CLabResultMulti.h"
 #include "CGeneticStrategyImpl.h"
-#include "CGeneticStrategyCL.h"
-#include "CGeneticStrategyCLv2.h"
+#include "CGeneticStrategyCLv3.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
 #include "CMapFactory.h"
@@ -246,9 +245,9 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< 
 	//ToDo: continue it!
 	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
 	if (version == 1)
-		return CGeneticStrategyCommonPtr(new CGeneticStrategyCL(antCommon, labResults.get(), fitnesFunctor, strings, logger));
-	else
-		return CGeneticStrategyCommonPtr(new CGeneticStrategyCLv2(source, antCommon, labResults.get(), fitnesFunctor, strings, logger));
+		BOOST_ASSERT_MSG(0, "Not supported anymore");
+		//return CGeneticStrategyCommonPtr(new CGeneticStrategyCL(antCommon, labResults.get(), fitnesFunctor, strings, logger));
+	return CGeneticStrategyCommonPtr(new CGeneticStrategyCLv3(source, antCommon, labResults.get(), fitnesFunctor, strings, logger));
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyWRAP(const std::vector< std::string >& strings,

@@ -80,6 +80,7 @@
     <ClCompile Include="CAntFitnes.cpp" />
     <ClCompile Include="CAutomatShortTables.cpp" />
     <ClCompile Include="CCLWrapInvoker.cpp" />
+    <ClCompile Include="CGeneticStrategyCLv3.cpp" />
     <ClCompile Include="CGeneticStrategyCommon.cpp" />
     <ClCompile Include="CLaboratoryFactory.cpp" />
     <ClCompile Include="CLaboratoryMulti.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="CActionContainerImpl.h" />
     <ClInclude Include="CAntFitnes.h" />
     <ClInclude Include="CAutomatShortTables.h" />
+    <ClInclude Include="CGeneticStrategyCLv3.h" />
     <ClInclude Include="CGeneticStrategyCommon.h" />
     <ClInclude Include="CLaboratoryFactory.h" />
     <ClInclude Include="CLaboratoryMulti.h" />

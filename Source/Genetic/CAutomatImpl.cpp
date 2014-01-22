@@ -44,10 +44,10 @@ void CAutomatImpl::generateRandom( CRandom* rand )
 }
 
 void CAutomatImpl::fillRandom( AntCommon* pAntCommon, 
-	COUNTERS_TYPE* buffer, size_t stSize, CRandom* rand)
+	COUNTERS_TYPE* buffer, CRandom* rand)
 {
 	size_t statesCount = pAntCommon->statesCount();
-    size_t stateSize = stSize;
+    size_t stateSize = 1 << statesCount;
     *buffer = (char)( rand->nextUINT()%statesCount );
     ++buffer;
     *buffer = (char)( rand->nextUINT()%statesCount );
@@ -268,11 +268,11 @@ char CAutomatImpl::getStartState() const
     return (char)startState;
 }
 
-CAutomatImpl CAutomatImpl::createFromBuffer(AntCommon* pAntCommon, char* buf)
+CAutomatImplPtr CAutomatImpl::createFromBuffer(AntCommon* pAntCommon, char* buf)
 {
-	CAutomatImpl impl(pAntCommon);
-    impl.startState = *buf;
+	CAutomatImplPtr impl(new CAutomatImpl(pAntCommon));
+    impl->startState = *buf;
     buf += 4;
-	memcpy(impl.buffer, buf, 2 * pAntCommon->statesCount()*impl.stateSize);
+	memcpy(impl->buffer, buf, 2 * pAntCommon->statesCount()*impl->stateSize);
     return impl;
 }

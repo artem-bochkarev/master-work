@@ -202,7 +202,7 @@ void GenerationViewer::OnButton1Click( wxCommandEvent& event )
 		
 		wxSharedPtr<CTest> antTester(new CTest(automat, arena.get(), laboratory->getFitnesFunctor()->steps()));
         wxSharedPtr<AntViewer> viewDialog( new AntViewer( this ) );
-        viewDialog->setTester( antTester );
-        viewDialog->ShowModal();
+		viewDialog->setTester(antTester);
+		viewDialog->ShowModal();
     }
 }

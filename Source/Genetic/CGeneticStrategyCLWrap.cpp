@@ -33,7 +33,7 @@ void CGeneticStrategyCLWrap::initMemory()
     for ( int i=0; i < N*M; ++i )
     {
         char * buf = (char*)buffer + i*(2*pAntCommon->statesCount()*stateSize + 4);
-        CAutomatImpl::fillRandom( pAntCommon.get(), buf, stateSize, &rand );
+        CAutomatImpl::fillRandom( pAntCommon.get(), buf, &rand );
     }
 }
 
@@ -171,8 +171,7 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
 	size_t autSize = (2 * pAntCommon->statesCount()*stateSize + 4);
 
     boost::this_thread::disable_interruption di;
-    curIndivid = CAutomatPtr( 
-                new CAutomatImpl( CAutomatImpl::createFromBuffer(pAntCommon.get(), (char*)outBuffer + bestPos*autSize ) ) );
+    curIndivid = CAutomatImpl::createFromBuffer(pAntCommon.get(), (char*)outBuffer + bestPos*autSize );
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
     result->addGeneration( curIndivid, bestResult, avgResult ); 

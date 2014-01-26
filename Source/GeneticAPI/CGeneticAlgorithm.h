@@ -13,7 +13,7 @@ public:
     virtual void nextGeneration( CRandom* rand )  = 0;
     virtual double getAvgFitness() const  = 0;
     virtual double getMaxFitness() const  = 0;
-    CAutomat<NUMBERS_TYPE, INPUT_TYPE>* getBestIndivid() const {};
+    //CAutomat<NUMBERS_TYPE, INPUT_TYPE>* getBestIndivid() const {};
 
     virtual std::string getDeviceType() const = 0;
     virtual std::string getPoolInfo() const = 0;

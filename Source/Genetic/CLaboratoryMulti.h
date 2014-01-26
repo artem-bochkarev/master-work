@@ -8,7 +8,7 @@
 class CLaboratoryMulti : public CLaboratory<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-    CLaboratoryMulti(AntCommonPtr antCommonPtr, 
+	CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
         CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult );
     
     /*virtual void start();
@@ -33,12 +33,12 @@ public:
 
     virtual ~CLaboratoryMulti();
 private:
-    CLaboratoryMulti();
+ //   CLaboratoryMulti();
     mutable CLabResultMultiPtr results;
     CGeneticStrategyCommonPtr strategy;
 
     //CActionContainerPtr actions;
-	AntCommonPtr antCommonPtr;
+	CAntCommonPtr<COUNTERS_TYPE> antCommonPtr;
 };
 
 typedef boost::shared_ptr<CLaboratoryMulti> CLaboratoryMultiPtr;

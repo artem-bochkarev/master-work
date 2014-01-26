@@ -81,12 +81,6 @@
     <ClCompile Include="..\wxWidgetsHello\gen.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="CAutomatShortTables.cpp">
-      <Filter>Source Files\ShortTables</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneticParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CGeneticStrategyImpl.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -151,9 +145,6 @@
     </ClInclude>
     <ClInclude Include="GenCLWrap.h">
       <Filter>Header Files\FullTables</Filter>
-    </ClInclude>
-    <ClInclude Include="CAutomatShortTables.h">
-      <Filter>Header Files\ShortTables</Filter>
     </ClInclude>
     <ClInclude Include="GeneticParams.h">
       <Filter>Header Files</Filter>

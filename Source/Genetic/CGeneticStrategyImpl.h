@@ -18,7 +18,7 @@ class CGeneticStrategyImpl : public CGeneticStrategyCommon
 public:
 	friend class CLocalInvoker<AUTOMAT_TYPE>;
 	friend class CMainInvoker<AUTOMAT_TYPE>;
-	CGeneticStrategyImpl(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes, 
+	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();

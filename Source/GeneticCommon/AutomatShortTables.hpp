@@ -1,14 +1,9 @@
-#include "stdafx.h"
-#include "CAutomatShortTables.h"
+#include "AutomatShortTables.h"
 #include "Tools\binFunc.hpp"
 #include <boost\assert.hpp>
 
-size_t CAutomatShortTables::commonDataSize = 4;
-size_t CAutomatShortTables::maskSize = INPUT_PARAMS_COUNT;
-size_t CAutomatShortTables::tableSize = 2*(1 << SHORT_TABLE_COLUMNS);
-size_t CAutomatShortTables::stateSize = tableSize + maskSize;
-
-CAutomatShortTables::CAutomatShortTables(AntCommon* pAntCommon)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::CAutomatShortTables(CAntCommon<COUNTERS_TYPE>* pAntCommon)
 :pAntCommon(pAntCommon)
 {
 	startState = 0;
@@ -16,12 +11,14 @@ CAutomatShortTables::CAutomatShortTables(AntCommon* pAntCommon)
 	memset(buffer, 0, sizeof(COUNTERS_TYPE)*(commonDataSize + pAntCommon->statesCount()*stateSize));
 }
 
-CAutomatShortTables::~CAutomatShortTables()
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::~CAutomatShortTables()
 {
 	delete[] buffer;
 }
 
-CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::CAutomatShortTables(const CAutomatShortTables& automat)
 :pAntCommon(automat.pAntCommon), startState(automat.startState)
 {
 	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
@@ -29,7 +26,8 @@ CAutomatShortTables::CAutomatShortTables(const CAutomatShortTables& automat)
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
 }
 
-CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables& automat)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>& CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::operator = (const CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>& automat)
 {
 	pAntCommon = automat.pAntCommon;
 	startState = automat.startState;
@@ -38,17 +36,21 @@ CAutomatShortTables& CAutomatShortTables::operator = (const CAutomatShortTables&
 	return *this;
 }
 
-CAutomatShortTablesPtr CAutomatShortTables::createFromBuffer(AntCommon* pAntCommon, COUNTERS_TYPE* buf)
+template<typename CT, typename IT, size_t S, size_t IPC>
+CAutomatShortTablesPtr<CT, IT, S, IPC> CAutomatShortTables<CT, IT, S, IPC>::createFromBuffer(
+		CAntCommon<CT>* pAntCommon, CT* buf)
 {
-	CAutomatShortTablesPtr aut(new CAutomatShortTables(pAntCommon));
+		CAutomatShortTablesPtr<CT, IT, S, IPC> aut(
+			new CAutomatShortTables<CT, IT, S, IPC>(pAntCommon));
 	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
 	aut->startState = buf[0];
-	memcpy(aut->buffer, buf, size*sizeof(COUNTERS_TYPE));
+	memcpy(aut->buffer, buf, size*sizeof(CT));
 	return aut;
 }
 
 
-void CAutomatShortTables::generateRandom(CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::generateRandom(CRandom* rand)
 {
 	startState = 0;// pAntCommon->randomState(rand);
 	buffer[0] = startState;
@@ -61,7 +63,8 @@ void CAutomatShortTables::generateRandom(CRandom* rand)
 	}
 }
 
-void CAutomatShortTables::fillRandom(AntCommon* pAntCommon, char* buff, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::fillRandom(CAntCommon<COUNTERS_TYPE>* pAntCommon, char* buff, CRandom* rand)
 {
 	COUNTERS_TYPE startState = 0;// pAntCommon->randomState(rand);
 	buff[0] = startState;
@@ -74,7 +77,8 @@ void CAutomatShortTables::fillRandom(AntCommon* pAntCommon, char* buff, CRandom*
 	}
 }
 
-void CAutomatShortTables::randomMask(COUNTERS_TYPE* mask, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::randomMask(COUNTERS_TYPE* mask, CRandom* rand)
 {
 	size_t alreadyEnabled = 0;
 	BOOST_ASSERT(maskSize == INPUT_PARAMS_COUNT);
@@ -93,7 +97,8 @@ void CAutomatShortTables::randomMask(COUNTERS_TYPE* mask, CRandom* rand)
 	}
 }
 
-void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand, AntCommon* antCommon)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::randomTable(COUNTERS_TYPE* table, CRandom* rand, CAntCommon<COUNTERS_TYPE>* antCommon)
 {
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
 	BOOST_ASSERT(maxIndex*recordSize <= tableSize);
@@ -104,7 +109,8 @@ void CAutomatShortTables::randomTable(COUNTERS_TYPE* table, CRandom* rand, AntCo
 	}
 }
 
-size_t CAutomatShortTables::countIndex(const std::vector<INPUT_TYPE>& mas, size_t currentState ) const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+size_t CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::countIndex(const std::vector<INPUT_TYPE>& mas, size_t currentState) const
 {
 	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * stateSize;
 	int index = 0, k = 1;
@@ -119,13 +125,15 @@ size_t CAutomatShortTables::countIndex(const std::vector<INPUT_TYPE>& mas, size_
 	return index;
 }
 
-COUNTERS_TYPE CAutomatShortTables::getStartState() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getStartState() const
 {
 	BOOST_ASSERT(buffer[0] == startState);
 	return startState;
 }
 
-COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
 	size_t index = countIndex(input, currentState);
 	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * stateSize + maskSize;
@@ -133,7 +141,8 @@ COUNTERS_TYPE CAutomatShortTables::getNextState(COUNTERS_TYPE currentState, cons
 	return state;
 }
 
-COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
 	size_t index = countIndex(input, currentState);
 	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
@@ -141,7 +150,8 @@ COUNTERS_TYPE CAutomatShortTables::getAction(COUNTERS_TYPE currentState, const s
 	return action;
 }
 
-void CAutomatShortTables::mutate(CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::mutate(CRandom* rand)
 {
 	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
@@ -163,7 +173,8 @@ void CAutomatShortTables::mutate(CRandom* rand)
 	//	startState = rand->nextUINT()%pAntCommon->statesCount();
 }
 
-void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand)
 {
 	for (size_t i = 0; i < tableSize; i += recordSize)
 	{
@@ -176,7 +187,8 @@ void CAutomatShortTables::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand
 	}
 }
 
-void CAutomatShortTables::mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand)
 {
 	uint alreadyEnabledCnt = 0;
 	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
@@ -199,7 +211,8 @@ void CAutomatShortTables::mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand)
 	}
 }
 
-void CAutomatShortTables::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* mother, const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* father, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* mother, const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* father, CRandom* rand)
 {
 	const CAutomatShortTables* motherPtr = static_cast<const CAutomatShortTables*>(mother);
 	const CAutomatShortTables* fatherPtr = static_cast<const CAutomatShortTables*>(father);
@@ -215,7 +228,8 @@ void CAutomatShortTables::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* m
 	}
 }
 
-void CAutomatShortTables::crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand)
 {
 	size_t bothEnabled = 0, oneEnabled = 0, enabled = 0;
 	for (size_t i = 0; i < INPUT_PARAMS_COUNT; ++i)
@@ -247,7 +261,8 @@ void CAutomatShortTables::crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TY
 	}
 }
 
-void CAutomatShortTables::crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand)
 {
 	size_t myMas[SHORT_TABLE_COLUMNS], j = 0;
 	memset(myMas, 0, SHORT_TABLE_COLUMNS*sizeof(size_t));
@@ -277,7 +292,8 @@ void CAutomatShortTables::crossTables(COUNTERS_TYPE* childMask, const COUNTERS_T
 	}
 }
 
-size_t CAutomatShortTables::createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+size_t CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand)
 {
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
 	size_t parentIndex = index;// rand->nextUINT()&(maxIndex - 1);
@@ -295,7 +311,8 @@ size_t CAutomatShortTables::createParentIndex(const size_t* toParent, const size
 	return parentIndex;
 }
 
-void CAutomatShortTables::toParent(size_t* toMother, const size_t* myMas, const COUNTERS_TYPE* motherMask)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::toParent(size_t* toMother, const size_t* myMas, const COUNTERS_TYPE* motherMask)
 {
 	for (size_t i = 0; i < SHORT_TABLE_COLUMNS; ++i)
 		toMother[i] = 0;

@@ -11,15 +11,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3E8748CE-B466-4C86-8EF4-95FE9681DFF6}</ProjectGuid>
-    <RootNamespace>CleverAnt3</RootNamespace>
+    <ProjectGuid>{CC1E3925-B43F-4FFE-802B-04D6C6A31472}</ProjectGuid>
+    <RootNamespace>GeneticCommon</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -69,12 +69,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CleverAnt3Fitnes.h" />
-    <ClInclude Include="GeneticParams.h" />
-    <ClInclude Include="GeneticStrategyImpl.h" />
+    <ClInclude Include="AntCommon.h" />
+    <ClInclude Include="AutomatImpl.h" />
+    <ClInclude Include="AutomatShortTables.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GeneticStrategyImpl.cpp" />
+    <ClCompile Include="AutomatImpl.cpp" />
+    <ClCompile Include="AutomatShortTables.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

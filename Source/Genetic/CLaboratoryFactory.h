@@ -12,9 +12,9 @@ public:
 private:
     static  CLaboratoryMultiPtr noFile( Tools::Logger& logger );
     
-	static AntCommonPtr createAntCommon(const std::vector<std::string>& strings);
+	static CAntCommonPtr<COUNTERS_TYPE> createAntCommon(const std::vector<std::string>& strings);
 
-    static  CLaboratoryMultiPtr createLaboratory( AntCommonPtr antCommonPtr, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults );
+	static  CLaboratoryMultiPtr createLaboratory(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults);
 
     CLaboratoryFactory();
     CLaboratoryFactory( const CLaboratoryFactory& );
@@ -26,13 +26,13 @@ class CStrategyFactory
 public:
     static CGeneticAlgorithmPtr getStrategy();
 	static  CGeneticStrategyCommonPtr createStrategy(const std::vector< std::string >& strings,
-		AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
 private:
 	static CGeneticStrategyCommonPtr createStrategyCL(const std::vector< std::string >& strings,
-		AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
 	static CGeneticStrategyCommonPtr createStrategyCPU(const std::vector< std::string >& strings,
-		AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
 	static CGeneticStrategyCommonPtr createStrategyWRAP(const std::vector< std::string >& strings,
-		AntCommonPtr antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
     CStrategyFactory();
 };

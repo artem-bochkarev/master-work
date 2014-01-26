@@ -115,7 +115,7 @@ public:
 
 
 template<class AUTOMAT_TYPE>
-CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes, 
+CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
@@ -282,8 +282,8 @@ void CGeneticStrategyImpl<AUTOMAT_TYPE>::nextGeneration(size_t start, size_t fin
             a[2].crossover( &curr, individs[ (i + 1)%N ][ j ], rand );
             a[1].crossover( &curr, individs[ i ][ (j + N - 1)%M ], rand );
             a[3].crossover( &curr, individs[ (i + N - 1)%N ][ j ], rand );
-			for (size_t i = 0; i < 4; ++i)
-				a[i].mutate(rand);
+			for (size_t z = 0; z < 4; ++z)
+				a[z].mutate(rand);
             double r[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
             for ( int z=0; z<5; ++z )
             {

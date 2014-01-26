@@ -128,7 +128,7 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
     options = ss.str();
 }
 
-CGeneticStrategyCLv2::CGeneticStrategyCLv2( const boost::filesystem::path& source, AntCommonPtr pAntCommon, 
+CGeneticStrategyCLv2::CGeneticStrategyCLv2(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
                                        CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
     :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {

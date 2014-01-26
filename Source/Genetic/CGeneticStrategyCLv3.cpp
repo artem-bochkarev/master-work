@@ -4,7 +4,7 @@
 #include <sstream>
 #include "SDKUtil/include/SDKCommon.hpp"
 #include "CAutomatImpl.h"
-#include "CAutomatShortTables.h"
+#include "GeneticCommon/AutomatShortTables.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
@@ -39,7 +39,7 @@ void CGeneticStrategyCLv3::initCLBuffers()
 			CAutomatImpl::fillRandom(pAntCommon.get(), buf, &rand);
 			break;
 		case(SHORT_TABLES) :
-			CAutomatShortTables::fillRandom(pAntCommon.get(), buf, &rand);
+			CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::fillRandom(pAntCommon.get(), buf, &rand);
 			break;
 		default:
 			Tools::throwFailed("Decisin trees not implemented yet", &logger);
@@ -171,7 +171,7 @@ void CGeneticStrategyCLv3::countRanges(std::string& options)
 	options = ss.str();
 }
 
-CGeneticStrategyCLv3::CGeneticStrategyCLv3(const boost::filesystem::path& source, AntCommonPtr pAntCommon,
+CGeneticStrategyCLv3::CGeneticStrategyCLv3(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
 	CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger)
 	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
@@ -393,7 +393,7 @@ void CGeneticStrategyCLv3::addGeneration(char* buff, float* results)
 			, results[bestPos], sum / (N*M));
 		break;
 	case(SHORT_TABLES) :
-		result->addGeneration(CAutomatShortTables::createFromBuffer(pAntCommon.get(), buff + bestPos*automatSize)
+		result->addGeneration(CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::createFromBuffer(pAntCommon.get(), buff + bestPos*automatSize)
 		, results[bestPos], sum / (N*M));
 		break;
 	default:

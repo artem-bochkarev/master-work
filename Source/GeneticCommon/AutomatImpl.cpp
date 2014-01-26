@@ -1,9 +1,8 @@
-#include "stdafx.h"
-#include "CAutomatImpl.h"
+#include "AutomatImpl.h"
 #include <cmath>
 #include <boost/assert.hpp>
 
-CAutomatImpl::CAutomatImpl(CAntCommon<COUNTERS_TYPE>* pAntCommon)
+/*CAutomatImpl::CAutomatImpl( CAntCommon* pAntCommon )
 //:CAutomat( states, actions )
 :startState(0), pAntCommon(pAntCommon)
 {
@@ -43,7 +42,7 @@ void CAutomatImpl::generateRandom( CRandom* rand )
 	startState = rand->nextUINT()%pAntCommon->statesCount(); //rand;
 }
 
-void CAutomatImpl::fillRandom(CAntCommon<COUNTERS_TYPE>* pAntCommon,
+void CAutomatImpl::fillRandom( AntCommon* pAntCommon, 
 	COUNTERS_TYPE* buffer, CRandom* rand)
 {
 	size_t statesCount = pAntCommon->statesCount();
@@ -187,7 +186,7 @@ void CAutomatImpl::crossover( const CAutomat* mother, const CAutomat* father, CR
             *(ptrActions + j) = *(ptrActAnc + j);
         }
     }*/
-    int k;
+  /*  int k;
 	for (size_t i = 0; i < pAntCommon->statesCount() * 2 * stateSize; ++i)
     {
         k = rand->nextUINT()%100;
@@ -268,7 +267,7 @@ char CAutomatImpl::getStartState() const
     return (char)startState;
 }
 
-CAutomatImplPtr CAutomatImpl::createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCommon, char* buf)
+CAutomatImplPtr CAutomatImpl::createFromBuffer(AntCommon* pAntCommon, char* buf)
 {
 	CAutomatImplPtr impl(new CAutomatImpl(pAntCommon));
     impl->startState = *buf;
@@ -276,3 +275,4 @@ CAutomatImplPtr CAutomatImpl::createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCo
 	memcpy(impl->buffer, buf, 2 * pAntCommon->statesCount()*impl->stateSize);
     return impl;
 }
+*/

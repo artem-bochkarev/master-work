@@ -4,7 +4,7 @@
 #include "CAntFitnes.h"
 #include <sstream>
 
-CGeneticStrategyCommon::CGeneticStrategyCommon(AntCommonPtr pAntCommon, CLabResultMulti *res, CAntFitnesPtr fitnes, 
+CGeneticStrategyCommon::CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti *res, CAntFitnesPtr fitnes, 
 	const std::vector<std::string> &strings, Tools::Logger &logger)
                         :logger(logger), pAntCommon(pAntCommon), N(0), M(0), result(res), fitnesFunctor(fitnes)
 {}

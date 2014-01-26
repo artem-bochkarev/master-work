@@ -36,7 +36,7 @@ double CLaboratoryMulti::getMaxFitness( size_t i ) const
     return results->getMaxFitnes( i );
 }
 
-CLaboratoryMulti::CLaboratoryMulti( AntCommonPtr antCommonPtr,
+CLaboratoryMulti::CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
                                    CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult )
 :antCommonPtr(antCommonPtr), strategy(strategy), results(labResult)
 {

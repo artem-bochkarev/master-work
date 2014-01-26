@@ -15,18 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneticParams.h">
+    <ClInclude Include="AutomatImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneticStrategyImpl.h">
+    <ClInclude Include="AutomatShortTables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CleverAnt3Fitnes.h">
+    <ClInclude Include="AntCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GeneticStrategyImpl.cpp">
+    <ClCompile Include="AutomatImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutomatShortTables.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

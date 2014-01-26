@@ -16,7 +16,7 @@ class CGeneticStrategyCLv3 : public CGeneticStrategyCommon
 		DECISION_TREE
 	};
 public:
-	CGeneticStrategyCLv3(const boost::filesystem::path& source, AntCommonPtr pAntCommon,
+	CGeneticStrategyCLv3(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger);
 
 	virtual void run();

@@ -10,7 +10,7 @@
 class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 {
 public:
-	CGeneticStrategyCLv2(const boost::filesystem::path& source, AntCommonPtr pAntCommon,
+	CGeneticStrategyCLv2(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
 		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();

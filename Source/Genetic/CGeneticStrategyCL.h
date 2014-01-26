@@ -23,7 +23,7 @@ class CGeneticStrategyCL : public CGeneticStrategyCommon
         NEW
     };
 public:
-	CGeneticStrategyCL(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyCL(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();

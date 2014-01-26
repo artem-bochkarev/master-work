@@ -5,11 +5,12 @@
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 #include "CAntFitnes.h"
+#include "GeneticCommon\AntCommon.h"
 
 class CGeneticStrategyCommon : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CGeneticStrategyCommon(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
     virtual void setMaps( std::vector<CMapPtr> maps );
@@ -31,7 +32,7 @@ public:
 protected:
     virtual void pushResults();
 
-	AntCommonPtr pAntCommon;
+	CAntCommonPtr<COUNTERS_TYPE> pAntCommon;
     CAntFitnesPtr fitnesFunctor;
 
     int N, M;

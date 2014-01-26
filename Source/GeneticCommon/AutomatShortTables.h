@@ -1,18 +1,27 @@
 #pragma once
-#include "GeneticParams.h"
+#include "AntCommon.h"
 
 //class CAutomatShortTables;
 static const size_t recordSize = 2;
 static const size_t stateShift = 0;
 static const size_t actionShift = 1;
 
-class CAutomatShortTables;
-typedef boost::shared_ptr<CAutomatShortTables> CAutomatShortTablesPtr;
 
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+class CAutomatShortTables;
+
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT,
+	typename C = CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT> >
+	using CAutomatShortTablesPtr = boost::shared_ptr< C >;
+//typedef boost::shared_ptr<CAutomatShortTables> CAutomatShortTablesPtr;
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
 class CAutomatShortTables final : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CAutomatShortTables(AntCommon* pAntCommon);// size_t stateSize);
+	CAutomatShortTables() {};
+	CAutomatShortTables(CAntCommon<COUNTERS_TYPE>* pAntCommon);// size_t stateSize);
     CAutomatShortTables( const CAutomatShortTables& automat );
     CAutomatShortTables& operator = ( const CAutomatShortTables& automat );
     virtual void generateRandom( CRandom* rand ) override;
@@ -23,10 +32,11 @@ public:
 	virtual void mutate(CRandom* rand) override;
 	virtual void crossover(const CAutomat* mother, const CAutomat* father, CRandom* rand) override;
 
-	static void fillRandom(AntCommon* pAntCommon, char* buff, CRandom* rand );
-	static char generateRandom(AntCommon* pAntCommon, CRandom* rand);
+	static void fillRandom(CAntCommon<COUNTERS_TYPE>* pAntCommon, char* buff, CRandom* rand);
+	static char generateRandom(CAntCommon<COUNTERS_TYPE>* pAntCommon, CRandom* rand);
     //static std::vector<CAutomatImplPtr> cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
-	static CAutomatShortTablesPtr createFromBuffer(AntCommon* pAntCommon, COUNTERS_TYPE* buf);
+	static CAutomatShortTablesPtr<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT> 
+		createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCommon, COUNTERS_TYPE* buf);
 
     virtual ~CAutomatShortTables();
 protected:
@@ -37,12 +47,17 @@ protected:
 	void mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand);
 	static void randomMask(COUNTERS_TYPE* mask, CRandom* rand);
 	void mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand);
-	static void randomTable(COUNTERS_TYPE* table, CRandom* rand, AntCommon* );
+	static void randomTable(COUNTERS_TYPE* table, CRandom* rand, CAntCommon<COUNTERS_TYPE>* );
 	static size_t createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand);
 private:
-    CAutomatShortTables() {};
-	static size_t commonDataSize, stateSize, maskSize, tableSize;
+	static const size_t commonDataSize = 4;
+	static const size_t maskSize = INPUT_PARAMS_COUNT;
+	static const size_t tableSize = 2 * (1 << SHORT_TABLE_COLUMNS);
+	static const size_t stateSize = tableSize + maskSize;
+
 	COUNTERS_TYPE startState;
 	COUNTERS_TYPE * buffer;
-	AntCommon* pAntCommon;
+	CAntCommon<COUNTERS_TYPE>* pAntCommon;
 };
+
+#include "AutomatShortTables.hpp"

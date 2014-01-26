@@ -37,7 +37,7 @@ void CGeneticStrategyCLWrap::initMemory()
     }
 }
 
-CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+CGeneticStrategyCLWrap::CGeneticStrategyCLWrap(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), mapBuffer(0), buffer(0)
 {

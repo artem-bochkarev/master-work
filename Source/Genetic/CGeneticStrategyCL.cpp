@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "SDKUtil/include/SDKCommon.hpp"
-#include "CAutomatImpl.h"
+#include "GeneticCommon/AutomatImpl.h"
 #include "CMapImpl.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
@@ -31,7 +31,7 @@ void CGeneticStrategyCL::initCLBuffers()
     for ( int i=0; i < N*M; ++i )
     {
 		char * buf = buffer + i*(2 * pAntCommon->statesCount() * stateSize + 4);
-        CAutomatImpl::fillRandom( pAntCommon.get(), buf, &rand );
+		CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::fillRandom(pAntCommon.get(), buf, &rand);
     }
 
     statesBufCL1 = cl::Buffer(context, CL_MEM_READ_WRITE, bufSize);
@@ -449,7 +449,7 @@ void CGeneticStrategyCL::nextGeneration( CRandom* rand )
 	size_t autSize = (2 * pAntCommon->statesCount() * stateSize + 4);
     for ( size_t i=0; i<gensToCount; ++i)
     {
-        curIndivid = CAutomatImpl::createFromBuffer(pAntCommon.get(), bestIndivids + i*autSize );
+		curIndivid = CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::createFromBuffer(pAntCommon.get(), bestIndivids + i*autSize);
         result->addGeneration( curIndivid, bestResults[i], sumResults[i] );
     }
 }

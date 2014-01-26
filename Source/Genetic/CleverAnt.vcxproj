@@ -92,7 +92,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="CAutomatImpl.cpp" />
     <ClCompile Include="CGeneticStrategyCL.cpp" />
     <ClCompile Include="CGeneticStrategyCLv2.cpp" />
     <ClCompile Include="CGeneticStrategyCLWrap.cpp" />
@@ -123,7 +122,6 @@
     <ClInclude Include="GeneticParams.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="CAutomatImpl.h" />
     <ClInclude Include="CGeneticStrategyCL.h" />
     <ClInclude Include="CGeneticStrategyCLv2.h" />
     <ClInclude Include="CGeneticStrategyCLWrap.h" />

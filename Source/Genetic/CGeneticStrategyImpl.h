@@ -2,7 +2,7 @@
 
 #include "CGeneticStrategyCommon.h"
 #include "CMap.h"
-#include "CAutomatImpl.h"
+#include "GeneticCommon/AutomatImpl.h"
 #include "CLabResultMulti.h"
 #include "Tools/Logger.h"
 

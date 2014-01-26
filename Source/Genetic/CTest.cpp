@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CTest.h"
 #include "CMapImpl.h"
-#include "CAutomatImpl.h"
+#include "GeneticCommon/AutomatImpl.h"
 
 EDirection left( EDirection d )
 {

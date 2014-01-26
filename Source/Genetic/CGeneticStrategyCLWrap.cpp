@@ -2,7 +2,7 @@
 #include "CGeneticStrategyCLWrap.h"
 #include <iostream>
 #include <fstream>
-#include "CAutomatImpl.h"
+#include "GeneticCommon/AutomatImpl.h"
 #include "CMapImpl.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
@@ -33,7 +33,7 @@ void CGeneticStrategyCLWrap::initMemory()
     for ( int i=0; i < N*M; ++i )
     {
         char * buf = (char*)buffer + i*(2*pAntCommon->statesCount()*stateSize + 4);
-        CAutomatImpl::fillRandom( pAntCommon.get(), buf, &rand );
+		CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::fillRandom(pAntCommon.get(), buf, &rand);
     }
 }
 
@@ -171,7 +171,7 @@ void CGeneticStrategyCLWrap::nextGeneration( CRandom* rand )
 	size_t autSize = (2 * pAntCommon->statesCount()*stateSize + 4);
 
     boost::this_thread::disable_interruption di;
-    curIndivid = CAutomatImpl::createFromBuffer(pAntCommon.get(), (char*)outBuffer + bestPos*autSize );
+	curIndivid = CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::createFromBuffer(pAntCommon.get(), (char*)outBuffer + bestPos*autSize);
     boost::mutex& mutex = result->getMutex();
     boost::mutex::scoped_lock lock(mutex);
     result->addGeneration( curIndivid, bestResult, avgResult ); 

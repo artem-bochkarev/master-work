@@ -26,10 +26,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AutomatImpl.cpp">
+    <ClCompile Include="AutomatShortTables.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AutomatShortTables.hpp">
+    <ClCompile Include="AutomatImpl.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

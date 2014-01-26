@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "SDKUtil/include/SDKCommon.hpp"
-#include "CAutomatImpl.h"
+#include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/AutomatShortTables.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
@@ -36,7 +36,7 @@ void CGeneticStrategyCLv3::initCLBuffers()
 		switch (automatType)
 		{
 		case(FULL_TABLES):
-			CAutomatImpl::fillRandom(pAntCommon.get(), buf, &rand);
+			CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::fillRandom(pAntCommon.get(), buf, &rand);
 			break;
 		case(SHORT_TABLES) :
 			CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::fillRandom(pAntCommon.get(), buf, &rand);
@@ -389,7 +389,7 @@ void CGeneticStrategyCLv3::addGeneration(char* buff, float* results)
 	switch (automatType)
 	{
 	case(FULL_TABLES) :
-		result->addGeneration(CAutomatImpl::createFromBuffer(pAntCommon.get(), buff + bestPos*automatSize)
+		result->addGeneration(CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::createFromBuffer(pAntCommon.get(), buff + bestPos*automatSize)
 			, results[bestPos], sum / (N*M));
 		break;
 	case(SHORT_TABLES) :

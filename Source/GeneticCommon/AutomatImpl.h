@@ -1,14 +1,19 @@
 #pragma once
 //#include "GeneticParams.h"
+#include "AntCommon.h"
 #include "GeneticAPI/CAutomat.h"
 
-/*class CAutomatImpl;
-typedef boost::shared_ptr<CAutomatImpl> CAutomatImplPtr;
+template <typename COUNTERS_TYPE, typename INPUT_TYPE>
+class CAutomatImpl;
 
+template <typename COUNTERS_TYPE, typename INPUT_TYPE, typename C = CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE> >
+using CAutomatImplPtr = boost::shared_ptr< C >;
+
+template <typename COUNTERS_TYPE, typename INPUT_TYPE>
 class CAutomatImpl : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CAutomatImpl(AntCommon* pAntCommon);
+	CAutomatImpl(CAntCommon<COUNTERS_TYPE>* pAntCommon);
     CAutomatImpl( const CAutomatImpl& automat );
     CAutomatImpl& operator = ( const CAutomatImpl& automat );
     virtual void generateRandom( CRandom* rand ) override;
@@ -22,14 +27,16 @@ public:
     virtual void mutate( CRandom* rand ) override;
     virtual void crossover( const CAutomat* mother, const CAutomat* father, CRandom* rand ) override;
 
-	static void fillRandom(AntCommon* pAntCommon, char* buff, CRandom* rand );
-    static std::vector<CAutomatImplPtr> cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
-	static CAutomatImplPtr createFromBuffer(AntCommon* pAntCommon, char* buf);
+	static void fillRandom(CAntCommon<COUNTERS_TYPE>* pAntCommon, COUNTERS_TYPE* buff, CRandom* rand);
+    static std::vector< CAutomatImplPtr<COUNTERS_TYPE, INPUT_TYPE> > cross( const CAutomat* mother, const CAutomat* father, CRandom* rand );
+	static CAutomatImplPtr<COUNTERS_TYPE, INPUT_TYPE> createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCommon, COUNTERS_TYPE* buf);
 
     virtual ~CAutomatImpl();
 private:
     CAutomatImpl() {};
 	size_t stateSize, startState;
 	COUNTERS_TYPE * buffer;
-	AntCommon* pAntCommon;
-};*/
+	CAntCommon<COUNTERS_TYPE>* pAntCommon;
+};
+
+#include "AutomatImpl.hpp"

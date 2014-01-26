@@ -63,9 +63,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CAutomatImpl.cpp">
-      <Filter>Source Files\FullTables</Filter>
-    </ClCompile>
     <ClCompile Include="CGeneticStrategyCL.cpp">
       <Filter>Source Files\FullTables</Filter>
     </ClCompile>
@@ -130,9 +127,6 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CAutomatImpl.h">
-      <Filter>Header Files\FullTables</Filter>
     </ClInclude>
     <ClInclude Include="CGeneticStrategyCL.h">
       <Filter>Header Files\FullTables</Filter>

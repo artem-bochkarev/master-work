@@ -1,7 +1,7 @@
 #pragma once
 #include "GeneticAPI/CGeneticAlgorithm.h"
 #include "CLaboratoryMulti.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
 
 class CLaboratoryFactory
@@ -14,7 +14,8 @@ private:
     
 	static CAntCommonPtr<COUNTERS_TYPE> createAntCommon(const std::vector<std::string>& strings);
 
-	static  CLaboratoryMultiPtr createLaboratory(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults);
+	static  CLaboratoryMultiPtr createLaboratory(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr, 
+		CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults);
 
     CLaboratoryFactory();
     CLaboratoryFactory( const CLaboratoryFactory& );
@@ -26,13 +27,13 @@ class CStrategyFactory
 public:
     static CGeneticAlgorithmPtr getStrategy();
 	static  CGeneticStrategyCommonPtr createStrategy(const std::vector< std::string >& strings,
-		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
 private:
 	static CGeneticStrategyCommonPtr createStrategyCL(const std::vector< std::string >& strings,
-		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
 	static CGeneticStrategyCommonPtr createStrategyCPU(const std::vector< std::string >& strings,
-		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
 	static CGeneticStrategyCommonPtr createStrategyWRAP(const std::vector< std::string >& strings,
-		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger);
+		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
     CStrategyFactory();
 };

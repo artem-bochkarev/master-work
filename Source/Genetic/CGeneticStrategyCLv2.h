@@ -11,7 +11,7 @@ class CGeneticStrategyCLv2 : public CGeneticStrategyCommon
 {
 public:
 	CGeneticStrategyCLv2(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
-		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger );
+		CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger);
 
     virtual void run();
 
@@ -22,7 +22,7 @@ public:
     //virtual void addMap( CMap maps );
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
-    CAutomatPtr getBestIndivid() const;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
     virtual ~CGeneticStrategyCLv2();
     virtual CInvoker* getInvoker() const;
     virtual size_t getN() const;
@@ -51,7 +51,7 @@ private:
     void freeIndivids();
     void fillCache() const;
 
-    CAutomatPtr curIndivid;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> curIndivid;
     char *buffer, *buffer2;
     int* mapsBuffer;
     float *cachedResults;

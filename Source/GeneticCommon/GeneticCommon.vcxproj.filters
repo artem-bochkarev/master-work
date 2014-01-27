@@ -24,12 +24,18 @@
     <ClInclude Include="AntCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LabResultMulti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutomatShortTables.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AutomatImpl.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LabResultMulti.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,8 @@
 
 class CRandom;
 
-template< typename NUMBERS_TYPE, typename INPUT_TYPE > class CAutomat
+template< typename NUMBERS_TYPE, typename INPUT_TYPE > 
+class CAutomat
 {
 public:
     virtual void generateRandom( CRandom* rand ) = 0;
@@ -16,4 +17,5 @@ public:
 private:
 };
 
-//typedef boost::shared_ptr<CAutomat> CAutomatPtr;
+template< typename NUMBERS_TYPE, typename INPUT_TYPE, typename C = CAutomat<NUMBERS_TYPE, INPUT_TYPE> >
+using CAutomatPtr = boost::shared_ptr<C>;

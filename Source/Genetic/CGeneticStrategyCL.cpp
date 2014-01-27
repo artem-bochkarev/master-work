@@ -147,7 +147,7 @@ void CGeneticStrategyCL::createProgram( const std::vector<size_t>& vals )
     
 }
 
-CGeneticStrategyCL::CGeneticStrategyCL(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+CGeneticStrategyCL::CGeneticStrategyCL(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
@@ -494,9 +494,9 @@ double CGeneticStrategyCL::getMaxFitness() const
 {
     return 0.0;
 }
-CAutomatPtr CGeneticStrategyCL::getBestIndivid() const
+CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> CGeneticStrategyCL::getBestIndivid() const
 {
-    return CAutomatPtr();
+	return CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>();
 }
 
 const CMapPtr CGeneticStrategyCL::getMap( size_t i )

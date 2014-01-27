@@ -4,7 +4,7 @@
 #include "CAntFitnes.h"
 #include <sstream>
 
-CGeneticStrategyCommon::CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti *res, CAntFitnesPtr fitnes, 
+CGeneticStrategyCommon::CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE> *res, CAntFitnesPtr fitnes,
 	const std::vector<std::string> &strings, Tools::Logger &logger)
                         :logger(logger), pAntCommon(pAntCommon), N(0), M(0), result(res), fitnesFunctor(fitnes)
 {}
@@ -24,9 +24,9 @@ double CGeneticStrategyCommon::getMaxFitness() const
 {
     return 0.0;
 }
-CAutomatPtr CGeneticStrategyCommon::getBestIndivid() const
+CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> CGeneticStrategyCommon::getBestIndivid() const
 {
-    return CAutomatPtr();
+	return CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>();
 }
 
 CInvoker* CGeneticStrategyCommon::getInvoker() const

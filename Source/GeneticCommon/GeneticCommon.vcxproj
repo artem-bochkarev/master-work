@@ -72,6 +72,7 @@
     <ClInclude Include="AntCommon.h" />
     <ClInclude Include="AutomatImpl.h" />
     <ClInclude Include="AutomatShortTables.h" />
+    <ClInclude Include="LabResultMulti.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutomatImpl.hpp">
@@ -80,6 +81,7 @@
     <ClCompile Include="AutomatShortTables.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="LabResultMulti.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

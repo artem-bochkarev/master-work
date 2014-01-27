@@ -1,21 +1,12 @@
 #pragma once
 #include "../GeneticAPI/CLaboratoryResult.h"
-#include "GeneticParams.h"
-#include "CLabResultMulti.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
-
+template<typename COUNTERS_TYPE, typename INPUT_TYPE>
 class CLabResultMulti : public CLaboratoryResult<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-    friend class CGeneticStrategyCommon;
-    friend class CLaboratoryMulti;
-    //friend class CGeneticStrategyImpl;
-    friend class CGeneticStrategyCL;
-	friend class CGeneticStrategyCLv2;
-	friend class CGeneticStrategyCLv3;
-	friend class CGeneticStrategyCLWrap;
     CLabResultMulti();
     virtual size_t getGenerationsNumber() const;
     virtual CAutomat<COUNTERS_TYPE, INPUT_TYPE>* getBestInd( size_t i ) const;
@@ -23,15 +14,16 @@ public:
     virtual double getMaxFitnes( size_t i ) const;
     virtual double getAvgFitnes( size_t i ) const;
     virtual size_t getRunCount() const;
-protected:
-    virtual void addGeneration( const CAutomatPtr ind, double maxF, double avgF );
+
+	virtual void addGeneration( const CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> ind, double maxF, double avgF );
     //boost::mutex& getMutex();
 private:
     boost::mutex mutex;
     size_t genCnt;
-    std::vector<CAutomatPtr> individs;
+	std::vector< CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> > individs;
     std::vector<double> avgFitnes;
     std::vector<double> maxFitnes;
 };
 
-typedef boost::shared_ptr<CLabResultMulti> CLabResultMultiPtr;
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename C = CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE> >
+using CLabResultMultiPtr = boost::shared_ptr<C>;

@@ -83,7 +83,6 @@
     <ClCompile Include="CGeneticStrategyCommon.cpp" />
     <ClCompile Include="CLaboratoryFactory.cpp" />
     <ClCompile Include="CLaboratoryMulti.cpp" />
-    <ClCompile Include="CLabResultMulti.cpp" />
     <ClCompile Include="CMapFactory.cpp" />
     <ClCompile Include="CMapImpl.cpp" />
     <ClCompile Include="CRandomImpl.cpp" />
@@ -112,7 +111,6 @@
     <ClInclude Include="CGeneticStrategyCommon.h" />
     <ClInclude Include="CLaboratoryFactory.h" />
     <ClInclude Include="CLaboratoryMulti.h" />
-    <ClInclude Include="CLabResultMulti.h" />
     <ClInclude Include="CMap.h" />
     <ClInclude Include="CMapFactory.h" />
     <ClInclude Include="CMapImpl.h" />

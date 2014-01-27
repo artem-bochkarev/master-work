@@ -45,9 +45,6 @@
     <ClCompile Include="CLaboratoryMulti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CLabResultMulti.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CMapFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CLaboratoryMulti.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CLabResultMulti.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CMap.h">

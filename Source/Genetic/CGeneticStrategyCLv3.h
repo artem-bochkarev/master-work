@@ -17,7 +17,7 @@ class CGeneticStrategyCLv3 : public CGeneticStrategyCommon
 	};
 public:
 	CGeneticStrategyCLv3(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
-		CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger);
+		CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger);
 
 	virtual void run();
 
@@ -45,7 +45,7 @@ private:
 	void freeIndivids();
 	void fillCache() const;
 
-	CAutomatPtr curIndivid;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> curIndivid;
 	char *buffer, *buffer2;
 	int* mapsBuffer;
 	float *cachedResults;

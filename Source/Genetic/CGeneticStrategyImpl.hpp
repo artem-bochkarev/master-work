@@ -1,3 +1,4 @@
+#pragma once
 #include "stdafx.h"
 #define NOMINMAX
 #include "CGeneticStrategyImpl.h"
@@ -115,7 +116,7 @@ public:
 
 
 template<class AUTOMAT_TYPE>
-CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {
@@ -205,7 +206,7 @@ double CGeneticStrategyImpl<AUTOMAT_TYPE>::getAvgFitness() const
 }
 
 template<class AUTOMAT_TYPE>
-CAutomatPtr CGeneticStrategyImpl<AUTOMAT_TYPE>::getBestIndivid() const
+CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> CGeneticStrategyImpl<AUTOMAT_TYPE>::getBestIndivid() const
 {
     if ( !isCacheValid )
         fillCache();
@@ -222,7 +223,7 @@ CAutomatPtr CGeneticStrategyImpl<AUTOMAT_TYPE>::getBestIndivid() const
                 y = j;
             }
         }
-		return CAutomatPtr(new AUTOMAT_TYPE(*(individs[x][y])));
+		return CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>(new AUTOMAT_TYPE(*(individs[x][y])));
 }
 
 template <class AUTOMAT_TYPE>

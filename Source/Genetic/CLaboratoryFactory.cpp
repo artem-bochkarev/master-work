@@ -2,7 +2,7 @@
 #include <fstream>
 #include "CLaboratoryFactory.h"
 #include "CActionContainerImpl.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "CGeneticStrategyImpl.h"
 #include "CGeneticStrategyCLv3.h"
 #include "CGeneticStrategyCLWrap.h"
@@ -43,7 +43,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::getLaboratory( Tools::Logger& logger, co
     }
     
 	CAntCommonPtr<COUNTERS_TYPE> antCommon = createAntCommon(strings);
-    CLabResultMultiPtr labResults( new CLabResultMulti() );
+	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 
     CGeneticStrategyCommonPtr strategy = CStrategyFactory::createStrategy( strings, antCommon, labResults, logger );
     return createLaboratory( antCommon, strategy, labResults );
@@ -83,7 +83,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 	actions->addAction(2, "turn left");
 	CAntCommonPtr<COUNTERS_TYPE> antCommon(new CAntCommon<COUNTERS_TYPE>(4, actions));
     
-    CLabResultMultiPtr labResults( new CLabResultMulti() );
+	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
     std::vector< std::string > strings;
 	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU(DEFAULT_STEPS_COUNT));
 	CGeneticStrategyCommonPtr strategy(new CGeneticStrategyImpl< CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE> >(antCommon, labResults.get(), fitnesFunctor, strings, logger));
@@ -148,7 +148,8 @@ CAntCommonPtr<COUNTERS_TYPE> CLaboratoryFactory::createAntCommon(const std::vect
 	return a;
 }
 
-CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory(CAntCommonPtr<COUNTERS_TYPE> antCommon, CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResults)
+CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory(CAntCommonPtr<COUNTERS_TYPE> antCommon, 
+	CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults)
 {
     return CLaboratoryMultiPtr( new CLaboratoryMulti( antCommon, strategy, labResults ) );
 }
@@ -156,7 +157,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::createLaboratory(CAntCommonPtr<COUNTERS_
 //-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=-=---==---=
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< std::string >& strings,
-	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger)
 {
 	/*ant_common::states = states.get();
 	ant_common::actions = actions.get();*/
@@ -186,7 +187,7 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategy(const std::vector< st
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector< std::string >& strings,
-	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger)
 {
 	//size_t ste
 	CAntFitnesCPUPtr fitnesFunctor(new CAntFitnesCPU(DEFAULT_STEPS_COUNT));
@@ -224,7 +225,7 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCPU(const std::vector<
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< std::string >& strings,
-	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger)
 {
 	boost::filesystem::path source("gen.cl");
 	if (!boost::filesystem::exists(source))
@@ -253,7 +254,7 @@ CGeneticStrategyCommonPtr CStrategyFactory::createStrategyCL(const std::vector< 
 }
 
 CGeneticStrategyCommonPtr CStrategyFactory::createStrategyWRAP(const std::vector< std::string >& strings,
-	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr labResults, Tools::Logger& logger)
+	CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger)
 {
 	CAntFitnesNonePtr fitnesFunctor(new CAntFitnesNone());
 	return CGeneticStrategyCommonPtr(new CGeneticStrategyCLWrap(antCommon, labResults.get(), fitnesFunctor, strings, logger));

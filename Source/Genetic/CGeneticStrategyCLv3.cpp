@@ -172,7 +172,7 @@ void CGeneticStrategyCLv3::countRanges(std::string& options)
 }
 
 CGeneticStrategyCLv3::CGeneticStrategyCLv3(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
-	CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger)
+	CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger)
 	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticStrategyCLv2.\n";

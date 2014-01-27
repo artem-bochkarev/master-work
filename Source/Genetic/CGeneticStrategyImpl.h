@@ -3,7 +3,7 @@
 #include "CGeneticStrategyCommon.h"
 #include "CMap.h"
 #include "GeneticCommon/AutomatImpl.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
 
 template<class AUTOMAT_TYPE>
@@ -18,7 +18,7 @@ class CGeneticStrategyImpl : public CGeneticStrategyCommon
 public:
 	friend class CLocalInvoker<AUTOMAT_TYPE>;
 	friend class CMainInvoker<AUTOMAT_TYPE>;
-	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();
@@ -29,7 +29,7 @@ public:
 
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
-    CAutomatPtr getBestIndivid() const;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
     virtual ~CGeneticStrategyImpl();
     virtual std::string getDeviceType() const;
 private:

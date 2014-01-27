@@ -6,7 +6,7 @@
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #define __MAX_DEFAULT_VECTOR_SIZE 100
 #include "CL/cl.hpp"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
 
 
@@ -23,7 +23,7 @@ class CGeneticStrategyCL : public CGeneticStrategyCommon
         NEW
     };
 public:
-	CGeneticStrategyCL(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyCL(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();
@@ -35,7 +35,7 @@ public:
     //virtual void addMap( CMap maps );
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
-    CAutomatPtr getBestIndivid() const;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
     virtual ~CGeneticStrategyCL();
     virtual CInvoker* getInvoker() const;
     virtual size_t getN() const;
@@ -65,7 +65,7 @@ private:
     void freeIndivids();
     void fillCache() const;
 
-    CAutomatPtr curIndivid;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> curIndivid;
     char* buffer;
     int* mapsBuffer;
     float *cache, *bestResults, *sumResults;

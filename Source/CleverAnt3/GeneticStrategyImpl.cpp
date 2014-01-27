@@ -49,9 +49,9 @@ ANT_FITNESS_TYPE CGeneticStrategyImpl::getMaxFitness() const
 	return m_max;
 }
 
-CAutomatPtr CGeneticStrategyImpl::getBestIndivid() const
+CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> CGeneticStrategyImpl::getBestIndivid() const
 {
-	return CAutomatPtr(&m_best);
+	return CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>(&m_best);
 }
 
 /*void CGeneticStrategyImpl::pushResults()

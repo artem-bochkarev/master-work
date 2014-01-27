@@ -1,7 +1,7 @@
 #pragma once
 #include "GeneticParams.h"
 #include "GeneticAPI/CLaboratory.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "CGeneticStrategyCommon.h"
 #include "CAntFitnes.h"
 
@@ -9,7 +9,7 @@ class CLaboratoryMulti : public CLaboratory<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
 	CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
-        CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr labResult );
+        CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult );
     
     /*virtual void start();
     virtual void runForTime( int milisec );
@@ -34,7 +34,7 @@ public:
     virtual ~CLaboratoryMulti();
 private:
  //   CLaboratoryMulti();
-    mutable CLabResultMultiPtr results;
+    mutable CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> results;
     CGeneticStrategyCommonPtr strategy;
 
     //CActionContainerPtr actions;

@@ -2,7 +2,7 @@
 #include "GeneticParams.h"
 #include "GeneticAPI/CGeneticAlgorithm.h"
 #include "CMap.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
 #include "CAntFitnes.h"
 #include "GeneticCommon\AntCommon.h"
@@ -10,7 +10,7 @@
 class CGeneticStrategyCommon : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyCommon(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& logger );
     virtual void nextGeneration( CRandom* rand ) = 0;
     virtual void setMaps( std::vector<CMapPtr> maps );
@@ -18,7 +18,7 @@ public:
     virtual size_t getMapsCount();
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
-    virtual CAutomatPtr getBestIndivid() const;
+	virtual CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
     virtual ~CGeneticStrategyCommon() {}
     virtual CInvoker* getInvoker() const;
     virtual size_t getN() const;
@@ -36,7 +36,7 @@ protected:
     CAntFitnesPtr fitnesFunctor;
 
     int N, M;
-    CLabResultMulti* result;
+	CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* result;
     CInvoker* invoker;
 	Tools::Logger& logger;
     //std::vector<CMapPtr> maps;

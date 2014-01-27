@@ -3,14 +3,14 @@
 #include "CGeneticStrategyCommon.h"
 #include "CMap.h"
 #include "GeneticCommon/AutomatImpl.h"
-#include "CLabResultMulti.h"
+#include "GeneticCommon/LabResultMulti.hpp"
 #include "GenCLWrap.h"
 #include "Tools/Logger.h"
 
 class CGeneticStrategyCLWrap : public CGeneticStrategyCommon
 {
 public:
-	CGeneticStrategyCLWrap(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyCLWrap(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& logger );
 
     virtual void run();
@@ -22,7 +22,7 @@ public:
     //virtual void addMap( CMap maps );
     virtual double getAvgFitness() const;
     virtual double getMaxFitness() const;
-    CAutomatPtr getBestIndivid() const;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
     virtual ~CGeneticStrategyCLWrap();
     virtual CInvoker* getInvoker() const;
     virtual size_t getN() const;
@@ -42,7 +42,7 @@ private:
     void freeIndivids();
     void fillCache() const;
 
-    CAutomatPtr curIndivid;
+	CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> curIndivid;
     CLWrapSettings settings;
     uint *buffer, *outBuffer, *tempBuffer;
 

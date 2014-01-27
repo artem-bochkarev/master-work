@@ -20,7 +20,7 @@ public:
 	//virtual size_t getMapsCount();
 	virtual ANT_FITNESS_TYPE getAvgFitness() const;
 	virtual ANT_FITNESS_TYPE getMaxFitness() const;
-	virtual CAutomatPtr getBestIndivid() const;
+	virtual CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> getBestIndivid() const;
 	virtual ~CGeneticStrategyImpl();
 	virtual CInvoker* getInvoker() const;
 	virtual size_t getN() const;

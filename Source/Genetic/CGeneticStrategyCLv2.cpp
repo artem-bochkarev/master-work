@@ -129,7 +129,7 @@ void CGeneticStrategyCLv2::countRanges( std::string& options )
 }
 
 CGeneticStrategyCLv2::CGeneticStrategyCLv2(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
-                                       CLabResultMulti* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger )
+	CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes, const std::vector< std::string >& strings, Tools::Logger& logger)
     :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), mapsBuffer(0), buffer(0)
 {
 	logger << "[INIT] Initializing CGeneticStrategyCLv2.\n";
@@ -386,7 +386,7 @@ double CGeneticStrategyCLv2::getMaxFitness() const
 {
     return 0.0;
 }
-CAutomatPtr CGeneticStrategyCLv2::getBestIndivid() const
+CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE> CGeneticStrategyCLv2::getBestIndivid() const
 {
-    return CAutomatPtr();
+	return CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>();
 }

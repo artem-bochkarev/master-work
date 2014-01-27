@@ -5,7 +5,7 @@
 #include <fstream>
 #include "SDKUtil/include/SDKCommon.hpp"
 #include "GeneticCommon/AutomatImpl.h"
-#include "CMapImpl.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
 #include "CTest.h"
 #include "CRandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>

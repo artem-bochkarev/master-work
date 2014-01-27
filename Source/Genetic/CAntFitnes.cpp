@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CAntFitnes.h"
-#include "CMapImpl.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
 #include "CTest.h"
 
 void CAntFitnes::setMaps(std::vector<CMapPtr> maps)

@@ -73,17 +73,26 @@
     <ClInclude Include="AntCommon.h" />
     <ClInclude Include="AutomatImpl.h" />
     <ClInclude Include="AutomatShortTables.h" />
+    <ClInclude Include="CleverAntMap.h" />
+    <ClInclude Include="CleverAntMapFactory.h" />
+    <ClInclude Include="CleverAntMapImpl.h" />
     <ClInclude Include="LabResultMulti.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ActionContainerImpl.hpp" />
+    <ClCompile Include="ActionContainerImpl.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="AutomatImpl.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="AutomatShortTables.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="LabResultMulti.hpp" />
+    <ClCompile Include="CleverAntMapFactory.cpp" />
+    <ClCompile Include="CleverAntMapImpl.cpp" />
+    <ClCompile Include="LabResultMulti.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

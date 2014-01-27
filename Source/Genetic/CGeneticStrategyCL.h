@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CGeneticStrategyCommon.h"
-#include "CMap.h"
+#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #define __MAX_DEFAULT_VECTOR_SIZE 100

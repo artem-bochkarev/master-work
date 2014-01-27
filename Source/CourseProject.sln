@@ -4,14 +4,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CleverAnt", "Genetic\CleverAnt.vcxproj", "{494896EB-9A10-4E6B-B966-E4DDCEF9B894}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC1E3925-B43F-4FFE-802B-04D6C6A31472} = {CC1E3925-B43F-4FFE-802B-04D6C6A31472}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticAPI", "GeneticAPI\GeneticAPI.vcxproj", "{D3A5C576-BFCB-4550-A753-9B52EF7B06E6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxApplication", "wxWidgetsHello\wxWidgetsHello.vcxproj", "{EFF666E7-1F56-44AF-810F-5F3CB3BBAD56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC1E3925-B43F-4FFE-802B-04D6C6A31472} = {CC1E3925-B43F-4FFE-802B-04D6C6A31472}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDKUtil", "SDKUtil\SDKUtil.vcxproj", "{12B84E62-D3D1-43DE-81ED-9F97B593AEC6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "speedTester", "speedTester\speedTester.vcxproj", "{2C17EBEF-001C-40D9-9760-75080207A797}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CC1E3925-B43F-4FFE-802B-04D6C6A31472} = {CC1E3925-B43F-4FFE-802B-04D6C6A31472}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QApp", "QApp\QApp.vcxproj", "{2CB0E632-48FC-4543-801C-B6370B131CF0}"
 EndProject

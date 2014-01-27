@@ -1,4 +1,4 @@
-#include "CMap.h"
+#include "CleverAntMap.h"
 
 class CMapFactory
 {

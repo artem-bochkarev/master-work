@@ -5,7 +5,7 @@
 
 #include "GeneticCommon/ActionContainerImpl.h"
 #include "Genetic/CLaboratoryFactory.h"
-#include "Genetic/CMapFactory.h"
+#include "GeneticCommon/CleverAntMapFactory.h"
 
 #include "Tools/errorMsg.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CGeneticStrategyCommon.h"
-#include "CMap.h"
+#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"

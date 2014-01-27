@@ -1,6 +1,5 @@
-#include "stdafx.h"
-#include "CMapFactory.h"
-#include "CMapImpl.h"
+#include "CleverAntMapFactory.h"
+#include "CleverAntMapImpl.h"
 #include <fstream>
 
 CMapPtr CMapFactory::getMap(const char *filename)

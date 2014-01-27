@@ -3,7 +3,7 @@
 #define NOMINMAX
 #include "CGeneticStrategyImpl.h"
 #include "CTest.h"
-#include "CMapImpl.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/thread_time.hpp>
 #include "CRandomImpl.h"

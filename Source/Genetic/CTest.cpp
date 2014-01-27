@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CTest.h"
-#include "CMapImpl.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
 #include "GeneticCommon/AutomatImpl.h"
 
 EDirection left( EDirection d )

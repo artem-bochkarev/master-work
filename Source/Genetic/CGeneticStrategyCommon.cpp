@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CGeneticStrategyCommon.h"
-#include "CMapImpl.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
 #include "CAntFitnes.h"
 #include <sstream>
 

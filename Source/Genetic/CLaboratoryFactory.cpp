@@ -7,7 +7,7 @@
 #include "CGeneticStrategyCLv3.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "CLaboratoryMulti.h"
-#include "CMapFactory.h"
+#include "GeneticCommon/CleverAntMapFactory.h"
 #include "GeneticCommon/AutomatShortTables.h"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>

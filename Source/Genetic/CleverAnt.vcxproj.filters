@@ -42,12 +42,6 @@
     <ClCompile Include="CLaboratoryMulti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CMapFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CMapImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CRandomImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -90,15 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CLaboratoryMulti.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CMapFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CMapImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COpenCLWrapInvoker.h">

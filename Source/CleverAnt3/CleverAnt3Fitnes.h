@@ -1,6 +1,6 @@
 #include "GeneticParams.h"
 #include "GeneticAPI/CFitnessCounter.h"
-//#include "CMap.h"
+//#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatShortTables.h"
 typedef CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 4, 8> AUTOMAT;
 

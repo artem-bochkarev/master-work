@@ -1,7 +1,7 @@
 #pragma once
 #include "GeneticParams.h"
 #include "GeneticAPI/CFitnessCounter.h"
-#include "CMap.h"
+#include "GeneticCommon/CleverAntMap.h"
 
 class CAntFitnes : public CFitnesCounter<ANT_FITNESS_TYPE, COUNTERS_TYPE, INPUT_TYPE>
 {

@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "CMapImpl.h"
+#include "CleverAntMapImpl.h"
 #include <cassert>
 
 const int VISIBLE_CELLS = 4;

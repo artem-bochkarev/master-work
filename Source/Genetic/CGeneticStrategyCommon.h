@@ -1,7 +1,7 @@
 #pragma once
 #include "GeneticParams.h"
 #include "GeneticAPI/CGeneticAlgorithm.h"
-#include "CMap.h"
+#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
 #include "CAntFitnes.h"

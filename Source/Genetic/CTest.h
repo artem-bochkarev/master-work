@@ -1,7 +1,7 @@
 #pragma once
 #include "GeneticParams.h"
 #include "GeneticAPI/CAutomat.h"
-#include "CMap.h"
+#include "GeneticCommon/CleverAntMap.h"
 
 class CTest
 {

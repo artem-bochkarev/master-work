@@ -30,6 +30,15 @@
     <ClInclude Include="ActionContainerImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CleverAntMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntMapFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntMapImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutomatShortTables.hpp">
@@ -42,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ActionContainerImpl.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CleverAntMapFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CleverAntMapImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,7 @@
 #include "AntShower.h"
 #include <wx/sharedptr.h>
 
-#include "Genetic/CActionContainerImpl.h"
+#include "GeneticCommon/ActionContainerImpl.h"
 #include "Genetic/CLaboratoryFactory.h"
 #include "Genetic/CMapFactory.h"
 

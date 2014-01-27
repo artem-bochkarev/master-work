@@ -76,7 +76,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CActionContainerImpl.cpp" />
     <ClCompile Include="CAntFitnes.cpp" />
     <ClCompile Include="CCLWrapInvoker.cpp" />
     <ClCompile Include="CGeneticStrategyCLv3.cpp" />
@@ -105,7 +104,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CActionContainerImpl.h" />
     <ClInclude Include="CAntFitnes.h" />
     <ClInclude Include="CGeneticStrategyCLv3.h" />
     <ClInclude Include="CGeneticStrategyCommon.h" />

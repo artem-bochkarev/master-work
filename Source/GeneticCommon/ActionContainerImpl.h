@@ -1,8 +1,8 @@
 #pragma once
-#include "GeneticParams.h"
 #include <map>
-#include "../GeneticAPI/CAction.h"
+#include "GeneticAPI/CAction.h"
 
+template<typename COUNTERS_TYPE>
 class CActionContainerImpl : public CActionContainer<COUNTERS_TYPE>
 {
 public:

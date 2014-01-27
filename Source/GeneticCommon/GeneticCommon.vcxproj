@@ -69,12 +69,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionContainerImpl.h" />
     <ClInclude Include="AntCommon.h" />
     <ClInclude Include="AutomatImpl.h" />
     <ClInclude Include="AutomatShortTables.h" />
     <ClInclude Include="LabResultMulti.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionContainerImpl.hpp" />
     <ClCompile Include="AutomatImpl.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>

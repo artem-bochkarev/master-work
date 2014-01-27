@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <fstream>
 #include "CLaboratoryFactory.h"
-#include "CActionContainerImpl.h"
+#include "GeneticCommon/ActionContainerImpl.hpp"
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "CGeneticStrategyImpl.h"
 #include "CGeneticStrategyCLv3.h"
@@ -77,7 +77,7 @@ CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std:
 
 CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 {
-	CActionContainerPtr actions(new CActionContainerImpl());
+	CActionContainerPtr actions(new CActionContainerImpl<COUNTERS_TYPE>());
 	actions->addAction(0, "move forward");
 	actions->addAction(1, "turn right");
 	actions->addAction(2, "turn left");
@@ -93,7 +93,7 @@ CLaboratoryMultiPtr CLaboratoryFactory::noFile( Tools::Logger& logger )
 
 /*CActionContainerPtr CLaboratoryFactory::createActions( const std::vector< std::string >& strings )
 {
-    CActionContainerPtr actions( new CActionContainerImpl() );
+    CActionContainerPtr actions( new CActionContainerImpl<COUNTERS_TYPE>() );
     actions->addAction( 0, "move forward" );
     actions->addAction( 1, "turn right" );
     actions->addAction( 2, "turn left" );
@@ -126,7 +126,7 @@ CStateContainerPtr CLaboratoryFactory::createStates( const std::vector< std::str
 
 CAntCommonPtr<COUNTERS_TYPE> CLaboratoryFactory::createAntCommon(const std::vector<std::string>& strings)
 {
-	CActionContainerPtr actions(new CActionContainerImpl());
+	CActionContainerPtr actions(new CActionContainerImpl<COUNTERS_TYPE>());
 	actions->addAction(0, "move forward");
 	actions->addAction(1, "turn right");
 	actions->addAction(2, "turn left");

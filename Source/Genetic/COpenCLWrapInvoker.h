@@ -1,5 +1,5 @@
 #pragma once
-#include "CRandomImpl.h"
+#include "GeneticCommon/RandomImpl.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "GenCLWrap.h"
 

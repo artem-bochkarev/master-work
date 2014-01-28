@@ -42,9 +42,6 @@
     <ClCompile Include="CLaboratoryMulti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CRandomImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

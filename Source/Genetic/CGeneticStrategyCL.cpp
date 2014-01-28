@@ -7,7 +7,7 @@
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/CleverAntMapImpl.h"
 #include "CTest.h"
-#include "CRandomImpl.h"
+#include "GeneticCommon/RandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 

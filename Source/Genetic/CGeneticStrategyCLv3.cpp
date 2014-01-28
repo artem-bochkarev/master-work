@@ -6,7 +6,7 @@
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/AutomatShortTables.h"
 #include "CTest.h"
-#include "CRandomImpl.h"
+#include "GeneticCommon/RandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "Tools/helper.hpp"
 #include "Tools/StringProcessorSimple.h"

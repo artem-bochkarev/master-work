@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include "CRandomImpl.h"
+#include "RandomImpl.h"
 #include <ctime>
 
 // rand like in MSVC

@@ -6,7 +6,7 @@
 #include "GeneticCommon/CleverAntMapImpl.h"
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/thread_time.hpp>
-#include "CRandomImpl.h"
+#include "GeneticCommon/RandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "CAntFitnes.h"
 

@@ -77,6 +77,7 @@
     <ClInclude Include="CleverAntMapFactory.h" />
     <ClInclude Include="CleverAntMapImpl.h" />
     <ClInclude Include="LabResultMulti.h" />
+    <ClInclude Include="RandomImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionContainerImpl.hpp">
@@ -93,6 +94,7 @@
     <ClCompile Include="LabResultMulti.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="RandomImpl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

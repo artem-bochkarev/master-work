@@ -39,6 +39,9 @@
     <ClInclude Include="CleverAntMapImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RandomImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutomatShortTables.hpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CleverAntMapImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

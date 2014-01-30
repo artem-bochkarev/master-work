@@ -8,7 +8,7 @@
 
 ////@begin includes
 #include "wx/listctrl.h"
-#include "Genetic/CLaboratoryMulti.h"
+#include "GeneticCommon/LaboratoryMulti.h"
 ////@end includes
 
 /*!
@@ -43,7 +43,7 @@ class GenerationViewer: public wxDialog
     DECLARE_DYNAMIC_CLASS( GenerationViewer )
     DECLARE_EVENT_TABLE()
 
-    CLaboratoryMulti* laboratory;
+    CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>* laboratory;
     wxListCtrl* itemListCtrl;
 
 public:
@@ -81,7 +81,7 @@ public:
     void OnButton1Click( wxCommandEvent& event );
 
 
-    void setLaboratory( CLaboratoryMulti* lab );
+	void setLaboratory(CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>* lab);
 
 ////@begin GenerationViewer member variables
 ////@end GenerationViewer member variables

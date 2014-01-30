@@ -181,7 +181,7 @@ wxIcon GenerationViewer::GetIconResource( const wxString& name )
 ////@end GenerationViewer icon retrieval
 }
 
-void GenerationViewer::setLaboratory( CLaboratoryMulti* lab )
+void GenerationViewer::setLaboratory(CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>* lab)
 {
     laboratory = lab;
     for ( size_t i=0; i < lab->getGenerationNumber(); ++i )

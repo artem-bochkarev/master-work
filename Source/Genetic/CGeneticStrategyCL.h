@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CGeneticStrategyCommon.h"
+#include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
@@ -10,7 +10,7 @@
 #include "Tools/Logger.h"
 
 
-class CGeneticStrategyCL : public CGeneticStrategyCommon
+class CGeneticStrategyCL : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
 {
     enum DeviceType
     {

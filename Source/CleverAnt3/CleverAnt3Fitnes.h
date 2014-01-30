@@ -1,10 +1,10 @@
 #include "GeneticParams.h"
-#include "GeneticAPI/CFitnessCounter.h"
+#include "GeneticAPI/CFitnesCounter.h"
 //#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatShortTables.h"
 typedef CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 4, 8> AUTOMAT;
 
-class CCleverAnt3Fitnes : public CFitnesCounter<ANT_FITNESS_TYPE, COUNTERS_TYPE, INPUT_TYPE>
+class CCleverAnt3Fitnes : public CFitnesCounter<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
 {
 public:
 	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;

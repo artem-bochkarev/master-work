@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CGeneticStrategyCommon.h"
+#include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/LabResultMulti.hpp"
@@ -13,12 +13,13 @@ template<class AUTOMAT_TYPE>
 class CMainInvoker;
 
 template<class AUTOMAT_TYPE>
-class CGeneticStrategyImpl : public CGeneticStrategyCommon
+class CGeneticStrategyImpl : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
 {
 public:
 	friend class CLocalInvoker<AUTOMAT_TYPE>;
 	friend class CMainInvoker<AUTOMAT_TYPE>;
-	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
+	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, 
+		CAntFitnesPtr fitnes,
 		const std::vector< std::string >& strings, Tools::Logger& );
     
     virtual void run();

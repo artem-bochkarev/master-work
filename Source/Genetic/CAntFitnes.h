@@ -1,9 +1,9 @@
 #pragma once
 #include "GeneticParams.h"
-#include "GeneticAPI/CFitnessCounter.h"
+#include "GeneticCommon/CleverAntFitnes.h"
 #include "GeneticCommon/CleverAntMap.h"
 
-class CAntFitnes : public CFitnesCounter<ANT_FITNESS_TYPE, COUNTERS_TYPE, INPUT_TYPE>
+class CAntFitnes : public CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
 {
 public:
 	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;

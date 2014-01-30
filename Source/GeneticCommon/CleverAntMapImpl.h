@@ -1,3 +1,4 @@
+#pragma once
 #include "CleverAntMap.h"
 
 class CMapImpl : public CMap

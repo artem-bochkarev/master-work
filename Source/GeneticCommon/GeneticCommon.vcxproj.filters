@@ -42,6 +42,24 @@
     <ClInclude Include="RandomImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LaboratoryMulti.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LaboratoryMulti.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntStrategy.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntFitnes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CleverAntFitnes.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutomatShortTables.hpp">

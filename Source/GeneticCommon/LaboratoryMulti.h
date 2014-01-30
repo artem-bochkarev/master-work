@@ -1,15 +1,16 @@
 #pragma once
-#include "GeneticParams.h"
 #include "GeneticAPI/CLaboratory.h"
 #include "GeneticCommon/LabResultMulti.hpp"
-#include "CGeneticStrategyCommon.h"
-#include "CAntFitnes.h"
+#include "CleverAntStrategy.h"
+//#include "CAntFitnes.h"
 
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE = double>
 class CLaboratoryMulti : public CLaboratory<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
 	CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
-        CGeneticStrategyCommonPtr strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult );
+		CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE> strategy, 
+		CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult);
     
     /*virtual void start();
     virtual void runForTime( int milisec );
@@ -28,17 +29,18 @@ public:
 
 	virtual const CActionContainer<COUNTERS_TYPE>* getActions() const;
 
-    CAntFitnes* getFitnesFunctor();
-    const CAntFitnes* getFitnesFunctor() const;
+	CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor();
+	const CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor() const;
 
     virtual ~CLaboratoryMulti();
 private:
  //   CLaboratoryMulti();
     mutable CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> results;
-    CGeneticStrategyCommonPtr strategy;
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> strategy;
 
     //CActionContainerPtr actions;
 	CAntCommonPtr<COUNTERS_TYPE> antCommonPtr;
 };
 
-typedef boost::shared_ptr<CLaboratoryMulti> CLaboratoryMultiPtr;
+template<typename C, typename I, typename F = double, typename K = CLaboratoryMulti<C, I, F> >
+using CLaboratoryMultiPtr = boost::shared_ptr< K >;

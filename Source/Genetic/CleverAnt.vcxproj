@@ -79,9 +79,7 @@
     <ClCompile Include="CAntFitnes.cpp" />
     <ClCompile Include="CCLWrapInvoker.cpp" />
     <ClCompile Include="CGeneticStrategyCLv3.cpp" />
-    <ClCompile Include="CGeneticStrategyCommon.cpp" />
     <ClCompile Include="CLaboratoryFactory.cpp" />
-    <ClCompile Include="CLaboratoryMulti.cpp" />
     <ClCompile Include="CTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -103,11 +101,8 @@
   <ItemGroup>
     <ClInclude Include="CAntFitnes.h" />
     <ClInclude Include="CGeneticStrategyCLv3.h" />
-    <ClInclude Include="CGeneticStrategyCommon.h" />
     <ClInclude Include="CLaboratoryFactory.h" />
-    <ClInclude Include="CLaboratoryMulti.h" />
     <ClInclude Include="COpenCLWrapInvoker.h" />
-    <ClInclude Include="CRandomImpl.h" />
     <ClInclude Include="CTest.h" />
     <ClInclude Include="GeneticParams.h" />
     <ClInclude Include="stdafx.h" />

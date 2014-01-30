@@ -1,6 +1,6 @@
 #include "wx/wx.h"
 #include "Genetic/CTest.h"
-#include "Genetic/CLaboratoryMulti.h"
+#include "GeneticCommon/LaboratoryMulti.h"
 #include "Tools/Logger.h"
 
 class MyApp: public wxApp
@@ -32,7 +32,7 @@ private:
     wxButton* button;
 
 	CActionContainer<COUNTERS_TYPE>* actions;
-    CLaboratoryMultiPtr laboratory;
+    CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> laboratory;
     std::vector<CMapPtr> maps;
     wxTimer timer;
     Tools::Logger logger;

@@ -15,4 +15,6 @@ public:
     virtual size_t size() const = 0;
 };
 
+template<typename NUMBERS_TYPE, typename C = CActionContainer<NUMBERS_TYPE> >
+using CActionContainerPtr = boost::shared_ptr< C >;
 //typedef boost::shared_ptr<CActionContainer> CActionContainerPtr;

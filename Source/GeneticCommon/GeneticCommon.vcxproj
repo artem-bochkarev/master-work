@@ -73,9 +73,15 @@
     <ClInclude Include="AntCommon.h" />
     <ClInclude Include="AutomatImpl.h" />
     <ClInclude Include="AutomatShortTables.h" />
+    <ClInclude Include="CleverAntFitnes.h" />
+    <ClInclude Include="CleverAntFitnes.hpp" />
     <ClInclude Include="CleverAntMap.h" />
     <ClInclude Include="CleverAntMapFactory.h" />
     <ClInclude Include="CleverAntMapImpl.h" />
+    <ClInclude Include="CleverAntStrategy.h" />
+    <ClInclude Include="CleverAntStrategy.hpp" />
+    <ClInclude Include="LaboratoryMulti.h" />
+    <ClInclude Include="LaboratoryMulti.hpp" />
     <ClInclude Include="LabResultMulti.h" />
     <ClInclude Include="RandomImpl.h" />
   </ItemGroup>

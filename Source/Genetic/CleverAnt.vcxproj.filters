@@ -33,13 +33,7 @@
     <ClCompile Include="CCLWrapInvoker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CGeneticStrategyCommon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CLaboratoryFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CLaboratoryMulti.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CTest.cpp">
@@ -74,19 +68,10 @@
     <ClInclude Include="CAntFitnes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CGeneticStrategyCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CLaboratoryFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CLaboratoryMulti.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="COpenCLWrapInvoker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CRandomImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CTest.h">

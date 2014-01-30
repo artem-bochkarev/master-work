@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CGeneticStrategyCommon.h"
+#include "GeneticCommon/CleverAntStrategy.hpp"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #include "CL/cl.hpp"
 #include <boost/filesystem.hpp>
 #include "SDKUtil/include/SDKCommon.hpp"
 
 
-class CGeneticStrategyCLv3 : public CGeneticStrategyCommon
+class CGeneticStrategyCLv3 : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
 {
 	enum AUTOMAT_TYPE
 	{

@@ -81,7 +81,7 @@
   <ItemGroup>
     <ClInclude Include="CAction.h" />
     <ClInclude Include="CAutomat.h" />
-    <ClInclude Include="CFitnessCounter.h" />
+    <ClInclude Include="CFitnesCounter.h" />
     <ClInclude Include="CGeneticAlgorithm.h" />
     <ClInclude Include="CLaboratory.h" />
     <ClInclude Include="CLaboratoryResult.h" />

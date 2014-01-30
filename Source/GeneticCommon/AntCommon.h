@@ -1,11 +1,12 @@
 #pragma once
 #include <boost\shared_ptr.hpp>
+#include "GeneticAPI/CAction.h"
 
 template<typename COUNTERS_TYPE>
 class CAntCommon
 {
 public:
-	CAntCommon(size_t statesCount, CActionContainerPtr aPtr)
+	CAntCommon(size_t statesCount, CActionContainerPtr<COUNTERS_TYPE> aPtr)
 		:m_statesCount(statesCount), actionsPtr(aPtr) {}
 	
 	size_t statesCount() const
@@ -30,7 +31,7 @@ public:
 
 private:
 	CAntCommon();
-	CActionContainerPtr actionsPtr;
+	CActionContainerPtr<COUNTERS_TYPE> actionsPtr;
 	size_t m_statesCount;
 };
 

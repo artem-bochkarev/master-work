@@ -116,7 +116,8 @@ public:
 
 
 template<class AUTOMAT_TYPE>
-CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
+CGeneticStrategyImpl<AUTOMAT_TYPE>::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, 
+	CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger )
 :CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), isCacheValid(false), cnt(0), cachedResult(0)
 {

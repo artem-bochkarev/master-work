@@ -1,5 +1,6 @@
 #include "wx/wx.h"
-#include "Genetic/CTest.h"
+#include "Genetic/GeneticParams.h"
+#include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/LaboratoryMulti.h"
 #include "Tools/Logger.h"
 

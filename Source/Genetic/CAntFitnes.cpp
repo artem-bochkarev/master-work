@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CAntFitnes.h"
 #include "GeneticCommon/CleverAntMapImpl.h"
-#include "CTest.h"
+#include "GeneticCommon/Test.hpp"
 
 void CAntFitnes::setMaps(std::vector<CMapPtr> maps)
 {
@@ -46,7 +46,7 @@ ANT_FITNESS_TYPE CAntFitnesCPU::fitnes( const CAutomat<COUNTERS_TYPE, INPUT_TYPE
     for ( std::vector<CMapPtr>::const_iterator it = maps.begin(); it != maps.end(); ++it )
     {
         CMapImpl tmpMap( it->get() );
-        result +=  CTest::run( automat,  &tmpMap, m_steps );
+		result += CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>::run(automat, &tmpMap, m_steps);
     }
     return result;
 }

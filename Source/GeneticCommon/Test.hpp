@@ -1,63 +1,17 @@
-#include "stdafx.h"
-#include "CTest.h"
+#pragma once
+#include "Test.h"
 #include "GeneticCommon/CleverAntMapImpl.h"
 #include "GeneticCommon/AutomatImpl.h"
 
-EDirection left( EDirection d )
-{
-    switch (d)
-    {
-        case (DLeft):
-            {
-                return DDown;
-            }break;
-        case (DUp):
-            {
-                return DLeft;
-            }break;
-        case (DRight):
-            {
-                return DUp;
-            }break;
-        case (DDown):
-            {
-                return DRight;
-            }break;
-    }
-    return DUp;
-}
-
-EDirection right( EDirection d )
-{
-    switch (d)
-    {
-        case (DLeft):
-            {
-                return DUp;
-            }break;
-        case (DUp):
-            {
-                return DRight;
-            }break;
-        case (DRight):
-            {
-                return DDown;
-            }break;
-        case (DDown):
-            {
-                return DLeft;
-            }break;
-    }
-    return DDown;
-}
-
-CTest::CTest(CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves, int x, int y, EDirection dir)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CTest(CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves, int x, int y, EDirection dir)
     :moves(moves), automat(automat), map(map), movesCnt(0), m_foodEaten(0), 
         currentState( automat->getStartState() ), currentDirection( dir ), x(x), y(y)
 {
 }
 
-bool CTest::makeMove()
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+bool CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::makeMove()
 {
     if ( movesCnt > moves-1 )
         return false;
@@ -105,26 +59,30 @@ bool CTest::makeMove()
     return true;
 }
 
-size_t CTest::movesMaked() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+size_t CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::movesMaked() const
 {
     return movesCnt;
 }
 
-size_t CTest::foodEaten() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+size_t CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::foodEaten() const
 {
     return m_foodEaten;
 }
 
-std::vector< std::pair<int, int> > CTest::getVisibleCells( const CMap *map, int x, int y, EDirection direct )
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+std::vector< std::pair<int, int> > CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getVisibleCells(const CMap *map, int x, int y, EDirection direct)
 {
     return map->getVisibleCells( x, y, direct );
 }
 
-double CTest::run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE> *automat, CMap *map, size_t moves)
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE> *automat, CMap *map, size_t moves)
 {
     int x = 0, y = 0;
     EDirection direct( DRight );
-    double cnt = 0;
+	FITNES_TYPE cnt = 0;
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
     //const CAutomatImpl* autImpl = static_cast<const CAutomatImpl*>(automat);
     char curState = automat->getStartState();
@@ -171,22 +129,26 @@ double CTest::run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE> *automat, CMap *map,
     return cnt;
 }
 
-const CMap* CTest::getArena() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+const CMap* CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getArena() const
 {
     return map;
 }
 
-int CTest::getX() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+int CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getX() const
 {
     return x;
 }
 
-int CTest::getY() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+int CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getY() const
 {
     return y;
 }
 
-EDirection CTest::getDir() const
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+EDirection CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getDir() const
 {
     return currentDirection;
 }

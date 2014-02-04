@@ -29,5 +29,8 @@
     <ClCompile Include="GeneticStrategyImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CleverAnt3Fitnes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

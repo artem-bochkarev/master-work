@@ -84,6 +84,7 @@
     <ClInclude Include="LaboratoryMulti.hpp" />
     <ClInclude Include="LabResultMulti.h" />
     <ClInclude Include="RandomImpl.h" />
+    <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionContainerImpl.hpp">
@@ -101,6 +102,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="RandomImpl.cpp" />
+    <ClCompile Include="Test.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

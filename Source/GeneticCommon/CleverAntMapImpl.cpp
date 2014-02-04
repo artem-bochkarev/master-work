@@ -3,6 +3,54 @@
 
 const int VISIBLE_CELLS = 4;
 
+EDirection left( EDirection d )
+{
+    switch (d)
+    {
+        case (DLeft):
+            {
+                return DDown;
+            }break;
+        case (DUp):
+            {
+                return DLeft;
+            }break;
+        case (DRight):
+            {
+                return DUp;
+            }break;
+        case (DDown):
+            {
+                return DRight;
+            }break;
+    }
+    return DUp;
+}
+
+EDirection right( EDirection d )
+{
+    switch (d)
+    {
+        case (DLeft):
+            {
+                return DUp;
+            }break;
+        case (DUp):
+            {
+                return DRight;
+            }break;
+        case (DRight):
+            {
+                return DDown;
+            }break;
+        case (DDown):
+            {
+                return DLeft;
+            }break;
+    }
+    return DDown;
+}
+
 CMapImpl::CMapImpl(size_t width, size_t height, size_t foodCounter)
 :x_size(width), y_size(height), map(0)
 {

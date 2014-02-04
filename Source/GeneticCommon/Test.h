@@ -1,15 +1,17 @@
 #pragma once
-#include "GeneticParams.h"
 #include "GeneticAPI/CAutomat.h"
 #include "GeneticCommon/CleverAntMap.h"
 
+EDirection left(EDirection d);
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
 class CTest
 {
 public:
 	CTest(CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves, int x = 0, int y = 0,
            EDirection start = DRight );
     bool makeMove();
-	static double run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves = 100);
+	static FITNES_TYPE run(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves = 100);
     const CMap* getArena() const;
     size_t movesMaked() const;
     size_t foodEaten() const;

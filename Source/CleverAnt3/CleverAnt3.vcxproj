@@ -74,6 +74,7 @@
     <ClInclude Include="GeneticStrategyImpl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CleverAnt3Fitnes.cpp" />
     <ClCompile Include="GeneticStrategyImpl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

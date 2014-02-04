@@ -4,7 +4,7 @@
 #include <sstream>
 #include "SDKUtil/include/SDKCommon.hpp"
 #include "GeneticCommon/AutomatImpl.h"
-#include "CTest.h"
+#include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include "Tools/helper.hpp"

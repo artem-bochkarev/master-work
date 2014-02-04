@@ -36,7 +36,7 @@ public:
 private:
  //   CLaboratoryMulti();
     mutable CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> results;
-	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> strategy;
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE> strategy;
 
     //CActionContainerPtr actions;
 	CAntCommonPtr<COUNTERS_TYPE> antCommonPtr;

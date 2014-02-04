@@ -6,7 +6,7 @@
 #include "SDKUtil/include/SDKCommon.hpp"
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/CleverAntMapImpl.h"
-#include "CTest.h"
+#include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>

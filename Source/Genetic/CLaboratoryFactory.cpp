@@ -7,7 +7,8 @@
 #include "CGeneticStrategyCLv3.h"
 #include "CGeneticStrategyCLWrap.h"
 #include "GeneticCommon/LaboratoryMulti.hpp"
-#include "GeneticCommon/CleverAntMapFactory.h"
+#include "GeneticCommon/CleverAntMapImpl.h"
+#include "GeneticCommon/CleverAntMapFactory.hpp"
 #include "GeneticCommon/AutomatShortTables.h"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
@@ -63,10 +64,10 @@ CLaboratoryPtr CLaboratoryFactory::createLaboratory( Tools::Logger& logger, std:
     CMapPtr map1;
     if ( args.size() < 2 )
     {
-        map1 = CMapFactory::getMap( "map1.txt" );
+		map1 = CMapFactory<CMapImpl>::getMap("map1.txt");
     }else
     {
-        map1 = CMapFactory::getMap( args[1].c_str() );
+		map1 = CMapFactory<CMapImpl>::getMap(args[1].c_str());
     }
 
     std::vector<CMapPtr> maps;

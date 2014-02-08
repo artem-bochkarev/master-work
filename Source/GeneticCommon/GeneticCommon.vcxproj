@@ -96,7 +96,9 @@
     <ClCompile Include="AutomatShortTables.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="CleverAntMapFactory.cpp" />
+    <ClCompile Include="CleverAntMapFactory.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CleverAntMapImpl.cpp" />
     <ClCompile Include="LabResultMulti.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

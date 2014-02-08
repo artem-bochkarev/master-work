@@ -26,7 +26,7 @@ private:
 class CStrategyFactory
 {
 public:
-    static CGeneticAlgorithmPtr getStrategy();
+    static CGeneticAlgorithmPtr<COUNTERS_TYPE, INPUT_TYPE> getStrategy();
 	static  CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> createStrategy(const std::vector< std::string >& strings,
 		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
 private:

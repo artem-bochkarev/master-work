@@ -89,7 +89,7 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
     for ( size_t i=0; i<moves; ++i )
     {
         //int input[4];
-		std::vector<INPUT_TYPE> input(4);
+		std::vector<INPUT_TYPE> input(8);
         mapImpl->getInput( x, y, direct, input.data() );
         char action = automat->getAction( curState, input );
         curState = automat->getNextState( curState, input );

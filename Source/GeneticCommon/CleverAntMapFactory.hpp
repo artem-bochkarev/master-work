@@ -1,15 +1,17 @@
+#pragma once
 #include "CleverAntMapFactory.h"
 #include "CleverAntMapImpl.h"
 #include <fstream>
 
-CMapPtr CMapFactory::getMap(const char *filename)
+template<typename MAP_TYPE>
+CMapPtr CMapFactory<MAP_TYPE>::getMap(const char *filename)
 {
     std::ifstream in( filename );
     if ( !in.is_open() )
         return getRandomMap( 32, 32, 64 );
     int n, m;
     in >> n >> m;
-    CMapImpl* map = new CMapImpl( n, m, 0 );
+	CMapImpl* map = new MAP_TYPE(n, m, 0);
     if ( !in.is_open() )
         return CMapPtr( map );
 
@@ -26,8 +28,9 @@ CMapPtr CMapFactory::getMap(const char *filename)
     return CMapPtr( map );
 }
 
-CMapPtr CMapFactory::getRandomMap(int n, int m, int cnt)
+template<typename MAP_TYPE>
+CMapPtr CMapFactory<MAP_TYPE>::getRandomMap(int n, int m, int cnt)
 {
-    CMapPtr ptr( new CMapImpl( n, m, cnt ) );
+    CMapPtr ptr( new MAP_TYPE( n, m, cnt ) );
     return ptr;
 }

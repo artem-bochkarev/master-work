@@ -77,9 +77,6 @@
     <ClCompile Include="ActionContainerImpl.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CleverAntMapFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CleverAntMapImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Test.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CleverAntMapFactory.hpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

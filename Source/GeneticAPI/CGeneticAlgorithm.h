@@ -24,3 +24,5 @@ public:
     virtual const boost::exception_ptr& getError() const = 0;
 };
 
+template<typename C, typename I, typename K = CGeneticAlgorithm<C, I> >
+using CGeneticAlgorithmPtr = boost::shared_ptr< K >;

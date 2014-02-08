@@ -72,9 +72,9 @@ void MyFrame::initLaboratory(const std::string fName)
 	try
 	{
 		laboratory = CLaboratoryFactory::getLaboratory(logger, fName);
-		CMapPtr map1 = CMapFactory::getMap("map1.txt");
+		CMapPtr map1 = CMapFactory<CMapImpl>::getMap("map1.txt");
 		//  CMap map2( 32, 32, 64 );
-		CMapPtr map3 = CMapFactory::getRandomMap(32, 32, 64);
+		CMapPtr map3 = CMapFactory<CMapImpl>::getRandomMap(32, 32, 64);
 
 		maps.clear();
 		maps.push_back(map1);

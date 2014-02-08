@@ -70,11 +70,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CleverAnt3Fitnes.h" />
+    <ClInclude Include="CleverAnt3LaboratoryFactory.h" />
+    <ClInclude Include="CleverAnt3Map.h" />
     <ClInclude Include="GeneticParams.h" />
     <ClInclude Include="GeneticStrategyImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CleverAnt3Fitnes.cpp" />
+    <ClCompile Include="CleverAnt3LaboratoryFactory.cpp" />
+    <ClCompile Include="CleverAnt3Map.cpp" />
     <ClCompile Include="GeneticStrategyImpl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,5 +1,10 @@
 #include "GeneticStrategyImpl.h"
 
+void CGeneticStrategyImpl::run()
+{
+	nextGeneration(m_pRandom.get());
+}
+
 void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 {
 	std::vector<ANT_FITNESS_TYPE> results(individuals.size());

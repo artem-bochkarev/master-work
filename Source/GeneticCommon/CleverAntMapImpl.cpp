@@ -195,7 +195,7 @@ void CMapImpl::pushToBuffer( int x, int y, int*& buffer ) const
     buffer += 2;
 }
 
-int CMapImpl::getVisibleCells( int x, int y, EDirection direct, int* buffer, int size ) const
+int CMapImpl::getVisibleCells( int x, int y, EDirection direct, int* buffer ) const
 {
     int x1(x), y1(y);
     forwardOf( x1, y1, direct );
@@ -213,26 +213,7 @@ int CMapImpl::getVisibleCells( int x, int y, EDirection direct, int* buffer, int
     forwardOf( x4, y4, direct );
     pushToBuffer( x4, y4, buffer );
 
-    if ( size <= 4 )
-        return 4;
-
-    int x5(x), y5(y);
-    leftOf( x5, y5, direct );
-    pushToBuffer( x5, y5, buffer );
-
-    int x6(x), y6(y);
-    rightOf( x6, y6, direct );
-    pushToBuffer( x6, y6, buffer );
-
-    int x7(x5), y7(y5);
-    leftOf( x7, y7, direct );
-    pushToBuffer( x7, y7, buffer );
-
-    int x8(x6), y8(y6);
-    rightOf( x8, y8, direct );
-    pushToBuffer( x8, y8, buffer );
-
-    return 8;
+	return 4;
 }
 
 std::vector< std::pair<int, int> > CMapImpl::getVisibleCells( int x, int y, EDirection direct ) const
@@ -261,41 +242,13 @@ std::vector< std::pair<int, int> > CMapImpl::getVisibleCells( int x, int y, EDir
     forwardOf( x4, y4, direct );
     vec.push_back( std::make_pair( x4, y4 ) );
 
-
-    /*
-    int x5(x), y5(y);
-    leftOf( x5, y5, direct );
-    vec.push_back( std::make_pair( x5, y5 ) );
-
-    int x6(x), y6(y);
-    rightOf( x6, y6, direct );
-    vec.push_back( std::make_pair( x6, y6 ) );
-
-    int x7(x5), y7(y5);
-    leftOf( x7, y7, direct );
-    vec.push_back( std::make_pair( x7, y7 ) );
-
-    int x8(x6), y8(y6);
-    rightOf( x8, y8, direct );
-    vec.push_back( std::make_pair( x8, y8 ) );*/
-
     return vec;
 }
 
 std::vector<int> CMapImpl::getInput( size_t x, size_t y, EDirection direct ) const
 {
-    
-    /*std::vector< std::pair<int, int> > vec( getVisibleCells( x, y, direct ) );
-    std::vector<int> res;
-    for ( size_t i=0; i<vec.size(); ++i )
-    {
-        const std::pair<int, int>& pair( vec[i] );
-        res.push_back( map[pair.second][pair.first] );
-    }
-    return res;*/
-    
     int buffer[2 * VISIBLE_CELLS];
-    int size = getVisibleCells( x, y, direct, buffer, VISIBLE_CELLS );
+    int size = getVisibleCells( x, y, direct, buffer );
     std::vector<int> res;
     for ( int i=0; i<size; ++i )
     {
@@ -307,7 +260,7 @@ std::vector<int> CMapImpl::getInput( size_t x, size_t y, EDirection direct ) con
 void CMapImpl::getInput( size_t x, size_t y, EDirection direct, int* output ) const
 {   
     int buffer[2 * VISIBLE_CELLS];
-    int size = getVisibleCells( x, y, direct, buffer, VISIBLE_CELLS );
+    int size = getVisibleCells( x, y, direct, buffer );
     for ( int i=0; i<size; ++i )
     {
         output[i] = map[ buffer[2*i + 1] ][ buffer[2*i] ];

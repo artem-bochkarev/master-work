@@ -1,5 +1,6 @@
 #include "CleverAntMap.h"
 
+template<typename MAP_TYPE>
 class CMapFactory
 {
 public:

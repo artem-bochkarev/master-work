@@ -1,3 +1,4 @@
+#pragma once
 #include "GeneticParams.h"
 #include "GeneticCommon/CleverAntFitnes.h"
 //#include "GeneticCommon/CleverAntMap.h"
@@ -24,6 +25,7 @@ typedef boost::shared_ptr<CCleverAnt3Fitnes> CCleverAnt3FitnesPtr;
 class CCleverAnt3FitnesCPU : public CCleverAnt3Fitnes
 {
 public:
+	CCleverAnt3FitnesCPU(size_t stepsCount);
 	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
 	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNESS_TYPE>& result) const;
 protected:

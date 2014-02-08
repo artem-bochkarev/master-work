@@ -1,19 +1,21 @@
 #pragma once
 #include "GeneticParams.h"
-#include "GeneticAPI/CGeneticAlgorithm.h"
+#include "GeneticCommon/CleverAntStrategy.h"
 #include "CleverAnt3Fitnes.h"
 #include "GeneticCommon/AutomatShortTables.h"
-/*#include "CLabResultMulti.h"
+#include "GeneticCommon/AntCommon.h"
+#include "GeneticCommon/LabResultMulti.h"
 #include "Tools/Logger.h"
-#include "CAntFitnes.h"*/
+#include "CleverAnt3Fitnes.h"
 
 typedef CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 4, 8> AUTOMAT;
 
-class CGeneticStrategyImpl : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
+class CGeneticStrategyImpl : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	//CGeneticStrategyCommon(AntCommonPtr pAntCommon, CLabResultMulti* res, CAntFitnesPtr fitnes,
-	//	const std::vector< std::string >& strings, Tools::Logger& logger);
+	CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, 
+		CCleverAntFitnesPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> fitnes, 
+		const std::vector< std::string >& strings, Tools::Logger& logger);
 	virtual void nextGeneration(CRandom* rand);
 	//virtual void setMaps(std::vector<CMapPtr> maps);
 	//virtual const CMapPtr getMap(size_t i);
@@ -25,10 +27,11 @@ public:
 	virtual CInvoker* getInvoker() const;
 	virtual size_t getN() const;
 	virtual size_t getM() const;
-	virtual std::string getDeviceType() const = 0;
+	virtual std::string getDeviceType() const;
 	virtual const boost::exception_ptr& getError() const;
 	virtual std::string getPoolInfo() const;
 
+	virtual void run();
 	//CAntFitnes* getFitnesFunctor();
 	//const CAntFitnes* getFitnesFunctor() const;
 protected:
@@ -46,6 +49,7 @@ protected:
 	//Tools::Logger& logger;
 	//std::vector<CMapPtr> maps;
 	boost::exception_ptr error;
+	CRandomPtr m_pRandom;
 };
 
 typedef boost::shared_ptr<CGeneticStrategyImpl> CGeneticStrategyImplPtr;

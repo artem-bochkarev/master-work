@@ -1,13 +1,15 @@
 #pragma once
 
+#include "GeneticParams.h"
 #include "GeneticCommon/CleverAntStrategy.hpp"
 #define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #include "CL/cl.hpp"
 #include <boost/filesystem.hpp>
 #include "SDKUtil/include/SDKCommon.hpp"
+#include "CAntFitnes.h"
 
 
-class CGeneticStrategyCLv2 : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
+class CGeneticStrategyCLv2 : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {
 public:
 	CGeneticStrategyCLv2(const boost::filesystem::path& source, CAntCommonPtr<COUNTERS_TYPE> pAntCommon,

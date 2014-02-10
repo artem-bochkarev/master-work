@@ -4,8 +4,11 @@
 #include <wx/sharedptr.h>
 
 #include "GeneticCommon/ActionContainerImpl.h"
-#include "Genetic/CLaboratoryFactory.h"
-#include "GeneticCommon/CleverAntMapFactory.h"
+//#include "Genetic/CLaboratoryFactory.h"
+#include "GeneticCommon/CleverAntMapFactory.hpp"
+
+#include "CleverAnt3/CleverAnt3LaboratoryFactory.h"
+#include "CleverAnt3/CleverAnt3Map.h"
 
 #include "Tools/errorMsg.hpp"
 
@@ -71,7 +74,7 @@ void MyFrame::initLaboratory(const std::string fName)
 {
 	try
 	{
-		laboratory = CLaboratoryFactory::getLaboratory(logger, fName);
+		/*laboratory = CLaboratoryFactory::getLaboratory(logger, fName);
 		CMapPtr map1 = CMapFactory<CMapImpl>::getMap("map1.txt");
 		//  CMap map2( 32, 32, 64 );
 		CMapPtr map3 = CMapFactory<CMapImpl>::getRandomMap(32, 32, 64);
@@ -82,7 +85,13 @@ void MyFrame::initLaboratory(const std::string fName)
 		//  maps.push_back( map3 );
 		laboratory->setMaps(maps);
 		//laboratory->start();
-
+		*/
+		
+		laboratory = CleverAnt3LaboratoryFactory::getLaboratory(logger, fName);
+		CMapPtr map1 = CMapFactory<CCleverAnt3Map>::getMap("map1.txt");
+		maps.clear();
+		maps.push_back(map1);
+		laboratory->setMaps(maps);
 		drawGraph();
 	}
 	catch (std::exception& err)

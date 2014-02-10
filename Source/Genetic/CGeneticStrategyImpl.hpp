@@ -253,7 +253,7 @@ void CGeneticStrategyImpl<AUTOMAT_TYPE>::fillCache() const
             for ( std::vector<CMapPtr>::const_iterator it = maps.begin(); it != maps.end(); ++it )
             {
                 CMapImpl tmpMap( it->get() );
-                tmp += CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>::run( individs[i][j],  &tmpMap );
+                tmp += CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>::run( individs[i][j],  &tmpMap );
             }
             cachedResult[i][j] = tmp;
         }

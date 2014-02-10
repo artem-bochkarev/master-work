@@ -106,6 +106,14 @@
     <ClCompile Include="RandomImpl.cpp" />
     <ClCompile Include="Test.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeneticAPI\GeneticAPI.vcxproj">
+      <Project>{d3a5c576-bfcb-4550-a753-9b52ef7b06e6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\TimeRun\TimeRun.vcxproj">
+      <Project>{b9c14178-a21f-49a1-ac8c-c80f3543bbb7}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

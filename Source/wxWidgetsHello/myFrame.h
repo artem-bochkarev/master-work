@@ -1,5 +1,6 @@
 #include "wx/wx.h"
-#include "Genetic/GeneticParams.h"
+//#include "Genetic/GeneticParams.h"
+#include "CleverAnt3/GeneticParams.h"
 #include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/LaboratoryMulti.h"
 #include "Tools/Logger.h"
@@ -33,7 +34,7 @@ private:
     wxButton* button;
 
 	CActionContainer<COUNTERS_TYPE>* actions;
-    CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> laboratory;
+    CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> laboratory;
     std::vector<CMapPtr> maps;
     wxTimer timer;
     Tools::Logger logger;

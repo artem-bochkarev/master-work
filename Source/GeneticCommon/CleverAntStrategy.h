@@ -28,8 +28,8 @@ public:
     virtual const boost::exception_ptr& getError() const;
     virtual std::string getPoolInfo() const;
 
-	CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor();
-	const CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor() const;
+	virtual CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor();
+	virtual const CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor() const;
 protected:
     virtual void pushResults();
 

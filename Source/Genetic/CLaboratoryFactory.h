@@ -8,10 +8,10 @@
 class CLaboratoryFactory
 {
 public:
-	static CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> getLaboratory(Tools::Logger& logger, const std::string& fileName);
+	static CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> getLaboratory(Tools::Logger& logger, const std::string& fileName);
     static CLaboratoryPtr createLaboratory( Tools::Logger& logger, std::vector<std::string> &args );
 private:
-	static  CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> noFile(Tools::Logger& logger);
+	static  CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> noFile(Tools::Logger& logger);
     
 	static CAntCommonPtr<COUNTERS_TYPE> createAntCommon(const std::vector<std::string>& strings);
 
@@ -27,14 +27,14 @@ class CStrategyFactory
 {
 public:
     static CGeneticAlgorithmPtr<COUNTERS_TYPE, INPUT_TYPE> getStrategy();
-	static  CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> createStrategy(const std::vector< std::string >& strings,
+	static  CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> createStrategy(const std::vector< std::string >& strings,
 		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
 private:
-	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> createStrategyCL(const std::vector< std::string >& strings,
+	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> createStrategyCL(const std::vector< std::string >& strings,
 		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
-	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> createStrategyCPU(const std::vector< std::string >& strings,
+	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> createStrategyCPU(const std::vector< std::string >& strings,
 		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
-	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> createStrategyWRAP(const std::vector< std::string >& strings,
+	static CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> createStrategyWRAP(const std::vector< std::string >& strings,
 		CAntCommonPtr<COUNTERS_TYPE> antCommon, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults, Tools::Logger& logger);
     CStrategyFactory();
 };

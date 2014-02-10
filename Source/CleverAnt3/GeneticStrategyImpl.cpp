@@ -1,4 +1,13 @@
 #include "GeneticStrategyImpl.h"
+#include "GeneticCommon/CleverAntStrategy.hpp"
+
+CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res,
+	CCleverAnt3FitnesPtr fitnes,
+	const std::vector< std::string >& strings, Tools::Logger& logger)
+	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger)
+{
+	fitnesFunctor = fitnes;
+}
 
 void CGeneticStrategyImpl::run()
 {
@@ -7,10 +16,10 @@ void CGeneticStrategyImpl::run()
 
 void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 {
-	std::vector<ANT_FITNESS_TYPE> results(individuals.size());
+	std::vector<ANT_FITNES_TYPE> results(individuals.size());
 	fitnesFunctor->fitnes(individuals, results);
 
-	ANT_FITNESS_TYPE avg = 0;
+	ANT_FITNES_TYPE avg = 0;
 	uint k = 0;
 	for (uint i = 0; i < individuals.size(); ++i)
 	{
@@ -19,7 +28,7 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 			k = i;
 	}
 	avg /= individuals.size();
-	ANT_FITNESS_TYPE max = results[k];
+	ANT_FITNES_TYPE max = results[k];
 
 	std::vector<AUTOMAT> newGeneration(individuals.size());
 	for (int i = 0; i < N; ++i)
@@ -44,12 +53,12 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 //void CGeneticStrategyImpl::setMaps(std::vector<CMapPtr> maps);
 //const CMapPtr CGeneticStrategyImpl::getMap(size_t i);
 //size_t getMapsCount();
-ANT_FITNESS_TYPE CGeneticStrategyImpl::getAvgFitness() const
+ANT_FITNES_TYPE CGeneticStrategyImpl::getAvgFitness() const
 {
 	return m_avg;
 }
 
-ANT_FITNESS_TYPE CGeneticStrategyImpl::getMaxFitness() const
+ANT_FITNES_TYPE CGeneticStrategyImpl::getMaxFitness() const
 {
 	return m_max;
 }
@@ -85,5 +94,8 @@ const boost::exception_ptr& CGeneticStrategyImpl::getError() const
 }
 CGeneticStrategyImpl::~CGeneticStrategyImpl() {}
 
-//std::string CGeneticStrategyImpl::getDeviceType() const = 0;
+std::string CGeneticStrategyImpl::getDeviceType() const
+{
+	return "Clever ant 3 standard";
+}
 

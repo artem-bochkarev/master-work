@@ -1,13 +1,15 @@
 #pragma once
 
+#include "GeneticParams.h"
 #include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/LabResultMulti.hpp"
+#include "CAntFitnes.h"
 #include "GenCLWrap.h"
 #include "Tools/Logger.h"
 
-class CGeneticStrategyCLWrap : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
+class CGeneticStrategyCLWrap : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {
 public:
 	CGeneticStrategyCLWrap(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res, CAntFitnesPtr fitnes,

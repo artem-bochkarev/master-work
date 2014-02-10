@@ -106,9 +106,8 @@
     <ClInclude Include="myFrame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Genetic\CleverAnt.vcxproj">
-      <Project>{494896eb-9a10-4e6b-b966-e4ddcef9b894}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    <ProjectReference Include="..\CleverAnt3\CleverAnt3.vcxproj">
+      <Project>{3e8748ce-b466-4c86-8ef4-95fe9681dff6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Tools\Tools.vcxproj">
       <Project>{c6c20a1d-c572-444c-8891-94341dc19f0b}</Project>

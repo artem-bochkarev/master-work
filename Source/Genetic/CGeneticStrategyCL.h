@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GeneticParams.h"
 #include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatImpl.h"
@@ -8,9 +9,10 @@
 #include "CL/cl.hpp"
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
+#include "CAntFitnes.h"
 
 
-class CGeneticStrategyCL : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
+class CGeneticStrategyCL : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {
     enum DeviceType
     {

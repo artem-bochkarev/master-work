@@ -373,7 +373,7 @@ void AntViewer::drawVisibleCells( wxColor color )
 	dc.SetPen(wxNullPen);
 }
 
-void AntViewer::setTester(wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> > ptr)
+void AntViewer::setTester(wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> > ptr)
 {
     antArena = ptr;
     draw();

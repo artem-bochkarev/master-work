@@ -1,7 +1,7 @@
 #pragma once
 #include "CleverAntStrategy.h"
 #include "CleverAntMapImpl.h"
-#include "CAntFitnes.h"
+#include "CleverAntFitnes.hpp"
 #include <sstream>
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>

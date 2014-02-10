@@ -5,6 +5,7 @@
 #include "GeneticCommon/AutomatImpl.h"
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "Tools/Logger.h"
+#include "CAntFitnes.h"
 
 template<class AUTOMAT_TYPE>
 class CLocalInvoker;
@@ -13,7 +14,7 @@ template<class AUTOMAT_TYPE>
 class CMainInvoker;
 
 template<class AUTOMAT_TYPE>
-class CGeneticStrategyImpl : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
+class CGeneticStrategyImpl : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {
 public:
 	friend class CLocalInvoker<AUTOMAT_TYPE>;

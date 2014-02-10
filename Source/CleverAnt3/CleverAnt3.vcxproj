@@ -81,6 +81,11 @@
     <ClCompile Include="CleverAnt3Map.cpp" />
     <ClCompile Include="GeneticStrategyImpl.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeneticCommon\GeneticCommon.vcxproj">
+      <Project>{cc1e3925-b43f-4ffe-802b-04d6c6a31472}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

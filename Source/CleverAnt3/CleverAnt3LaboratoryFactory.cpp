@@ -14,7 +14,7 @@
 #include <boost/assert.hpp>
 #include <fstream>
 
-CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> CleverAnt3LaboratoryFactory::getLaboratory(Tools::Logger& logger, const std::string& fileNameM)
+CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3LaboratoryFactory::getLaboratory(Tools::Logger& logger, const std::string& fileNameM)
 {
 	return noFile(logger);
 	/*std::string fileName = fileNameM;
@@ -44,11 +44,11 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> CleverAnt3Labor
 	CAntCommonPtr<COUNTERS_TYPE> antCommon = createAntCommon(strings);
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 
-	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> strategy = CStrategyFactory::createStrategy(strings, antCommon, labResults, logger);
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy = CStrategyFactory::createStrategy(strings, antCommon, labResults, logger);
 	return createLaboratory(antCommon, strategy, labResults);*/
 }
 
-CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> CleverAnt3LaboratoryFactory::noFile(Tools::Logger& logger)
+CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3LaboratoryFactory::noFile(Tools::Logger& logger)
 {
 	CActionContainerPtr<COUNTERS_TYPE> actions(new CActionContainerImpl<COUNTERS_TYPE>());
 	actions->addAction(0, "move forward");
@@ -59,12 +59,12 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> CleverAnt3Labor
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 	std::vector< std::string > strings;
 	CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCPU(DEFAULT_STEPS_COUNT));
-	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> strategy(
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy(
 		new CGeneticStrategyImpl/*< CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 3, INPUT_PARAMS_COUNT> >*/
 		(antCommon, labResults.get(), fitnesFunctor, strings, logger));
 
-	return CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>(
-		new CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>(antCommon, strategy, labResults));
+	return CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(
+		new CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(antCommon, strategy, labResults));
 }
 
 CAntCommonPtr<COUNTERS_TYPE> CleverAnt3LaboratoryFactory::createAntCommon(const std::vector<std::string>& strings)
@@ -93,7 +93,7 @@ CAntCommonPtr<COUNTERS_TYPE> CleverAnt3LaboratoryFactory::createAntCommon(const 
 
 CLaboratoryPtr CleverAnt3LaboratoryFactory::createLaboratory(Tools::Logger& logger, std::vector<std::string> &args)
 {
-	CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> laboratory;
+	CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> laboratory;
 
 	if (args.size() < 1)
 	{

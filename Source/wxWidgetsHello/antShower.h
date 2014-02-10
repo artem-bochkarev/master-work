@@ -1,7 +1,8 @@
 #ifndef _ANTVIEWER_H_
 #define _ANTVIEWER_H_
 
-#include "Genetic/GeneticParams.h"
+//#include "Genetic/GeneticParams.h"
+#include "CleverAnt3/GeneticParams.h"
 #include "GeneticCommon/Test.hpp"
 #include <wx/sharedptr.h>
 #include <wx/timer.h>
@@ -48,7 +49,7 @@ class AntViewer: public wxDialog
     DECLARE_DYNAMIC_CLASS( AntViewer )
     DECLARE_EVENT_TABLE()
 
-    wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> > antArena;
+    wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> > antArena;
     bool bMapDrawed;
     int buttonMode;
 
@@ -109,7 +110,7 @@ public:
 ////@begin AntViewer member variables
 ////@end AntViewer member variables
 
-	void setTester(wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> > ptr);
+	void setTester(wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> > ptr);
 };
 
 #endif

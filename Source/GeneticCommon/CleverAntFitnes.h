@@ -2,11 +2,11 @@
 #include "GeneticAPI/CFitnesCounter.h"
 #include "CleverAntMap.h"
 
-template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename ANT_FITNESS_TYPE>
-class CCleverAntFitnes : public CFitnesCounter<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename ANT_FITNES_TYPE>
+class CCleverAntFitnes : public CFitnesCounter<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {
 public:
-	virtual ANT_FITNESS_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;
+	virtual ANT_FITNES_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;
 
 	virtual void setMaps(std::vector<CMapPtr> maps) = 0;
 	virtual const CMapPtr getMap(size_t i) = 0;

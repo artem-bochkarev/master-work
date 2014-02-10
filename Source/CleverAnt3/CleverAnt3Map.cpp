@@ -1,5 +1,9 @@
 #include "CleverAnt3Map.h"
 
+CCleverAnt3Map::CCleverAnt3Map(size_t width, size_t geight, size_t foodCounter)
+:CMapImpl(width, geight, foodCounter)
+{}
+
 int CCleverAnt3Map::getVisibleCells(int x, int y, EDirection direct, int* buffer ) const
 {
 	int x1(x), y1(y);

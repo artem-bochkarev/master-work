@@ -13,7 +13,6 @@
 #include "wx/imaglist.h"
 ////@end includes
 
-#include "AntViewer.h"
 #include "AntShower.h"
 #include <wx/sharedptr.h>
 #include "CGenerationViewer.h"
@@ -181,7 +180,7 @@ wxIcon GenerationViewer::GetIconResource( const wxString& name )
 ////@end GenerationViewer icon retrieval
 }
 
-void GenerationViewer::setLaboratory(CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>* lab)
+void GenerationViewer::setLaboratory(CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>* lab)
 {
     laboratory = lab;
     for ( size_t i=0; i < lab->getGenerationNumber(); ++i )
@@ -200,8 +199,8 @@ void GenerationViewer::OnButton1Click( wxCommandEvent& event )
         CMapPtr arena( laboratory->getMap( 0 ) );
         CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat = laboratory->getBestInd( laboratory->getGenerationNumber() - item - 1 );
 		
-		wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE> > 
-			antTester(new CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNESS_TYPE>(
+		wxSharedPtr< CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> > 
+			antTester(new CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(
 				automat, arena.get(), laboratory->getFitnesFunctor()->steps())
 			);
         wxSharedPtr<AntViewer> viewDialog( new AntViewer( this ) );

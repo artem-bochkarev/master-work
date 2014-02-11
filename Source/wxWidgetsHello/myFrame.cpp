@@ -88,7 +88,7 @@ void MyFrame::initLaboratory(const std::string fName)
 		*/
 		
 		laboratory = CleverAnt3LaboratoryFactory::getLaboratory(logger, fName);
-		CMapPtr map1 = CMapFactory<CCleverAnt3Map>::getMap("map1.txt");
+		CMapPtr map1 = CMapFactory<CleverAnt3Map>::getMap("map1.txt");
 		maps.clear();
 		maps.push_back(map1);
 		laboratory->setMaps(maps);

@@ -1,10 +1,14 @@
 #include "CleverAnt3Map.h"
 
-CCleverAnt3Map::CCleverAnt3Map(size_t width, size_t geight, size_t foodCounter)
+CleverAnt3Map::CleverAnt3Map(CMapPtr pMap)
+:CMapImpl(pMap.get())
+{}
+
+CleverAnt3Map::CleverAnt3Map(size_t width, size_t geight, size_t foodCounter)
 :CMapImpl(width, geight, foodCounter)
 {}
 
-int CCleverAnt3Map::getVisibleCells(int x, int y, EDirection direct, int* buffer ) const
+int CleverAnt3Map::getVisibleCells(int x, int y, EDirection direct, int* buffer ) const
 {
 	int x1(x), y1(y);
 	forwardOf(x1, y1, direct);
@@ -41,7 +45,7 @@ int CCleverAnt3Map::getVisibleCells(int x, int y, EDirection direct, int* buffer
 	return 8;
 }
 
-std::vector< std::pair<int, int> > CCleverAnt3Map::getVisibleCells(int x, int y, EDirection direct) const
+std::vector< std::pair<int, int> > CleverAnt3Map::getVisibleCells(int x, int y, EDirection direct) const
 {
 	/*
 	    4
@@ -86,7 +90,7 @@ std::vector< std::pair<int, int> > CCleverAnt3Map::getVisibleCells(int x, int y,
 	return vec;
 }
 
-std::vector<int> CCleverAnt3Map::getInput(size_t x, size_t y, EDirection direct) const
+std::vector<int> CleverAnt3Map::getInput(size_t x, size_t y, EDirection direct) const
 {
 
 	/*std::vector< std::pair<int, int> > vec( getVisibleCells( x, y, direct ) );
@@ -108,7 +112,7 @@ std::vector<int> CCleverAnt3Map::getInput(size_t x, size_t y, EDirection direct)
 	return res;
 }
 
-void CCleverAnt3Map::getInput(size_t x, size_t y, EDirection direct, int* output) const
+void CleverAnt3Map::getInput(size_t x, size_t y, EDirection direct, int* output) const
 {
 	int buffer[2 * 8];
 	int size = getVisibleCells(x, y, direct, buffer);

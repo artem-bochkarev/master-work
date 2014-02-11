@@ -1,4 +1,5 @@
 #include "CleverAnt3Fitnes.h"
+#include "CleverAnt3Map.h"
 #include "GeneticCommon/Test.hpp"
 
 void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
@@ -8,6 +9,7 @@ void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
 
 const CMapPtr CCleverAnt3Fitnes::getMap(size_t i)
 {
+	CMapPtr pMap(new CleverAnt3Map(maps[i]));
 	return maps[i];
 }
 
@@ -28,7 +30,8 @@ CCleverAnt3FitnesCPU::CCleverAnt3FitnesCPU(size_t stepsCount)
 
 ANT_FITNES_TYPE CCleverAnt3FitnesCPU::fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const
 {
-	return CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>::run(automat, maps[0].get(), DEFAULT_STEPS_COUNT);
+	CMapPtr pMap(new CleverAnt3Map(maps[0]));
+	return CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>::run(automat, pMap.get(), DEFAULT_STEPS_COUNT);
 }
 
 void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) const

@@ -106,11 +106,11 @@ CLaboratoryPtr CleverAnt3LaboratoryFactory::createLaboratory(Tools::Logger& logg
 	CMapPtr map1;
 	if (args.size() < 2)
 	{
-		map1 = CMapFactory<CCleverAnt3Map>::getMap("map1.txt");
+		map1 = CMapFactory<CleverAnt3Map>::getMap("map1.txt");
 	}
 	else
 	{
-		map1 = CMapFactory<CCleverAnt3Map>::getMap(args[1].c_str());
+		map1 = CMapFactory<CleverAnt3Map>::getMap(args[1].c_str());
 	}
 
 	std::vector<CMapPtr> maps;

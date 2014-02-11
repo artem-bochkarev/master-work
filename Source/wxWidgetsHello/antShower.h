@@ -71,10 +71,14 @@ class AntViewer: public wxDialog
 public:
     /// Constructors
     AntViewer();
-    AntViewer( wxWindow* parent, wxWindowID id = SYMBOL_ANTVIEWER_IDNAME, const wxString& caption = SYMBOL_ANTVIEWER_TITLE, const wxPoint& pos = SYMBOL_ANTVIEWER_POSITION, const wxSize& size = SYMBOL_ANTVIEWER_SIZE, long style = SYMBOL_ANTVIEWER_STYLE );
+    AntViewer( wxWindow* parent, wxWindowID id = SYMBOL_ANTVIEWER_IDNAME, const wxString& caption = SYMBOL_ANTVIEWER_TITLE, 
+		const wxPoint& pos = SYMBOL_ANTVIEWER_POSITION, const wxSize& size = SYMBOL_ANTVIEWER_SIZE, 
+		long style = SYMBOL_ANTVIEWER_STYLE );
 	virtual int ShowModal();
     /// Creation
-    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_ANTVIEWER_IDNAME, const wxString& caption = SYMBOL_ANTVIEWER_TITLE, const wxPoint& pos = SYMBOL_ANTVIEWER_POSITION, const wxSize& size = SYMBOL_ANTVIEWER_SIZE, long style = SYMBOL_ANTVIEWER_STYLE );
+    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_ANTVIEWER_IDNAME, const wxString& caption = SYMBOL_ANTVIEWER_TITLE, 
+		const wxPoint& pos = SYMBOL_ANTVIEWER_POSITION, const wxSize& size = SYMBOL_ANTVIEWER_SIZE, 
+		long style = SYMBOL_ANTVIEWER_STYLE );
 
     /// Destructor
     ~AntViewer();

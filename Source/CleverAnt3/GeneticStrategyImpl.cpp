@@ -7,6 +7,7 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntComm
 	const std::vector< std::string >& strings, Tools::Logger& logger)
 	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), m_pRandom(new CRandomImpl())
 {
+	m_pResults = res;
 	fitnesFunctor = fitnes;
 	invoker = new CInvoker(this, error);
 	N = 100;
@@ -39,6 +40,7 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	}
 	avg /= individuals.size();
 	ANT_FITNES_TYPE max = results[k];
+	m_pResults->addGeneration(CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>(new AUTOMAT(individuals[k])), max, avg);
 
 	std::vector<AUTOMAT> newGeneration(individuals.size());
 	for (int i = 0; i < N; ++i)

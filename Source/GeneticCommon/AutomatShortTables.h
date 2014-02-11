@@ -20,7 +20,7 @@ template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS
 class CAutomatShortTables final : public CAutomat<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:
-	CAutomatShortTables() {};
+	CAutomatShortTables();
 	CAutomatShortTables(CAntCommon<COUNTERS_TYPE>* pAntCommon);// size_t stateSize);
     CAutomatShortTables( const CAutomatShortTables& automat );
     CAutomatShortTables& operator = ( const CAutomatShortTables& automat );

@@ -12,6 +12,12 @@ CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::CAutomatShortTables()
+:buffer(0)
+{
+}
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
 CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::~CAutomatShortTables()
 {
 	delete[] buffer;
@@ -32,6 +38,8 @@ CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS
 	pAntCommon = automat.pAntCommon;
 	startState = automat.startState;
 	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
+	if (buffer == 0)
+		buffer = new COUNTERS_TYPE[size];
 	memcpy(buffer, automat.buffer, size*sizeof(COUNTERS_TYPE));
 	return *this;
 }

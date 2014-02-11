@@ -1,12 +1,22 @@
 #include "GeneticStrategyImpl.h"
 #include "GeneticCommon/CleverAntStrategy.hpp"
+#include "GeneticCommon/RandomImpl.h"
 
 CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res,
 	CCleverAnt3FitnesPtr fitnes,
 	const std::vector< std::string >& strings, Tools::Logger& logger)
-	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger)
+	:CGeneticStrategyCommon(pAntCommon, res, fitnes, strings, logger), m_pRandom(new CRandomImpl())
 {
 	fitnesFunctor = fitnes;
+	invoker = new CInvoker(this, error);
+	N = 100;
+	M = 2;
+	for (int i = 0; i < N; ++i)
+	{
+		AUTOMAT aut(pAntCommon.get());
+		aut.generateRandom(m_pRandom.get());
+		individuals.push_back(aut);
+	}
 }
 
 void CGeneticStrategyImpl::run()

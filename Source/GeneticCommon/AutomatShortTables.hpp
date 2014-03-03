@@ -13,7 +13,7 @@ CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
 CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::CAutomatShortTables()
-:buffer(0)
+:buffer(0), startState(0)
 {
 }
 
@@ -220,12 +220,20 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
-void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* mother, const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* father, CRandom* rand)
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::crossover(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* mother, 
+	const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* father, CRandom* rand)
 {
 	const CAutomatShortTables* motherPtr = static_cast<const CAutomatShortTables*>(mother);
 	const CAutomatShortTables* fatherPtr = static_cast<const CAutomatShortTables*>(father);
+	pAntCommon = motherPtr->pAntCommon;
+	size_t size = commonDataSize + pAntCommon->statesCount()*stateSize;
+	if (buffer == 0)
+	{
+		buffer = new COUNTERS_TYPE[size];
+		memset(buffer, 0, size*sizeof(COUNTERS_TYPE));
+	}
 
-	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
+	for (size_t currentState = 0; currentState < motherPtr->pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* motherMask = motherPtr->buffer + commonDataSize + currentState * (stateSize);
 		COUNTERS_TYPE* fatherMask = fatherPtr->buffer + commonDataSize + currentState * (stateSize);

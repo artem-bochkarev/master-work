@@ -42,13 +42,13 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	ANT_FITNES_TYPE max = results[k];
 	m_pResults->addGeneration(CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>(new AUTOMAT(individuals[k])), max, avg);
 
-	std::vector<AUTOMAT> newGeneration(individuals.size());
+	std::vector<AUTOMAT> tournamentWinners(N);
 	for (int i = 0; i < N; ++i)
 	{
 		int k = -1;
 		for (int j = 0; j < M; ++j)
 		{
-			uint a = rand->nextUINT()%individuals.size();
+			uint a = rand->nextUINT()%N;
 			if (k == -1)
 				k = a;
 			else
@@ -57,7 +57,22 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 					k = a;
 			}
 		}
-		newGeneration[i] = individuals[k];
+		tournamentWinners[i] = individuals[k];
+	}
+
+	std::vector<AUTOMAT> newGeneration(individuals.size());
+	float SPLIT_KOEFF = 0.7;
+	size_t z = individuals.size() * SPLIT_KOEFF;
+	for (int i = 0; i < z; ++i)
+	{
+		int a = rand->nextUINT() % N;
+		int b = rand->nextUINT() % N;
+		newGeneration[i].crossover(&tournamentWinners[a], &tournamentWinners[b], rand);
+	}
+	for (int i = z; i < individuals.size(); ++i)
+	{
+		int a = rand->nextUINT() % N;
+		newGeneration[i] = tournamentWinners[a];
 	}
 	individuals.swap(newGeneration);
 }

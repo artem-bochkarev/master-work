@@ -8,8 +8,6 @@
 #include "Tools/Logger.h"
 #include "CleverAnt3Fitnes.h"
 
-typedef CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 4, 8> AUTOMAT;
-
 class CGeneticStrategyImpl : public CGeneticStrategyCommon<COUNTERS_TYPE, INPUT_TYPE>
 {
 public:

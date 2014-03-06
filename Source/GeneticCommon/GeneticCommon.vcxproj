@@ -73,6 +73,8 @@
     <ClInclude Include="AntCommon.h" />
     <ClInclude Include="AutomatImpl.h" />
     <ClInclude Include="AutomatShortTables.h" />
+    <ClInclude Include="AutomatShortTablesStatic.h" />
+    <ClInclude Include="AutomatShortTablesStatic.hpp" />
     <ClInclude Include="CleverAntFitnes.h" />
     <ClInclude Include="CleverAntFitnes.hpp" />
     <ClInclude Include="CleverAntMap.h" />

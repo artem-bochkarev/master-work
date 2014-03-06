@@ -39,16 +39,17 @@ public:
 		createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCommon, COUNTERS_TYPE* buf);
 
     virtual ~CAutomatShortTables();
-protected:
-	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
+
 	static void toParent(size_t* toMother, const size_t* myMas, const COUNTERS_TYPE* motherMask);
-	void crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);
-	void crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);
-	void mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand);
+	static void crossMasks(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);
+	static void crossTables(COUNTERS_TYPE* childMask, const COUNTERS_TYPE* motherMask, const COUNTERS_TYPE* fatherMask, CRandom* rand);
+	static void mutateMask(COUNTERS_TYPE* currentMask, CRandom* rand);
 	static void randomMask(COUNTERS_TYPE* mask, CRandom* rand);
-	void mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand);
+	static void mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand, CAntCommon<COUNTERS_TYPE>* );
 	static void randomTable(COUNTERS_TYPE* table, CRandom* rand, CAntCommon<COUNTERS_TYPE>* );
 	static size_t createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand);
+protected:
+	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
 private:
 	static const size_t commonDataSize = 4;
 	static const size_t maskSize = INPUT_PARAMS_COUNT;

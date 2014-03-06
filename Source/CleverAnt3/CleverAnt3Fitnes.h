@@ -3,7 +3,8 @@
 #include "GeneticCommon/CleverAntFitnes.h"
 //#include "GeneticCommon/CleverAntMap.h"
 #include "GeneticCommon/AutomatShortTables.h"
-typedef CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 4, 8> AUTOMAT;
+#include "GeneticCommon/AutomatShortTablesStatic.hpp"
+typedef CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, 4, 8, 5> AUTOMAT;
 
 class CCleverAnt3Fitnes : public CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {

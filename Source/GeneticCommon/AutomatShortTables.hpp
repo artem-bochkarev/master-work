@@ -174,7 +174,7 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 		COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize) + maskSize;
 		a = rand->nextUINT() & 255;
 		if ((a > 31) && (a < 90))
-			mutateTable(currentTable, rand);
+			mutateTable(currentTable, rand, pAntCommon);
 	}
 
 	//if ((rand->nextUINT() & 255) < 30)
@@ -182,7 +182,8 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
-void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand)
+void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand, 
+	CAntCommon<COUNTERS_TYPE>* pAntCommon )
 {
 	for (size_t i = 0; i < tableSize; i += recordSize)
 	{

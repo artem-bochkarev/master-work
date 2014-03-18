@@ -5,8 +5,8 @@
 #include "GeneticStrategyImpl.h"
 #include "CleverAnt3Map.h"
 #include "GeneticCommon/LaboratoryMulti.hpp"
-#include "GeneticCommon/CleverAntMapFactory.h"
-#include "GeneticCommon/AutomatShortTables.h"
+#include "GeneticCommon/CleverAntMapFactory.hpp"
+#include "GeneticCommon/AutomatShortTables.hpp"
 #include <cstdlib>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>

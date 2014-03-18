@@ -1,3 +1,4 @@
+#pragma once
 #include "AutomatShortTables.h"
 #include "Tools\binFunc.hpp"
 #include <boost\assert.hpp>

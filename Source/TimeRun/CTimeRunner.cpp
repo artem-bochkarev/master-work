@@ -71,9 +71,9 @@ void CTimeRunner::writeResult( std::ostream& out ) const
 {
     if ( m_pTimeResult.get() != 0 )
         out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
-    //else
-    //if ( m_pInvoker != 0 )
-    //    out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
+    else
+    if ( m_pInvoker != 0 )
+        out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
     else
         out << "No Invoker - No Result: " << std::endl;
 }

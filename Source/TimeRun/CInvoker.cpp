@@ -33,7 +33,7 @@ void CInvoker::operator ()()
 
 threadPtr CInvoker::getThread()
 {
-	return threadPtr(new boost::thread(*this));
+	return threadPtr(new boost::thread( boost::ref(*this) ));
 }
 
 size_t CInvoker::getLoopCounter() const

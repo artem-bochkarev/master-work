@@ -1,3 +1,4 @@
+#pragma once
 #include "AutomatImpl.h"
 #include <cmath>
 #include <boost/assert.hpp>

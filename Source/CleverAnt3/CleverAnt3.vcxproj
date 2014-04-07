@@ -70,6 +70,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CleverAnt3Fitnes.h" />
+    <ClInclude Include="CLeverAnt3FitnesCL.h" />
     <ClInclude Include="CleverAnt3LaboratoryFactory.h" />
     <ClInclude Include="CleverAnt3Map.h" />
     <ClInclude Include="GeneticParams.h" />
@@ -77,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CleverAnt3Fitnes.cpp" />
+    <ClCompile Include="CleverAnt3FitnesCL.cpp" />
     <ClCompile Include="CleverAnt3LaboratoryFactory.cpp" />
     <ClCompile Include="CleverAnt3Map.cpp" />
     <ClCompile Include="GeneticStrategyImpl.cpp" />
@@ -84,6 +86,9 @@
   <ItemGroup>
     <ProjectReference Include="..\GeneticCommon\GeneticCommon.vcxproj">
       <Project>{cc1e3925-b43f-4ffe-802b-04d6c6a31472}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SDKUtil\SDKUtil.vcxproj">
+      <Project>{12b84e62-d3d1-43de-81ed-9f97b593aec6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

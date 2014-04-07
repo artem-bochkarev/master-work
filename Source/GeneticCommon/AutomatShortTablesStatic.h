@@ -34,16 +34,19 @@ public:
 		createFromBuffer(CAntCommon<COUNTERS_TYPE>* pAntCommon, COUNTERS_TYPE* buf);
 
 	virtual ~CAutomatShortTablesStatic();
-protected:
-	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
-private:
+	size_t getBufferOffset() const;
+	const CAntCommon<COUNTERS_TYPE>* getAntCommon() const;
+
 	static const size_t commonDataSize = 4;
 	static const size_t maskSize = INPUT_PARAMS_COUNT;
 	static const size_t tableSize = 2 * (1 << SHORT_TABLE_COLUMNS);
 	static const size_t stateSize = tableSize + maskSize;
 	static const size_t bufferSize = STATES_COUNT * stateSize + commonDataSize;
-
+protected:
+	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
+private:
+	
+	CAntCommon<COUNTERS_TYPE>* pAntCommon;
 	COUNTERS_TYPE startState;
 	mutable COUNTERS_TYPE buffer[bufferSize];
-	CAntCommon<COUNTERS_TYPE>* pAntCommon;
 };

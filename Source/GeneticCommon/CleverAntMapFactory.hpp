@@ -2,13 +2,14 @@
 #include "CleverAntMapFactory.h"
 #include "CleverAntMapImpl.h"
 #include <fstream>
-
+#include "Tools/errorMsg.hpp"
 template<typename MAP_TYPE>
 CMapPtr CMapFactory<MAP_TYPE>::getMap(const char *filename)
 {
     std::ifstream in( filename );
     if ( !in.is_open() )
-        return getRandomMap( 32, 32, 64 );
+		Tools::throwDetailedFailed("[FAILED] to open MAP file: ", filename, 0);
+        //return getRandomMap( 32, 32, 64 );
     int n, m;
     in >> n >> m;
 	CMapImpl* map = new MAP_TYPE(n, m, 0);

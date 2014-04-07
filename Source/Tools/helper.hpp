@@ -7,7 +7,7 @@
 
 namespace Tools
 {
-	void readFileToString(std::string& outStr, const boost::filesystem::path& sourceFile, Logger* logger = 0, StringProcessor* processStr = 0)
+	inline void readFileToString(std::string& outStr, const boost::filesystem::path& sourceFile, Logger* logger = 0, StringProcessor* processStr = 0)
 	{
 		outStr.clear();
 		if (logger != 0)

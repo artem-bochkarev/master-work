@@ -4,6 +4,7 @@
 #include "GeneticCommon/LabResultMulti.hpp"
 #include "GeneticStrategyImpl.h"
 #include "CleverAnt3Map.h"
+#include "CleverAnt3FitnesCL.h"
 #include "GeneticCommon/LaboratoryMulti.hpp"
 #include "GeneticCommon/CleverAntMapFactory.hpp"
 #include "GeneticCommon/AutomatShortTables.hpp"
@@ -58,7 +59,12 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 	std::vector< std::string > strings;
-	CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCPU(DEFAULT_STEPS_COUNT));
+	
+	
+	//CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCPU(DEFAULT_STEPS_COUNT));
+	CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCL(DEFAULT_STEPS_COUNT, strings, logger));
+	
+	
 	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy(
 		new CGeneticStrategyImpl/*< CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 3, INPUT_PARAMS_COUNT> >*/
 		(antCommon, labResults.get(), fitnesFunctor, strings, logger));

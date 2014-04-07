@@ -70,7 +70,7 @@ private:
 	CLocalInvoker& operator=(const CLocalInvoker&);
 };
 
-void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) const
+void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
 {
 	/*for (size_t i = 0; i < individs.size(); ++i)
 	{

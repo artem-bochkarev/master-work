@@ -10,7 +10,7 @@ class CCleverAnt3Fitnes : public CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, ANT
 {
 public:
 	virtual ANT_FITNES_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const = 0;
-	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) const = 0;
+	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) = 0;
 
 	virtual void setMaps(std::vector<CMapPtr> maps);
 	virtual const CMapPtr getMap(size_t i);
@@ -28,6 +28,6 @@ class CCleverAnt3FitnesCPU : public CCleverAnt3Fitnes
 public:
 	CCleverAnt3FitnesCPU(size_t stepsCount);
 	virtual ANT_FITNES_TYPE fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const;
-	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) const;
+	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) override;
 protected:
 };

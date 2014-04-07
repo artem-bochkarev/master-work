@@ -3,13 +3,12 @@
 //version 2.0
 
 #define SHORT_TABLE_COLUMNS 4
-#define INPUT_PARAMS_COUNT 4
+#define INPUT_PARAMS_COUNT 8
 #define MASK_SIZE INPUT_PARAMS_COUNT
 #define STATES_COUNT 4
-#define STATE_SIZE_BYTES 20
-#define STATE_SIZE_UINTS 5
-#define COMMON_DATA_SIZE 1
-
+#define COMMON_DATA_SIZE 4
+#define TABLE_SIZE (2 * (1 << SHORT_TABLE_COLUMNS))
+#define STATE_SIZE_UINTS (TABLE_SIZE + MASK_SIZE)
 
 // rand like in MSVC
 __constant uint rand_m = 0x80000000;
@@ -155,10 +154,11 @@ void getInput( uint* answ, uint x, uint y, uint direction, const __global int* m
 
 uint getMask( __global const uint* maskPtr, uint index)
 {
-	uint k = index/4;
+return maskPtr[index];
+	/*uint k = index/4;
 	uint res = maskPtr[k];
 	uint diff = index - k*4;
-	return (k >> 8*diff)&0x000000FF;
+	return (k >> 8*diff)&0x000000FF;*/
 }
 
 uint countIndex( const uint* in, __global const uint* maskPtr )
@@ -170,8 +170,8 @@ uint countIndex( const uint* in, __global const uint* maskPtr )
 		uint maskVal = getMask(maskPtr, i);
 		uint a = select( (uint)0, k, maskVal );
 		a = select((uint)0, k, in[i]);
-		index += k;
-		k = select(k, 2*k, getMask(maskPtr, i));
+		index += a;
+		k = select(k, 2*k, maskVal);
 	}
     return index;
 }
@@ -197,28 +197,11 @@ float run( __global const uint* ind, __global int* map )
 	uint myId=get_global_id(0);
 	
 	__global int * myMap = map + 2;
-	/*printf("\n");
-	if (myId==0)
-	{
-		for (int i=0; i<c_y_size; ++i)
-		{
-			for (int j=0; j<c_x_size; ++j)
-			{
-				if (myMap[j + i*c_x_size] > 0)
-					printf("+");
-				else
-					printf("_");
-			}
-			printf("\n");
-		}
-	}*/
     
     uint x = 0, y = 0;
     uint direction = 2;
     uint curState = (*ind)&0x000000FF;
     ind++;
-    
-	uint diff = COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState;
 	
 	
 	
@@ -234,11 +217,15 @@ float run( __global const uint* ind, __global int* map )
 		getInput( input, x, y, direction, map );
 		if (myId==0 && i<32)
 			printf("\t  %i\n\t %i%i%i\n\t%i%iA%i%i\n", input[3], input[1], input[0], input[2], input[6], input[4], input[5], input[7] );
-		uint index = countIndex( input, ind + diff );
+		__global uint* maskPtr = ind + COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState;
+		uint index = countIndex( input, maskPtr );
+		if (myId==0)
+			printf("INDEX=%i    MASK=%i, %i, %i, %i, %i, %i, %i, %i", index, getMask(maskPtr, 0), 
+				getMask(maskPtr, 1), getMask(maskPtr, 2), getMask(maskPtr, 3), getMask(maskPtr, 4), 
+				getMask(maskPtr, 5), getMask(maskPtr, 6), getMask(maskPtr, 7));
         uint2 nex = getNext( index, curState, ind );
         uint action = nex.y;
         curState = nex.x;
-		
         
         x = moveXa( x, direction, action );
         y = moveYa( y, direction, action );
@@ -296,23 +283,7 @@ __kernel void genetic_1d( __global const uint* individs, __global const uint* co
         tmp = vload16( i, from );
         vstore16( tmp, i, to );
     }
-	
-	/*if (myPos==0)
-	{
-		printf("\n");
-		for (int i=0; i<c_y_size; ++i)
-		{
-			for (int j=0; j<c_x_size; ++j)
-			{
-				if (from[j + i*c_x_size] > 0)
-					printf("+");
-				else
-					printf("_");
-			}
-			printf("\n");
-		}
-	}*/
-	
+
     resultCache[ myPos ] = run( myBuffer, myMapsPtr );
 	if (myPos == 0)
 		printf("end run, result=%f\n", resultCache[myPos]);

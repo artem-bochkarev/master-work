@@ -9,6 +9,10 @@ CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_
 {
 	startState = 0;
 	memset(buffer, 0, sizeof(COUNTERS_TYPE)*(bufferSize));
+	buffer[0] = 666;
+	buffer[1] = 666;
+	buffer[2] = 666;
+	buffer[3] = 666;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
@@ -16,6 +20,10 @@ CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_
 :startState(0)
 {
 	memset(buffer, 0, sizeof(COUNTERS_TYPE)*(bufferSize));
+	buffer[0] = 666;
+	buffer[1] = 666;
+	buffer[2] = 666;
+	buffer[3] = 666;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
@@ -70,6 +78,9 @@ void CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, I
 {
 	startState = 0;// pAntCommon->randomState(rand);
 	buffer[0] = startState;
+	buffer[1] = 666;
+	buffer[2] = 666;
+	buffer[3] = 666;
 	for (size_t currentState = 0; currentState < pAntCommon->statesCount(); ++currentState)
 	{
 		COUNTERS_TYPE* maskPtr = buffer + commonDataSize + currentState*stateSize;

@@ -24,7 +24,18 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(size_t stepsCount, const std::vector< s
 	try
 	{
 		logger << "[INIT] Trying to get specified device.\n";
-		context = cl::Context(deviceType, 0);
+
+		cl_uint numPlatforms;
+		cl_platform_id firstPlatformId;
+
+		clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
+		cl_context_properties contextProperties[] =
+		{
+			CL_CONTEXT_PLATFORM,
+			(cl_context_properties)firstPlatformId,
+			0
+		};
+		context = cl::Context(deviceType, contextProperties);
 		devices = context.getInfo<CL_CONTEXT_DEVICES>();
 		queue = cl::CommandQueue(context, devices[0]);
 		deviceInfo.setDeviceInfo(devices[0]());
@@ -155,18 +166,7 @@ void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
 
 		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, &individs[0]);
 		queue.enqueueWriteBuffer(mapCL, CL_TRUE, 0, mapSize * 4, mapsBuffer);
-		printf("Expected map:\n");
-		for (int i = 0; i<32; ++i)
-		{
-			for (int j = 0; j<32; ++j)
-			{
-				if (mapsBuffer[2 + j + i*32] > 0)
-					printf("+");
-				else
-					printf("_");
-			}
-			printf("\n");
-		}
+
 		queue.enqueueWriteBuffer(sizesBuf, CL_TRUE, 0, 5 * 4, sizes);
 
 	}

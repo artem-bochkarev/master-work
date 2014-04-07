@@ -1,0 +1,17 @@
+ipch/
+*.sdf
+*.suo
+*.user
+*.obj
+*.pdb
+*/Release/
+*/Debug/
+*/GeneratedFiles/
+*/Template/
+*/build/
+Log.txt
+config.txt
+*.opensdf
+Backup/
+Debug/
+UpgradeLog.htm

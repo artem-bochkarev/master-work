@@ -100,7 +100,7 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 			if (alreadyEnabled < SHORT_TABLE_COLUMNS)
 			{
 				++alreadyEnabled;
-				mask[i] = 1;
+				mask[i] = i;
 			}
 		}
 	}

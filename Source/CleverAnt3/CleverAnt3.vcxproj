@@ -70,7 +70,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CleverAnt3Fitnes.h" />
-    <ClInclude Include="CLeverAnt3FitnesCL.h" />
+    <ClInclude Include="CleverAnt3FitnesCL.h" />
     <ClInclude Include="CleverAnt3LaboratoryFactory.h" />
     <ClInclude Include="CleverAnt3Map.h" />
     <ClInclude Include="GeneticParams.h" />

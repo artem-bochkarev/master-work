@@ -15,6 +15,7 @@ CCleverAnt3FitnesCL::~CCleverAnt3FitnesCL()
 CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(size_t stepsCount, const std::vector< std::string >& strings, Tools::Logger& log)
 :logger(log), m_size(100), cachedResults(0), mapsBuffer(0)
 {
+	m_steps = stepsCount;
 	logger << "[INIT] Initializing CCleverAnt3FitnesCL.\n";
 	setFromStrings(strings);
 	globalRange = cl::NDRange(m_size);
@@ -130,6 +131,10 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 
 void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
 {
+	/*CCleverAnt3FitnesCPU fitCPU(m_steps);
+	fitCPU.setMaps(maps);
+	fitCPU.fitnes(&individs[0]);*/
+
 	m_size = individs.size();
 	prepareData(individs);
 	run();
@@ -156,13 +161,16 @@ void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
 		size_t sizes[5];
 		sizes[0] = individs[0].getAntCommon()->statesCount();
 		sizes[1] = 1 << individs[0].getAntCommon()->statesCount();
+		if (sizeof(AUTOMAT) % 4 != 0)
+			Tools::throwFailed("sizeof(AUTOMAT) % 4 != 0", 0);
 		sizes[2] = sizeof(AUTOMAT)/4;
+
 		sizes[3] = individs[0].getBufferOffset();
 		sizes[4] = mapSize;
 
-		const int* buf = ((const int*)&individs[0]) + individs[0].getBufferOffset();
+		/*const int* buf = ((const int*)&individs[0]) + individs[0].getBufferOffset();
 		std::cout << "expected:" << buf[0] << " " << buf[0] << " " << buf[1] << " " << buf[2] << " " << buf[3]
-			<< " " << buf[4] << " " << buf[5] << " " << buf[6] << " " << buf[7] << " " << std::endl;
+			<< " " << buf[4] << " " << buf[5] << " " << buf[6] << " " << buf[7] << " " << std::endl;*/
 
 		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, &individs[0]);
 		queue.enqueueWriteBuffer(mapCL, CL_TRUE, 0, mapSize * 4, mapsBuffer);
@@ -179,6 +187,7 @@ void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
 
 void CCleverAnt3FitnesCL::run() const
 {
+	
 	try
 	{
 		//queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );

@@ -13,7 +13,7 @@ CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CTest(CAutomat<COUNTERS_TYPE, INP
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
 bool CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::makeMove()
 {
-    if ( movesCnt > moves-1 )
+	if (moves < 1 + movesCnt)
         return false;
     //int input[4];
     //CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
@@ -91,8 +91,21 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
         //int input[4];
 		std::vector<INPUT_TYPE> input(8);
         mapImpl->getInput( x, y, direct, input.data() );
+		/*if (i < 10)
+		{
+			printf("STEP = %i\n\tINPUT: ", i);
+			for (int j = 0; j<8; ++j)
+				printf("%i ", input[j]);
+			printf("\n");
+		}*/
         char action = automat->getAction( curState, input );
         curState = automat->getNextState( curState, input );
+		/*if (i < 10)
+		{
+			printf("\tCOORDS: %i, %i\n", x, y);
+			printf("\tACTION = %i, NEXT_STATE = %i\n", action, curState);
+		}*/
+		
         switch (action)
         {
             case 0:

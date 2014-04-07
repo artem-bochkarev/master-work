@@ -30,7 +30,7 @@
     <ClInclude Include="CleverAnt3LaboratoryFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CLeverAnt3FitnesCL.h">
+    <ClInclude Include="CleverAnt3FitnesCL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

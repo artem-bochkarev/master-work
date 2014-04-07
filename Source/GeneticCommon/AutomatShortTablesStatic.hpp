@@ -41,7 +41,13 @@ CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
 size_t CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT, STATES_COUNT>::getBufferOffset() const
 {
-	return ((int*)buffer - (int*)this);
+	int* a = buffer;
+	int* b = (int*)this;
+	int c = a - b;
+	void* a1 = (void*)buffer;
+	void* b1 = (void*)this;
+	//int c1 = a1 - b1;
+	return c;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
@@ -142,6 +148,12 @@ COUNTERS_TYPE CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_C
 	size_t index = countIndex(input, currentState);
 	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
 	COUNTERS_TYPE action = *(currentTable + recordSize*index + actionShift);
+
+	COUNTERS_TYPE* currentMask = buffer + commonDataSize + currentState * (stateSize);
+	/*printf("\tINDEX=%i    MASK=%i, %i, %i, %i, %i, %i, %i, %i\n", index, currentMask[0],
+		currentMask[1], currentMask[2], currentMask[3], currentMask[4],
+		currentMask[5], currentMask[6], currentMask[7]);*/
+
 	return action;
 }
 

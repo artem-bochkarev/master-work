@@ -10,6 +10,7 @@
 #define RECORD_SIZE 2
 #define TABLE_SIZE (2 * (1 << SHORT_TABLE_COLUMNS))
 #define STATE_SIZE_UINTS (TABLE_SIZE + MASK_SIZE)
+#define STEPS_COUNT 100
 
 // rand like in MSVC
 __constant uint rand_m = 0x80000000;
@@ -203,7 +204,7 @@ float run( __global const uint* ind, __global int* map )
 	//if (myId==0)
 	//	printf("\t%i, %i\n", x, y);
 	
-    for ( uint i=0; i<100; ++i )
+    for ( uint i=0; i<STEPS_COUNT; ++i )
     {
 		uint input[8];
 		getInput( input, x, y, direction, map );

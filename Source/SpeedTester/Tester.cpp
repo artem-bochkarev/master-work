@@ -1,7 +1,7 @@
 #include "Tester.h"
 #include <iostream>
 
-#include "Genetic/CLaboratoryFactory.h"
+#include "CleverAnt3/CleverAnt3LaboratoryFactory.h"
 
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/compare.hpp>
@@ -13,24 +13,28 @@ typedef boost::tokenizer<boost::char_separator<char> >
     tokenizer;
 
 
-Tester::Tester( const char *inFileName, const char *outFileName, Tools::Logger& logger)
-:in(inFileName), pOut( new std::ofstream(outFileName)), logger(logger), timeSec(30)
+Tester::Tester(const char *inFileName, const char *outFileName, const char* clFileName, const char* configFileName, Tools::Logger& logger)
+:in(inFileName), pOut(new std::ofstream(outFileName)), logger(logger), timeSec(30), m_configFileName(configFileName), m_clFileName(clFileName)
 {
+	m_configFileNameTmp = m_configFileName;
+	m_configFileNameTmp.append(".tmp");
 
+	m_clFileNameTmp = m_clFileName;
+	m_clFileNameTmp.append(".tmp");
 }
 
 void Tester::run()
 {
     using namespace boost::filesystem;
-    path config_path("config.txt");
-    path config_tmp_path("config_tmp.txt");
+	path config_path( m_configFileName );
+	path config_tmp_path( m_configFileNameTmp );
     remove( config_tmp_path );
     bool wasFile = exists( config_path );
     if ( wasFile )
         copy_file( config_path, config_tmp_path);
 
-    path gen_path("gen.c");
-    path gen_tmp_path("gen_tmp.c");
+	path gen_path( m_clFileName );
+	path gen_tmp_path( m_clFileNameTmp );
     remove( gen_tmp_path );
     bool wasFile2 = exists( gen_path );
     if ( wasFile2 )
@@ -122,7 +126,7 @@ Tester::Commands Tester::parseStr( const std::string& in, std::vector<std::strin
 
 bool Tester::runCmd( std::vector<std::string> &args )
 {
-    CTimeRunnerPtr laboratory = CLaboratoryFactory::createLaboratory( logger, args );
+	CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, args);
 
     laboratory->writeInfo( std::cout );
     laboratory->writeInfo( *pOut );
@@ -153,7 +157,7 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     *pOut << "mean test on \"" << args[0] << "\"" << std::endl;
     for ( int i=0; i<cnt; ++i )
     {
-		CTimeRunnerPtr laboratory = CLaboratoryFactory::createLaboratory( logger, args );
+		CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, args);
 
         laboratory->runForTime( timeSec * 1000 );
         values[i] = laboratory->getRunCount();
@@ -192,7 +196,7 @@ bool Tester::setCmd( std::vector<std::string> &args )
     }
     if ( args[0] == "CLSOURCE" )
     {
-        path oldPath("gen.c");
+		path oldPath(m_clFileName);
         path newGenPath = args[1];
         remove( oldPath );
         if ( exists( newGenPath ) )

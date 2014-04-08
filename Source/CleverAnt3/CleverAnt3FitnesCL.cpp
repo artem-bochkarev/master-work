@@ -6,6 +6,8 @@
 #include "CleverAnt3Map.h"
 #include "GeneticCommon/Test.hpp"
 #include <boost/spirit/include/qi.hpp>
+#include "Tools/StringProcessor.h"
+#include <boost/lexical_cast.hpp>
 
 CCleverAnt3FitnesCL::~CCleverAnt3FitnesCL()
 {
@@ -83,7 +85,7 @@ void CCleverAnt3FitnesCL::setFromStrings(const std::vector< std::string >& strin
 {
 	using namespace boost::spirit::qi;
 	std::string deviceTypeStr;
-	char c;
+	char c = 'C';
 	for (int i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
@@ -130,6 +132,9 @@ void CCleverAnt3FitnesCL::createProgram(const boost::filesystem::path& sourceFil
 	std::string input;
 	//Tools::StringProcessorSimple strProc(vals);
 	Tools::readFileToString(input, sourceFile, &logger);
+
+	Tools::changeDefine(input, Tools::Define("STEPS_COUNT", boost::lexical_cast<std::string, size_t>(m_steps)));
+
 	checkProgrmType(input);
 
 	cl::Program::Sources source;
@@ -227,7 +232,7 @@ void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
 	{
 		Tools::throwDetailedFailed("[FAILED] to set arguments", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
 	}
-	logger << "[SUCCESS] Buffers was wrtitten to the device\n";
+	//logger << "[SUCCESS] Buffers was wrtitten to the device\n";
 }
 
 void CCleverAnt3FitnesCL::run() const

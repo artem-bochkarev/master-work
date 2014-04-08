@@ -1,0 +1,12 @@
+test_config_cpu25.txt
+test_config_cl_cpu25.txt
+test_config_cl_gpu25.txt
+test_config_clwrap_cpu25.txt
+test_config_cpu100.txt
+test_config_cl_cpu100.txt
+test_config_cl_gpu100.txt
+test_config_clwrap_cpu100.txt
+test_config_cpu256.txt
+test_config_cl_cpu256.txt
+test_config_cl_gpu256.txt
+test_config_clwrap_cpu256.txt

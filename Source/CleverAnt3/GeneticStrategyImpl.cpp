@@ -122,7 +122,7 @@ CInvoker* CGeneticStrategyImpl::getInvoker() const
 std::string CGeneticStrategyImpl::getPoolInfo() const
 {
 	std::stringstream out;
-	out << "Size of generation = " << generation_size;
+	out << "Size of generation = " << generation_size << ", Steps on map = " << fitnesFunctor->steps();
 	return out.str();
 }
 

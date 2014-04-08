@@ -15,7 +15,7 @@ class Tester
         ERROR
     };
 public:
-    Tester( const char* inFileName, const char* outFileName, Tools::Logger& logger );
+	Tester(const char* inFileName, const char* outFileName, const char* clFileName, const char* configFileName, Tools::Logger& logger);
     void run();
 private:
     Commands parseStr( const std::string& in, std::vector<std::string>& args );
@@ -28,6 +28,8 @@ private:
     ofstreamPtr pOut;
     std::string version;
     Tools::Logger& logger;
+	std::string m_configFileName, m_clFileName;
+	std::string m_configFileNameTmp, m_clFileNameTmp;
 
     int timeSec;
 };

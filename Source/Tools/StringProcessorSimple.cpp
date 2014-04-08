@@ -34,3 +34,24 @@ std::string Tools::StringProcessorSimple::operator ()( const std::string &str ) 
     }
     return str;
 }
+
+void Tools::changeDefines(std::string& text, const DefinesVector&)
+{
+
+}
+
+void Tools::changeDefine(std::string& text, const Define& def)
+{
+	std::string toFind = "#define " + def.first;
+	int j = text.find(toFind);
+	if (j > 0)
+	{
+		int a = text.find('\n', j+1);
+		if (a > j)
+		{
+			std::string firstPart = text.substr(0, j);
+			std::string secondPart = text.substr(a, text.length() - a);
+			text = firstPart + toFind + " " + def.second + "\n" + secondPart;
+		}
+	}
+}

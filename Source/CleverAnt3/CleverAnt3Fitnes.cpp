@@ -40,7 +40,7 @@ CCleverAnt3FitnesCPU::CCleverAnt3FitnesCPU(const std::vector< std::string >& str
 ANT_FITNES_TYPE CCleverAnt3FitnesCPU::fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const
 {
 	CMapPtr pMap(new CleverAnt3Map(maps[0]));
-	return CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>::run(automat, pMap.get(), DEFAULT_STEPS_COUNT);
+	return CTest<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>::run(automat, pMap.get(), m_steps);
 }
 
 template<class AUTOMAT_TYPE>

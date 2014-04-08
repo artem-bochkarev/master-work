@@ -87,7 +87,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(OPENCL)\lib\x86\openCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(BOOST)\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCL)\lib\x86;$(BOOST)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

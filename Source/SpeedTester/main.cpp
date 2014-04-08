@@ -25,6 +25,7 @@ int main()
     task.run();
     task.writeResult( std::cout );*/
 	std::vector<std::string> nulVec;
+	nulVec.push_back("config.txt");
 	CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, nulVec);
 
 	laboratory->writeInfo(std::cout);

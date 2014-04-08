@@ -9,16 +9,15 @@
 #include "GeneticCommon/CleverAntMapFactory.hpp"
 #include "GeneticCommon/AutomatShortTables.hpp"
 #include <cstdlib>
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/assert.hpp>
 #include <fstream>
+#include <boost/spirit/include/qi.hpp>
 
 CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3LaboratoryFactory::getLaboratory(Tools::Logger& logger, const std::string& fileNameM)
 {
-	return noFile(logger);
-	/*std::string fileName = fileNameM;
+	std::string fileName = fileNameM;
 	if (fileName.length() == 0)
 		fileName = "config.txt";
 	std::ifstream in(fileName.c_str());
@@ -28,9 +27,9 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 		int k = 0;
 		std::string str = boost::filesystem::current_path().string();
 		int z = 1;
-	}*/
+	}
 	std::vector< std::string > strings;
-	/*if (!in.is_open())
+	if (!in.is_open())
 	{
 		logger << "[WARNING] Can't find config file, so using default settings.\n";
 		return noFile(logger);
@@ -42,11 +41,36 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 		strings.push_back(tmp);
 	}
 
-	CAntCommonPtr<COUNTERS_TYPE> antCommon = createAntCommon(strings);
+	CActionContainerPtr<COUNTERS_TYPE> actions(new CActionContainerImpl<COUNTERS_TYPE>());
+	actions->addAction(0, "move forward");
+	actions->addAction(1, "turn right");
+	actions->addAction(2, "turn left");
+	CAntCommonPtr<COUNTERS_TYPE> antCommon(new CAntCommon<COUNTERS_TYPE>(4, actions));
+
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 
-	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy = CStrategyFactory::createStrategy(strings, antCommon, labResults, logger);
-	return createLaboratory(antCommon, strategy, labResults);*/
+	bool useOpenCL = false;
+	using namespace boost::spirit::qi;
+	for (const std::string& str : strings)
+	{
+		if (phrase_parse(str.begin(), str.end(), "USE_OPENCL=" >> bool_ >> ";", space, useOpenCL))
+			continue;
+	}
+
+	CCleverAnt3FitnesPtr fitnesFunctor;
+	if (useOpenCL)
+		fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCL(strings, logger));
+	else
+		fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCPU(strings));
+	
+
+
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy(
+		new CGeneticStrategyImpl/*< CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 3, INPUT_PARAMS_COUNT> >*/
+		(antCommon, labResults.get(), fitnesFunctor, strings, logger));
+
+	return CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(
+		new CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(antCommon, strategy, labResults));
 }
 
 CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3LaboratoryFactory::noFile(Tools::Logger& logger)
@@ -60,9 +84,9 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
 	std::vector< std::string > strings;
 	
-	
+	size_t count = 256;
 	//CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCPU(DEFAULT_STEPS_COUNT));
-	CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCL(DEFAULT_STEPS_COUNT, strings, logger));
+	CCleverAnt3FitnesPtr fitnesFunctor(new CCleverAnt3FitnesCL(strings, logger));
 	
 	
 	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy(
@@ -81,18 +105,13 @@ CAntCommonPtr<COUNTERS_TYPE> CleverAnt3LaboratoryFactory::createAntCommon(const 
 	actions->addAction(2, "turn left");
 
 	int statesCount = 0;
-	for (size_t i = 0; i < strings.size(); ++i)
+	using namespace boost::spirit::qi;
+	for (const std::string& str : strings)
 	{
-		const std::string& str = strings[i];
-		if (boost::starts_with(str, "states"))
-		{
-			int b = str.find("=");
-			++b;
-			int e = str.find(";");
-			const std::string tmp(str.substr(b, e));
-			statesCount = std::atoi(tmp.c_str());
-		}
+		if (phrase_parse(str.begin(), str.end(), "STATES_COUNT=" >> bool_ >> ";", space, statesCount))
+			continue;
 	}
+	
 	CAntCommonPtr<COUNTERS_TYPE> a(new CAntCommon<COUNTERS_TYPE>(statesCount, actions));
 	return a;
 }

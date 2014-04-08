@@ -5,6 +5,7 @@
 #include "Tools/helper.hpp"
 #include "CleverAnt3Map.h"
 #include "GeneticCommon/Test.hpp"
+#include <boost/spirit/include/qi.hpp>
 
 CCleverAnt3FitnesCL::~CCleverAnt3FitnesCL()
 {
@@ -12,10 +13,10 @@ CCleverAnt3FitnesCL::~CCleverAnt3FitnesCL()
 	delete mapsBuffer;
 }
 
-CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(size_t stepsCount, const std::vector< std::string >& strings, Tools::Logger& log)
+CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strings, Tools::Logger& log)
 :logger(log), m_size(100), cachedResults(0), mapsBuffer(0)
 {
-	m_steps = stepsCount;
+	m_steps = 100;
 	logger << "[INIT] Initializing CCleverAnt3FitnesCL.\n";
 	setFromStrings(strings);
 	globalRange = cl::NDRange(m_size);
@@ -27,20 +28,38 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(size_t stepsCount, const std::vector< s
 		logger << "[INIT] Trying to get specified device.\n";
 
 		cl_uint numPlatforms;
-		cl_platform_id firstPlatformId;
+		clGetPlatformIDs(0, 0, &numPlatforms);
+		cl_platform_id platforms[4];
 
-		clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
-		cl_context_properties contextProperties[] =
+		clGetPlatformIDs(4, platforms, 0);
+		bool isCreated = false;
+		for (int i = 0; i < numPlatforms; ++i)
 		{
-			CL_CONTEXT_PLATFORM,
-			(cl_context_properties)firstPlatformId,
-			0
-		};
-		context = cl::Context(deviceType, contextProperties);
+			cl_context_properties contextProperties[] =
+			{
+				CL_CONTEXT_PLATFORM,
+				(cl_context_properties)platforms[i],
+				0
+			};
+			try
+			{
+				context = cl::Context(deviceType, contextProperties);
+				isCreated = true;
+			}
+			catch (cl::Error& error)
+			{
+				//Tools::throwDetailedFailed("Failed to create CCleverAnt3FitnesCL", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
+			}
+			if (isCreated)
+				break;
+		}
+		if (!isCreated)
+			Tools::throwDetailedFailed("Failed to create CCleverAnt3FitnesCL", "No platform found for this request", &logger);
+
 		devices = context.getInfo<CL_CONTEXT_DEVICES>();
 		queue = cl::CommandQueue(context, devices[0]);
 		deviceInfo.setDeviceInfo(devices[0]());
-		std::string options = "-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
+		std::string options = "";//"-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
 		//countRanges(options);
 		boost::filesystem::path source("../CleverAnt3/genShortTables.cl");
 
@@ -62,7 +81,33 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(size_t stepsCount, const std::vector< s
 
 void CCleverAnt3FitnesCL::setFromStrings(const std::vector< std::string >& strings)
 {
+	using namespace boost::spirit::qi;
+	std::string deviceTypeStr;
+	char c;
+	for (int i = 0; i < strings.size(); ++i)
+	{
+		const std::string& str = strings[i];
+		if (phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> int_ >> ";", space, m_size))
+			continue;
+		if (phrase_parse(str.begin(), str.end(), "STEPS_COUNT=" >> int_ >> ";", space, m_steps))
+			continue;
+		if (phrase_parse(str.begin(), str.end(), "DEVICE_TYPE=" >> char_ >> ";", space, c))
+			continue;
+	}
 	deviceType = CL_DEVICE_TYPE_CPU;
+	if (c == 'G')
+		deviceType = CL_DEVICE_TYPE_GPU;
+}
+
+std::string CCleverAnt3FitnesCL::getInfo() const
+{
+	std::string res;
+	if (deviceType == CL_DEVICE_TYPE_CPU)
+		res = "OpenCL on CPU, ";
+	else
+		res = "OpenCL on GPU, ";
+	res.append(deviceInfo.name);
+	return res;
 }
 
 void CCleverAnt3FitnesCL::checkProgrmType(const std::string &source)

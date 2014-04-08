@@ -2,6 +2,8 @@
 #include "CleverAnt3Map.h"
 #include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/RandomImpl.h"
+#include <boost/spirit/include/qi.hpp>
+
 
 void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
 {
@@ -24,9 +26,15 @@ size_t CCleverAnt3Fitnes::steps() const
 	return m_steps;
 }
 
-CCleverAnt3FitnesCPU::CCleverAnt3FitnesCPU(size_t stepsCount)
+CCleverAnt3FitnesCPU::CCleverAnt3FitnesCPU(const std::vector< std::string >& strings)
 {
-	m_steps = stepsCount;
+	using namespace boost::spirit::qi;
+	for (int i = 0; i < strings.size(); ++i)
+	{
+		const std::string& str = strings[i];
+		if (phrase_parse(str.begin(), str.end(), "STEPS_COUNT=" >> int_ >> ";", space, m_steps))
+			continue;
+	}
 }
 
 ANT_FITNES_TYPE CCleverAnt3FitnesCPU::fitnes(const CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat) const
@@ -79,7 +87,7 @@ void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vec
 
 	boost::thread_group group;
 	size_t N = individs.size();
-	size_t cnt = 3;
+	size_t cnt = 4;
 	size_t step = std::max((size_t)1, N / cnt);
 	
 	size_t prev = 0;
@@ -101,4 +109,9 @@ void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vec
 	firstBarrier.wait();
 	group.interrupt_all();
 	group.join_all();
+}
+
+std::string CCleverAnt3FitnesCPU::getInfo() const
+{
+	return "C++ on CPU";
 }

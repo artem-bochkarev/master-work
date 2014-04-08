@@ -256,8 +256,8 @@ __kernel void genetic_1d( __global const uint* individs, __global const uint* co
 {
     uint myPos = get_global_id(0);
 
-	if (myPos == 0)
-		printf("begin run\n");
+	//if (myPos == 0)
+	//	printf("begin run\n");
     uint mapSize = constSizes[4];
 	uint bufSize = constSizes[2];
 	uint bufOffset = constSizes[3];

@@ -1,6 +1,7 @@
 #include "GeneticStrategyImpl.h"
 #include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/RandomImpl.h"
+#include <boost/spirit/include/qi.hpp>
 
 CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res,
 	CCleverAnt3FitnesPtr fitnes,
@@ -10,8 +11,18 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntComm
 	m_pResults = res;
 	fitnesFunctor = fitnes;
 	invoker = new CInvoker(this, error);
-	N = 100;
+
+	generation_size = 128;
+	for (int i = 0; i < strings.size(); ++i)
+	{
+		using namespace boost::spirit::qi;
+		const std::string& str = strings[i];
+		if (phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> int_ >> ";", space, generation_size))
+			continue;
+	}
+
 	M = 2;
+	N = generation_size;
 	for (int i = 0; i < N; ++i)
 	{
 		AUTOMAT aut(pAntCommon.get());
@@ -111,7 +122,7 @@ CInvoker* CGeneticStrategyImpl::getInvoker() const
 std::string CGeneticStrategyImpl::getPoolInfo() const
 {
 	std::stringstream out;
-	out << "Size: " << getN() << "x" << getM();
+	out << "Size of generation = " << generation_size;
 	return out.str();
 }
 
@@ -123,6 +134,8 @@ CGeneticStrategyImpl::~CGeneticStrategyImpl() {}
 
 std::string CGeneticStrategyImpl::getDeviceType() const
 {
-	return "Clever ant 3 standard";
+	std::stringstream out;
+	out << "Clever ant 3 standard, " << fitnesFunctor->getInfo();
+	return out.str();
 }
 

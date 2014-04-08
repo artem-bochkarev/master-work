@@ -33,7 +33,7 @@ protected:
 	std::vector<AUTOMAT> individuals;
 
 	CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* m_pResults;
-	int N, M;
+	int generation_size, M;
 	ANT_FITNES_TYPE m_avg, m_max;
 	mutable AUTOMAT m_best;
 	//CLabResultMulti* result;

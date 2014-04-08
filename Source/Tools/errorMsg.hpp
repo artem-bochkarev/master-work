@@ -19,7 +19,9 @@ namespace Tools
 	{
 		std::stringstream str;
 		str << msg << std::endl;
+#ifdef _DEBUG
 		OutputDebugStringA(str.str().c_str());
+#endif
 		std::clog << str.str();
 		//std::clo
 		if (logger != 0)
@@ -33,7 +35,9 @@ namespace Tools
 			*logger << "[DESCRIPTION] " << descr << "\n";
 		std::stringstream str;
 		str << "    :" << descr << std::endl;
+#ifdef _DEBUG
 		OutputDebugStringA(str.str().c_str());
+#endif
 	}
 
     inline void throwFailed( const std::string& msg, Tools::Logger* logger )

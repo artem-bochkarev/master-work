@@ -1,0 +1,18 @@
+128 individuals
+GenShortTables openCL on CPU : 9251, 9244, 9212
+4 flows on CPU: 8127, 8094, 8153
+GPU Quadro : 2721, 2708, 2710
+
+1024 individuals
+GenShortTables openCL on CPU : 1180, 1225
+4 flows on CPU: 1125, 1125
+GPU Quadro : 578, 578, 579
+
+1024 individs, 1000 steps
+GenShortTables openCL on CPU : 184, 182, 182
+4 flows on CPU: 177, 173, 176
+GPU Quadro : 76, 76, 75
+
+Abramovich(ATI Radeon HD4650 или 4670):
+128 individs 
+OpenCL on GPU: 4450, 4404, 4424

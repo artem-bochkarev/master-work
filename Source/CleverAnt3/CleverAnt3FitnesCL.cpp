@@ -20,7 +20,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 	logger << "[INIT] Initializing CCleverAnt3FitnesCL.\n";
 	setFromStrings(strings);
 	globalRange = cl::NDRange(m_size);
-	localRange = cl::NDRange(m_size);
+	localRange = cl::NullRange;
 	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
 	//stateSize = 16;//1 << statesCount;
 	try

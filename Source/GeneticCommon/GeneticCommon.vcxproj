@@ -77,10 +77,12 @@
     <ClInclude Include="AutomatShortTablesStatic.h" />
     <ClInclude Include="AutomatShortTablesStatic.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="CleverAntFitnes.h" />
     <ClInclude Include="CleverAntFitnes.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="CleverAntMap.h" />
     <ClInclude Include="CleverAntMapFactory.h" />
@@ -88,10 +90,12 @@
     <ClInclude Include="CleverAntStrategy.h" />
     <ClInclude Include="CleverAntStrategy.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="LaboratoryMulti.h" />
     <ClInclude Include="LaboratoryMulti.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="LabResultMulti.h" />
     <ClInclude Include="RandomImpl.h" />

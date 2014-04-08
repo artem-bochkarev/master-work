@@ -1,0 +1,74 @@
+VERSION=1.0
+TIME=30
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 1024, Steps on map = 100
+Result: 7075
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 2048, Steps on map = 100
+Result: 3382
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 4098, Steps on map = 100
+Result: 1627
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 100
+Result: 372
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 1024, Steps on map = 100
+Result: 6735
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 2048, Steps on map = 100
+Result: 3613
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 4098, Steps on map = 100
+Result: 1513
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 16384, Steps on map = 100
+Result: 363
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 1024, Steps on map = 100
+Result: 2689
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 2048, Steps on map = 100
+Result: 1324
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 4098, Steps on map = 100
+Result: 646
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 100
+Result: 153
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 1024, Steps on map = 1000
+Result: 1710
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 2048, Steps on map = 1000
+Result: 1059
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 4098, Steps on map = 1000
+Result: 524
+Clever ant 3 standard, OpenCL on CPU, AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 1000
+Result: 126
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 1024, Steps on map = 1000
+Result: 2208
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 2048, Steps on map = 1000
+Result: 1110
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 4098, Steps on map = 1000
+Result: 396
+Clever ant 3 standard, OpenCL on GPU, Barts,
+Size of generation = 16384, Steps on map = 1000
+Result: 115
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 1024, Steps on map = 1000
+Result: 415
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 2048, Steps on map = 1000
+Result: 207
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 4098, Steps on map = 1000
+Result: 103
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+Result: 26

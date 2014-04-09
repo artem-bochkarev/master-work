@@ -50,5 +50,8 @@
     <ClCompile Include="CleverAnt3FitnesCL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CleverAnt3FitnesCLBoth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

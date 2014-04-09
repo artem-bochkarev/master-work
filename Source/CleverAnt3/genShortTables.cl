@@ -12,13 +12,14 @@
 #define STATE_SIZE_UINTS (TABLE_SIZE + MASK_SIZE)
 #define STEPS_COUNT 100
 
+/*
 // rand like in MSVC
 __constant uint rand_m = 0x80000000;
 __constant uint rand_a = 214013;
 __constant uint rand_c = 2531011;
 
 //probablility in % (0..100)
-__constant uint mutation_probability = 0;
+__constant uint mutation_probability = 0;*/
 __constant uint actions_count = 3;
 
 #define c_x_size 32
@@ -46,7 +47,7 @@ uint checkBit(uint value, uint pos)
 	return value & (1 << pos);
 }
 
-uint nextUInt( uint x )
+/*uint nextUInt( uint x )
 {
     return ( rand_a*x + rand_c );
 }
@@ -56,7 +57,7 @@ char16 nextChar16( char16 x )
     char16 a = (char16)(17);
     char16 b = (char16)(31);
     return mad_hi( x, a, b);
-}
+}*/
 
 uint left( uint direction )
 {
@@ -163,7 +164,7 @@ return maskPtr[index];
 	return (k >> 8*diff)&0x000000FF;*/
 }
 
-uint countIndex( const uint* in, __global const uint* maskPtr )
+uint countIndex( const uint* in, __check_space const uint* maskPtr )
 {
 	uint k = 1;
 	uint index = 0;
@@ -178,16 +179,16 @@ uint countIndex( const uint* in, __global const uint* maskPtr )
     return index;
 }
 
-uint2 getNext( uint index, uint curState, __global const uint* ind )
+uint2 getNext( uint index, uint curState, __check_space const uint* ind )
 {
     uint2 next;
-	__global const uint* currentRecord = ind + COMMON_DATA_SIZE + curState * STATE_SIZE_UINTS + MASK_SIZE + RECORD_SIZE*index;
+	__check_space const uint* currentRecord = ind + COMMON_DATA_SIZE + curState * STATE_SIZE_UINTS + MASK_SIZE + RECORD_SIZE*index;
 	next.x = *currentRecord;
 	next.y = *(currentRecord+1);
 	return next;
 }
 
-float run( __global const uint* ind, __global int* map )
+float run( __check_space const uint* ind, __global int* map )
 {
 	float cnt = 0.0f;
 	uint myId=get_global_id(0);
@@ -210,7 +211,7 @@ float run( __global const uint* ind, __global int* map )
 		getInput( input, x, y, direction, map );
 		//if (myId==0 && i<32)
 		//	printf("\t  %i\n\t %i%i%i\n\t%i%iA%i%i\n", input[3], input[1], input[0], input[2], input[6], input[4], input[5], input[7] );
-		__global uint* maskPtr = ind + COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState;
+		__check_space const uint* maskPtr = ind + COMMON_DATA_SIZE + STATE_SIZE_UINTS*curState;
 		uint index = countIndex( input, maskPtr );
 		/*if (myId==0 && i < 10)
 		{
@@ -250,9 +251,7 @@ float run( __global const uint* ind, __global int* map )
 //constSizes[2] - mapSize
 //constSizes[3] - gensNum
 
-//varValues[0] - srand
-//varValues[1] - last buf
-__kernel void genetic_1d( __global const uint* individs, __global const uint* constSizes,
+__kernel void genetic_1d( __check_space const uint* individs, __constant const uint* constSizes,
                          __global int* mapBuffer, __constant int* maps, __global float* resultCache )
 {
     uint myPos = get_global_id(0);

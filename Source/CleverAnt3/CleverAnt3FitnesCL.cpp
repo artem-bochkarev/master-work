@@ -21,6 +21,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 	m_steps = 100;
 	logger << "[INIT] Initializing CCleverAnt3FitnesCL.\n";
 	setFromStrings(strings);
+	bufSize = sizeof(AUTOMAT)* m_size;
 	globalRange = cl::NDRange(m_size);
 	localRange = cl::NullRange;
 	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
@@ -61,7 +62,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 		devices = context.getInfo<CL_CONTEXT_DEVICES>();
 		queue = cl::CommandQueue(context, devices[0]);
 		deviceInfo.setDeviceInfo(devices[0]());
-		std::string options = "";//"-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
+		std::string options = getOptions();//"-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
 		//countRanges(options);
 		boost::filesystem::path source("../CleverAnt3/genShortTables.cl");
 
@@ -108,6 +109,9 @@ std::string CCleverAnt3FitnesCL::getInfo() const
 		res = "OpenCL on CPU, ";
 	else
 		res = "OpenCL on GPU, ";
+
+	res.append(deviceInfo.vendorName);
+	res.append(": ");
 	res.append(deviceInfo.name);
 	return res;
 }
@@ -124,6 +128,21 @@ void CCleverAnt3FitnesCL::checkProgrmType(const std::string &source)
 	{
 		
 	}
+}
+
+std::string CCleverAnt3FitnesCL::getOptions() const
+{
+	std::string params = "";
+	size_t localMem = deviceInfo.localMemSize;
+	if (bufSize < localMem)
+	{
+		params.append(" -D __check_space=__local");
+	}
+	else
+	{
+		params.append(" -D __check_space=__global");
+	}
+	return params;
 }
 
 void CCleverAnt3FitnesCL::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
@@ -183,7 +202,6 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 		memcpy(mapsBuffer + i*mapSize, oneMap, mapSize*sizeof(int));
 	}
 
-	bufSize = sizeof(AUTOMAT)* m_size;
 	AUTOMAT aut;
 
 	//__kernel void genetic_2d(__global uint* individs, __global const uint* constSizes,
@@ -227,17 +245,26 @@ void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vect
 	//m_size = individs.size();
 	if (m_size != individs.size())
 		Tools::throwFailed("Different sizes!!!", &logger);
+	prepareData(individs.data());
+	run();
+	getData(result.data());
+}
+
+void CCleverAnt3FitnesCL::fitnes(const AUTOMAT* individs, ANT_FITNES_TYPE* result)
+{
+	//if (m_size != individs.size())
+	//	Tools::throwFailed("Different sizes!!!", &logger);
 	prepareData(individs);
 	run();
 	getData(result);
 }
 
-void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
+void CCleverAnt3FitnesCL::prepareData(const AUTOMAT* individs)
 {
 	try
 	{
 		queue.enqueueCopyBuffer(mapBufConst, mapBufCL, 0, 0, m_size * mapSize * sizeof(int));
-		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, &individs[0]);
+		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, individs);
 	}
 	catch (cl::Error& error)
 	{
@@ -267,7 +294,7 @@ void CCleverAnt3FitnesCL::run() const
 	}
 }
 
-void CCleverAnt3FitnesCL::getData(std::vector<ANT_FITNES_TYPE>& result) const
+void CCleverAnt3FitnesCL::getData(ANT_FITNES_TYPE* result) const
 {
 	for (size_t i = 0; i < m_size; ++i)
 	{

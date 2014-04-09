@@ -51,15 +51,23 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 
 	bool useOpenCL = false;
 	using namespace boost::spirit::qi;
+	char c = 'C';
 	for (const std::string& str : strings)
 	{
 		if (phrase_parse(str.begin(), str.end(), "USE_OPENCL=" >> bool_ >> ";", space, useOpenCL))
+			continue;
+		if (phrase_parse(str.begin(), str.end(), "DEVICE_TYPE=" >> char_ >> ";", space, c))
 			continue;
 	}
 
 	CCleverAnt3FitnesPtr fitnesFunctor;
 	if (useOpenCL)
-		fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCL(strings, logger));
+	{
+		if ( c != 'B' )
+			fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCL(strings, logger));
+		else
+			fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCLBoth(strings, logger));
+	}
 	else
 		fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCPU(strings));
 	

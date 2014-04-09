@@ -78,6 +78,7 @@
     <ClInclude Include="GeneticStrategyImpl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CleverAnt3FitnesCLBoth.cpp" />
     <ClCompile Include="CleverAnt3Fitnes.cpp" />
     <ClCompile Include="CleverAnt3FitnesCL.cpp" />
     <ClCompile Include="CleverAnt3LaboratoryFactory.cpp" />

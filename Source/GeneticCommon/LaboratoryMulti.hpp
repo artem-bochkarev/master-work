@@ -43,9 +43,10 @@ double CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getMaxFitness(s
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
 CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
 	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE> strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult)
-:antCommonPtr(antCommonPtr), strategy(strategy), results(labResult)
+	:antCommonPtr(antCommonPtr), strategy(strategy), results(labResult)
 {
     m_pTask = strategy;
+	m_pTimeResult = results;
     //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyImpl( states, actions, &results ));
     //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyCL( states, actions, &results ));
 }

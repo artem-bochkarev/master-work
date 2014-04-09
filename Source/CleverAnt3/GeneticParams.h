@@ -10,6 +10,7 @@ typedef boost::shared_ptr< CLaboratory<COUNTERS_TYPE, INPUT_TYPE> > CLaboratoryP
 //typedef boost::shared_ptr< CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE> > CGeneticAlgorithmPtr;
 typedef boost::shared_ptr< CLaboratoryResult<COUNTERS_TYPE, INPUT_TYPE> > CLaboratoryResultPtr;
 
+static const size_t STATES_COUNT = 5;
 static const size_t SHORT_TABLE_COLUMNS = 4;
 static const size_t INPUT_PARAMS_COUNT = 8;
 static const size_t DEFAULT_STEPS_COUNT = 100;

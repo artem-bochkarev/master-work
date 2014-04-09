@@ -152,12 +152,18 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     int cnt = boost::lexical_cast<int>( args[1] );
     std::vector<size_t> values(cnt);
     size_t sum = 0;
-    
+	
     std::cout << "Started mean test on " << args[0] << std::endl;
     *pOut << "mean test on \"" << args[0] << "\"" << std::endl;
+	
+	std::vector<std::string> newArgs(args.size() - 1);
+	newArgs[0] = args[0];
+	for (size_t i = 2; i < args.size(); ++i)
+		newArgs[i - 1] = args[i];
+
     for ( int i=0; i<cnt; ++i )
     {
-		CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, args);
+		CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, newArgs);
 
         laboratory->runForTime( timeSec * 1000 );
         values[i] = laboratory->getRunCount();

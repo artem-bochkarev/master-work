@@ -1,0 +1,26 @@
+VERSION=1.0
+TIME=10
+mean test on "../Release/tests/cleverAnt3ShortTables/config_cl_cpu_3072.txt"
+    mean=734.50  deviation=2.69 good=99.63%
+mean test on "tests/cleverAnt3ShortTables/config_cl_cpu_16384.txt"
+    mean=122.00  deviation=0.71 good=99.42%
+mean test on "tests/cleverAnt3ShortTables/config_cl_gpu_3072.txt"
+    mean=782.50  deviation=3.04 good=99.61%
+mean test on "tests/cleverAnt3ShortTables/config_cl_gpu_16384.txt"
+    mean=120.00  deviation=2.35 good=98.05%
+mean test on "tests/cleverAnt3ShortTables/config_nocl_3072.txt"
+    mean=288.75  deviation=6.18 good=97.86%
+mean test on "tests/cleverAnt3ShortTables/config_nocl_16384.txt"
+    mean=52.25  deviation=0.43 good=99.17%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_cl_cpu_3072.txt"
+    mean=20410.25  deviation=703.56 good=96.55%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_cl_cpu_16384.txt"
+    mean=42.75  deviation=0.43 good=98.99%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_cl_gpu_3072.txt"
+    mean=20565.50  deviation=412.73 good=97.99%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_cl_gpu_16384.txt"
+    mean=38.50  deviation=1.12 good=97.10%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_nocl_3072.txt"
+    mean=20849.75  deviation=581.47 good=97.21%
+mean test on "tests/cleverAnt3ShortTables/steps1000/config_nocl_16384.txt"
+    mean=9.00  deviation=0.00 good=100.00%

@@ -170,14 +170,20 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 {
 	CCleverAnt3Fitnes::setMaps( maps );
 
-	size_t mapSize = (2 + getMap(0)->width()*getMap(0)->height());
+	mapSize = (2 + getMap(0)->width()*getMap(0)->height());
 	mapCL = cl::Buffer(context, CL_MEM_READ_ONLY, mapSize * 4);
-	mapsBuffer = new int[mapSize];
-	getMap(0)->toIntBuffer(mapsBuffer);
+	mapsBuffer = new int[mapSize * m_size];
+	int* oneMap = new int[mapSize];
+	getMap(0)->toIntBuffer(oneMap);
 
 	mapBufCL = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * mapSize * sizeof(int) );
+	mapBufConst = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * mapSize * sizeof(int));
+	for (size_t i = 0; i < m_size; ++i)
+	{
+		memcpy(mapsBuffer + i*mapSize, oneMap, mapSize*sizeof(int));
+	}
 
-	size_t bufSize = sizeof(AUTOMAT)* m_size;
+	bufSize = sizeof(AUTOMAT)* m_size;
 	AUTOMAT aut;
 
 	//__kernel void genetic_2d(__global uint* individs, __global const uint* constSizes,
@@ -201,13 +207,15 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 		sizes[3] = aut.getBufferOffset();
 		sizes[4] = mapSize;
 
-		queue.enqueueWriteBuffer(mapCL, CL_TRUE, 0, mapSize * 4, mapsBuffer);
+		queue.enqueueWriteBuffer(mapBufConst, CL_TRUE, 0, m_size * mapSize * sizeof(int), mapsBuffer);
 		queue.enqueueWriteBuffer(sizesBuf, CL_TRUE, 0, 5 * 4, sizes);
 	}
 	catch (cl::Error& error)
 	{
+		delete oneMap;
 		Tools::throwDetailedFailed("[FAILED] to set arguments", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
 	}
+	delete oneMap;
 }
 
 void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
@@ -226,9 +234,9 @@ void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vect
 
 void CCleverAnt3FitnesCL::prepareData(const std::vector<AUTOMAT>& individs)
 {
-	size_t bufSize = sizeof(AUTOMAT)* individs.size();
 	try
 	{
+		queue.enqueueCopyBuffer(mapBufConst, mapBufCL, 0, 0, m_size * mapSize * sizeof(int));
 		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, &individs[0]);
 	}
 	catch (cl::Error& error)

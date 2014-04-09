@@ -24,7 +24,7 @@ protected:
 	void getData(std::vector<ANT_FITNES_TYPE>& result) const;
 	void run() const;
 
-	size_t m_size;
+	size_t m_size, mapSize, bufSize;
 private:
 
 	void initCLBuffers();
@@ -39,7 +39,7 @@ private:
 	streamsdk::SDKDeviceInfo deviceInfo;
 
 	cl::Buffer statesBufCL1;
-	cl::Buffer mapBufCL, mapCL;
+	cl::Buffer mapBufCL, mapCL, mapBufConst;
 	cl::Buffer sizesBuf;
 	cl::Buffer resultCache;
 

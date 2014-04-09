@@ -278,7 +278,7 @@ __kernel void genetic_1d( __global const uint* individs, __global const uint* co
     __global const uint* myBuffer = individs + myPos*bufSize  + bufOffset;// = (1-koeff)*inBuffer + koeff*outBuffer;
 
 	//make copy of a map
-    uint s = 32 * 2;
+    /*uint s = 32 * 2;
     int16 tmp;
     __constant int* from = maps+2;
     __global int* to = myMapsPtr+2;
@@ -286,7 +286,7 @@ __kernel void genetic_1d( __global const uint* individs, __global const uint* co
     {
         tmp = vload16( i, from );
         vstore16( tmp, i, to );
-    }
+    }*/
 
 	//if (myPos == 0)
 	//	printf("MY_BUFFER: %i, %i, %i, %i\n", myBuffer[0], myBuffer[1], myBuffer[2], myBuffer[3] );

@@ -73,6 +73,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 {
 	size_t a = rand->nextUINT() & 255;
 	COUNTERS_TYPE* curPtr = buffer + commonDataSize + stateNumber*TREE_SIZE + NODE_SIZE * position;
+	BOOST_ASSERT(curDepth <= MAX_DEPTH);
 	if ( curDepth == MAX_DEPTH || (a > 200))
 	{
 		//make a leaf
@@ -92,18 +93,19 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 			free.erase(a);
 		size_t choosed = rand->nextUINT() % free.size();
 		size_t k = 0;
+		size_t newVal;
 		for (size_t a : free)
 		{
-			++k;
 			if (k == choosed)
 			{
-				k = a;
+				newVal = a;
 				break;
 			}
+			++k;
 		}
-		*curPtr = k;
+		*curPtr = newVal;
 		++curPtr;
-		was.insert(k);
+		was.insert(newVal);
 		
 		size_t left = nextFreePosition(stateNumber);
 		*curPtr = left;
@@ -116,7 +118,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 		++curPtr;
 		addRandomNode(rand, stateNumber, right, was, curDepth + 1);
 		
-		was.erase(k);
+		was.erase(newVal);
 	}
 }
 
@@ -178,8 +180,11 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 	}
 	else
 	{
+		BOOST_ASSERT(curPos >= 0);
+		BOOST_ASSERT(curPos*NODE_SIZE <= TREE_SIZE);
 		if (treePtr[curPos*NODE_SIZE] == 0)
 			return;
+		BOOST_ASSERT(curDepth < MAX_DEPTH);
 		curWas.insert(curPos);
 
 		getDepthAndWas(treePtr[curPos*NODE_SIZE + 1], curDepth + 1, curWas, treePtr, newPosition, resultDepth, resultWas);
@@ -211,22 +216,26 @@ size_t CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PA
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
-void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::recreateTree(size_t curPos, size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree, size_t& newPosition )
+size_t CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::recreateTree(size_t curPos, size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree, size_t& newPosition )
 {
 	size_t newPos = nextFreePosition(stateNumber);
 	tempTree[newPos*NODE_SIZE] = treePtr[curPos*NODE_SIZE];
-	tempTree[newPos*NODE_SIZE + 1] = treePtr[curPos*NODE_SIZE + 1];
-	tempTree[newPos*NODE_SIZE + 2] = treePtr[curPos*NODE_SIZE + 2];
 	if (curPos == nodePosition)
 	{
 		newPosition = newPos;
-		return;
+		if (treePtr[curPos*NODE_SIZE] > 0)
+		{
+			tempTree[newPos*NODE_SIZE] = 0;
+			tempTree[newPos*NODE_SIZE + 1] = 0;
+			tempTree[newPos*NODE_SIZE + 2] = 0;
+		}
 	}
-	if (treePtr[curPos*NODE_SIZE] > 0)
+	else if (treePtr[curPos*NODE_SIZE] > 0)
 	{
-		recreateTree(treePtr[curPos*NODE_SIZE + 1], stateNumber, treePtr, nodePosition, tempTree, newPosition);
-		recreateTree(treePtr[curPos*NODE_SIZE + 2], stateNumber, treePtr, nodePosition, tempTree, newPosition);
+		tempTree[newPos*NODE_SIZE + 1] = recreateTree(treePtr[curPos*NODE_SIZE + 1], stateNumber, treePtr, nodePosition, tempTree, newPosition);
+		tempTree[newPos*NODE_SIZE + 2] = recreateTree(treePtr[curPos*NODE_SIZE + 2], stateNumber, treePtr, nodePosition, tempTree, newPosition);
 	}
+	return newPos;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
@@ -245,14 +254,27 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 	COUNTERS_TYPE* treePtr = buffer + commonDataSize + stateNumber*TREE_SIZE;
 	size_t treeSize = getRealTreeSize( treePtr );
 	size_t nodePosition = rand->nextUINT() % treeSize;
+
+#ifdef _DEBUG
+	std::set<size_t> oldWas;
+	size_t oldDepth;
+	getDepthAndWas(treePtr, nodePosition, oldDepth, oldWas);
+#endif
+
 	COUNTERS_TYPE tempTree[TREE_SIZE];
+	memset(tempTree, 0, TREE_SIZE * sizeof(COUNTERS_TYPE));
 	size_t newPosition = recreateTree(stateNumber, treePtr, nodePosition, tempTree);
 	memcpy(treePtr, tempTree, TREE_SIZE * sizeof(COUNTERS_TYPE));
 
 	std::set<size_t> was;
 	size_t depth;
 	getDepthAndWas(treePtr, newPosition, depth, was);
-	addRandomNode(rand, stateNumber, newPosition, was, depth + 1);
+
+#ifdef _DEBUG
+	BOOST_ASSERT(oldDepth == depth);
+#endif
+
+	addRandomNode(rand, stateNumber, newPosition, was, depth);
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>

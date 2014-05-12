@@ -56,7 +56,7 @@ private:
 	size_t getHeight(const COUNTERS_TYPE* fatherTreePtr, size_t fatherNode) const;
 	size_t getRealTreeSize(size_t curPos, const COUNTERS_TYPE* treePtr) const;
 	size_t getRealTreeSize(const COUNTERS_TYPE* treePtr) const;
-	void recreateTree(size_t curState, size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree, size_t& newPosition);
+	size_t recreateTree(size_t curState, size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree, size_t& newPosition);
 	size_t recreateTree(size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree);
 	void addSubTree(size_t stateNumber, COUNTERS_TYPE* dstTreePtr, size_t node, const COUNTERS_TYPE* srcTreePtr, size_t srcNode);
 	size_t nextFreePosition(size_t stateNumber);

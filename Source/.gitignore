@@ -4,6 +4,8 @@ ipch/
 *.user
 *.obj
 *.pdb
+Release/*.dll
+Release/*.lib
 */Release/
 */Debug/
 */GeneratedFiles/

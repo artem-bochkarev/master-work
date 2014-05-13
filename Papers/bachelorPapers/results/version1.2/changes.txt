@@ -1,0 +1,1 @@
+fast copy of map data ( in tryHim function )

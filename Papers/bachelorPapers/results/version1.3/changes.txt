@@ -1,0 +1,1 @@
+getInput and countIndex changed ( char* in arguments changed to uint4 ).

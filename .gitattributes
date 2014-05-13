@@ -15,6 +15,7 @@
 *.odt -text
 *.odp -text
 *.ppt -text
+*.rtf -text
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary

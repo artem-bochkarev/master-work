@@ -13,7 +13,7 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntComm
 	invoker = new CInvoker(this, error);
 
 	generation_size = 128;
-	for (int i = 0; i < strings.size(); ++i)
+	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		using namespace boost::spirit::qi;
 		const std::string& str = strings[i];
@@ -72,17 +72,17 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	}
 
 	std::vector<AUTOMAT> newGeneration(individuals.size());
-	float SPLIT_KOEFF = 0.7;
-	size_t z = individuals.size() * SPLIT_KOEFF;
-	for (int i = 0; i < z; ++i)
+	float SPLIT_KOEFF = 0.7f;
+	size_t z = static_cast<size_t>(individuals.size() * SPLIT_KOEFF);
+	for (size_t i = 0; i < z; ++i)
 	{
 		int a = rand->nextUINT() % N;
 		int b = rand->nextUINT() % N;
-		//newGeneration[i].crossover(&tournamentWinners[a], &tournamentWinners[b], rand);
-		newGeneration[i] = tournamentWinners[a];
-		newGeneration[i].mutate(rand);
+		newGeneration[i].crossover(&tournamentWinners[a], &tournamentWinners[b], rand);
+		//newGeneration[i] = tournamentWinners[a];
+		//newGeneration[i].mutate(rand);
 	}
-	for (int i = z; i < individuals.size(); ++i)
+	for (size_t i = z; i < individuals.size(); ++i)
 	{
 		int a = rand->nextUINT() % N;
 		newGeneration[i] = tournamentWinners[a];

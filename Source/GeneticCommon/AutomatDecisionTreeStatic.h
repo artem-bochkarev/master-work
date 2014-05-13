@@ -58,7 +58,7 @@ private:
 	size_t getRealTreeSize(const COUNTERS_TYPE* treePtr) const;
 	size_t recreateTree(size_t curState, size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree, size_t& newPosition);
 	size_t recreateTree(size_t stateNumber, const COUNTERS_TYPE* treePtr, size_t nodePosition, COUNTERS_TYPE* tempTree);
-	void addSubTree(size_t stateNumber, COUNTERS_TYPE* dstTreePtr, size_t node, const COUNTERS_TYPE* srcTreePtr, size_t srcNode);
+	void addSubTree(size_t stateNumber, COUNTERS_TYPE* dstTreePtr, size_t node, const COUNTERS_TYPE* srcTreePtr, size_t srcNode, size_t depth);
 	size_t nextFreePosition(size_t stateNumber);
 	std::map<size_t, size_t> m_freePositions;
 

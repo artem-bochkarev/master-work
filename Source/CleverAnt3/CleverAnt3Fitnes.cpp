@@ -29,7 +29,7 @@ size_t CCleverAnt3Fitnes::steps() const
 CCleverAnt3FitnesCPU::CCleverAnt3FitnesCPU(const std::vector< std::string >& strings)
 {
 	using namespace boost::spirit::qi;
-	for (int i = 0; i < strings.size(); ++i)
+	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
 		if (phrase_parse(str.begin(), str.end(), "STEPS_COUNT=" >> int_ >> ";", space, m_steps))

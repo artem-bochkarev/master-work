@@ -36,7 +36,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 
 		clGetPlatformIDs(4, platforms, 0);
 		bool isCreated = false;
-		for (int i = 0; i < numPlatforms; ++i)
+		for (size_t i = 0; i < numPlatforms; ++i)
 		{
 			cl_context_properties contextProperties[] =
 			{
@@ -49,7 +49,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 				context = cl::Context(deviceType, contextProperties);
 				isCreated = true;
 			}
-			catch (cl::Error& error)
+			catch (cl::Error&)
 			{
 				//Tools::throwDetailedFailed("Failed to create CCleverAnt3FitnesCL", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
 			}
@@ -87,7 +87,7 @@ void CCleverAnt3FitnesCL::setFromStrings(const std::vector< std::string >& strin
 	using namespace boost::spirit::qi;
 	std::string deviceTypeStr;
 	char c = 'C';
-	for (int i = 0; i < strings.size(); ++i)
+	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
 		if (phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> int_ >> ";", space, m_size))
@@ -133,7 +133,7 @@ void CCleverAnt3FitnesCL::checkProgrmType(const std::string &source)
 std::string CCleverAnt3FitnesCL::getOptions() const
 {
 	std::string params = "";
-	size_t localMem = deviceInfo.localMemSize;
+	size_t localMem = static_cast<size_t>(deviceInfo.localMemSize);
 	if (bufSize < localMem)
 	{
 		params.append(" -D __check_space=__local");

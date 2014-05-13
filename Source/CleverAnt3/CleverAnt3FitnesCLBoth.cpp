@@ -12,7 +12,7 @@ CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string 
 	size_t m_size;
 	std::vector< std::string > stringsCPU;
 	std::vector< std::string > stringsGPU;
-	for (int i = 0; i < strings.size(); ++i)
+	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
 		if (phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> int_ >> ";", space, m_size))

@@ -3,6 +3,10 @@
 #include "Tools\binFunc.hpp"
 #include <boost\assert.hpp>
 
+#ifdef _DEBUG
+//#define DEBUG_TREE
+#endif
+
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
 CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::CAutomatDecisionTreeStatic()
 {
@@ -53,6 +57,15 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 		std::set<size_t> was;
 		nextFreePosition(i);
 		addRandomNode(rand, i, 0, was, 1);
+		
+#ifdef DEBUG_TREE
+		const COUNTERS_TYPE* treePtr = buffer + commonDataSize + i*TREE_SIZE;
+		size_t treeSize = getRealTreeSize(treePtr);
+		std::set<size_t> oldWas;
+		size_t oldDepth;
+		for (size_t j = 0; j< treeSize; ++j)
+			getDepthAndWas(treePtr, j, oldDepth, oldWas);
+#endif
 	}
 	buffer[0] = rand->nextUINT() % STATES_COUNT;
 }
@@ -204,6 +217,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
 size_t CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::getRealTreeSize(size_t curPos, const COUNTERS_TYPE* treePtr) const
 {
+	BOOST_ASSERT(curPos*NODE_SIZE <= TREE_SIZE);
 	if (treePtr[curPos*NODE_SIZE] == 0)
 		return 1;
 	return 1 + getRealTreeSize(treePtr[curPos*NODE_SIZE + 1], treePtr) + getRealTreeSize(treePtr[curPos*NODE_SIZE + 2], treePtr);
@@ -255,7 +269,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 	size_t treeSize = getRealTreeSize( treePtr );
 	size_t nodePosition = rand->nextUINT() % treeSize;
 
-#ifdef _DEBUG
+#ifdef DEBUG_TREE
 	std::set<size_t> oldWas;
 	size_t oldDepth;
 	getDepthAndWas(treePtr, nodePosition, oldDepth, oldWas);
@@ -270,7 +284,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 	size_t depth;
 	getDepthAndWas(treePtr, newPosition, depth, was);
 
-#ifdef _DEBUG
+#ifdef DEBUG_TREE
 	BOOST_ASSERT(oldDepth == depth);
 #endif
 
@@ -283,19 +297,20 @@ size_t CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PA
 	if (fatherTreePtr[fatherNode*NODE_SIZE] == 0)
 		return 0;
 	else
-		return 1 + std::max(getHeight(fatherTreePtr, fatherNode*NODE_SIZE + 1), getHeight(fatherTreePtr, fatherNode*NODE_SIZE + 2));
+		return 1 + std::max(getHeight(fatherTreePtr, fatherTreePtr[fatherNode*NODE_SIZE + 1]), getHeight(fatherTreePtr, fatherTreePtr[fatherNode*NODE_SIZE + 2]));
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
-void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::addSubTree(size_t stateNumber, COUNTERS_TYPE* dstTreePtr, size_t node, const COUNTERS_TYPE* srcTreePtr, size_t srcNode)
+void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::addSubTree(size_t stateNumber, COUNTERS_TYPE* dstTreePtr, size_t node, const COUNTERS_TYPE* srcTreePtr, size_t srcNode, size_t depth)
 {
-	memcpy(dstTreePtr + node, srcTreePtr + srcNode, NODE_SIZE * sizeof(COUNTERS_TYPE));
+	BOOST_ASSERT(depth <= MAX_DEPTH);
+	memcpy(dstTreePtr + NODE_SIZE*node, srcTreePtr + NODE_SIZE*srcNode, NODE_SIZE * sizeof(COUNTERS_TYPE));
 	if (srcTreePtr[srcNode * NODE_SIZE] > 0)
 	{
 		dstTreePtr[node*NODE_SIZE + 1] = nextFreePosition(stateNumber);
 		dstTreePtr[node*NODE_SIZE + 2] = nextFreePosition(stateNumber);
-		addSubTree(stateNumber, dstTreePtr, dstTreePtr[node*NODE_SIZE + 1], srcTreePtr, srcTreePtr[srcNode * NODE_SIZE + 1]);
-		addSubTree(stateNumber, dstTreePtr, dstTreePtr[node*NODE_SIZE + 2], srcTreePtr, srcTreePtr[srcNode * NODE_SIZE + 2]);
+		addSubTree(stateNumber, dstTreePtr, dstTreePtr[node*NODE_SIZE + 1], srcTreePtr, srcTreePtr[srcNode * NODE_SIZE + 1], depth + 1);
+		addSubTree(stateNumber, dstTreePtr, dstTreePtr[node*NODE_SIZE + 2], srcTreePtr, srcTreePtr[srcNode * NODE_SIZE + 2], depth + 1);
 	}
 }
 
@@ -331,9 +346,33 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 		}
 		m_freePositions[stateNumber] = 0;
 		size_t childNode = recreateTree(stateNumber, motherTreePtr, motherNode, childTreePtr);
-		addSubTree(stateNumber, childTreePtr, childNode, fatherTreePtr, fatherNode);
+
+#ifdef DEBUG_TREE
+		const COUNTERS_TYPE* treePtr = buffer + commonDataSize + stateNumber*TREE_SIZE;
+		size_t treeSize = getRealTreeSize(treePtr);
+		std::set<size_t> oldWas;
+		size_t oldDepth;
+		for (size_t j = 0; j< treeSize; ++j)
+			getDepthAndWas(childTreePtr, j, oldDepth, oldWas);
+#endif
+		size_t savedPosition = m_freePositions[stateNumber];
+		m_freePositions[stateNumber] = savedPosition;
+		addSubTree(stateNumber, childTreePtr, childNode, fatherTreePtr, fatherNode, motherDepth);
+
+#ifdef DEBUG_TREE
+		getDepthAndWas(childTreePtr, childNode, oldDepth, oldWas);
+		BOOST_ASSERT(oldDepth == motherDepth);
+#endif
 		//checkTree(childTreePtr, 0);
+#ifdef DEBUG_TREE
+		for (size_t j = 0; j< treeSize; ++j)
+			getDepthAndWas(childTreePtr, j, oldDepth, oldWas);
+#endif
 	}
+	if ((rand->nextUINT() & 255) > 127)
+		buffer[0] = motherPtr->buffer[0];
+	else
+		buffer[0] = fatherPtr->buffer[0];
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>

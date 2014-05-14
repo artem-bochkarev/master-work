@@ -64,7 +64,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 		deviceInfo.setDeviceInfo(devices[0]());
 		std::string options = getOptions();//"-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
 		//countRanges(options);
-		boost::filesystem::path source("../CleverAnt3/genShortTables.cl");
+		boost::filesystem::path source(clFilePath);
 
 		createProgram(source, options);
 		initCLBuffers();

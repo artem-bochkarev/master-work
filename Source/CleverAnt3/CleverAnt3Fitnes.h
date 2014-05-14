@@ -2,12 +2,6 @@
 #include "GeneticParams.h"
 #include "GeneticCommon/CleverAntFitnes.h"
 //#include "GeneticCommon/CleverAntMap.h"
-#include "GeneticCommon/AutomatShortTables.h"
-#include "GeneticCommon/AutomatShortTablesStatic.hpp"
-#include "GeneticCommon/AutomatDecisionTreeStatic.hpp"
-
-//typedef CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
-typedef CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
 
 class CCleverAnt3Fitnes : public CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>
 {

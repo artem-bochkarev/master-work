@@ -106,7 +106,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 			free.erase(a);
 		size_t choosed = rand->nextUINT() % free.size();
 		size_t k = 0;
-		size_t newVal;
+		size_t newVal = 0;
 		for (size_t a : free)
 		{
 			if (k == choosed)

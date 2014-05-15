@@ -230,10 +230,10 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 	}
 	catch (cl::Error& error)
 	{
-		delete oneMap;
+		delete[] oneMap;
 		Tools::throwDetailedFailed("[FAILED] to set arguments", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
 	}
-	delete oneMap;
+	delete[] oneMap;
 }
 
 void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)

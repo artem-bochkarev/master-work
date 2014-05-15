@@ -9,7 +9,7 @@ CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string 
 	using namespace boost::spirit::qi;
 	std::string deviceTypeStr;
 	char c = 'C';
-	size_t m_size;
+	size_t m_size = 0;
 	std::vector< std::string > stringsCPU;
 	std::vector< std::string > stringsGPU;
 	for (size_t i = 0; i < strings.size(); ++i)

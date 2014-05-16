@@ -55,3 +55,31 @@ void Tools::changeDefine(std::string& text, const Define& def)
 		}
 	}
 }
+
+std::string Tools::splitToManyLines(const std::string& text, const std::set<char>& separators, size_t prefLength)
+{
+	std::string result;
+
+	size_t curLength = 0;
+	for (size_t i = 0; i < text.length(); ++i)
+	{
+		result.push_back(text[i]);
+		++curLength;
+		if (separators.find(text[i]) != separators.end())
+		{
+			if (curLength >= prefLength)
+			{
+				result.push_back('\n');
+				curLength = 0;
+				if ( (i+1 < text.length()) && (text[i + 1] == ' ') )
+					++i;
+			}
+		}
+		else
+		{
+			if (text[i] == '\n')
+				curLength = 0;
+		}
+	}
+	return result;
+}

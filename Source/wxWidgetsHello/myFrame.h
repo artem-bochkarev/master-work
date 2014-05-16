@@ -32,6 +32,8 @@ private:
 
     wxStaticBitmap* itemStaticBitmap;
     wxButton* button;
+	wxStaticText* infoLab;
+	wxStaticText* infoPerf;
 
 	CActionContainer<COUNTERS_TYPE>* actions;
     CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> laboratory;

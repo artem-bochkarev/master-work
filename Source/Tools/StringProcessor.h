@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <set>
 namespace Tools
 {
     class StringProcessor
@@ -16,4 +17,6 @@ namespace Tools
 
 	void changeDefines(std::string& text, const DefinesVector& );
 	void changeDefine(std::string& text, const Define&);
+
+	std::string splitToManyLines(const std::string& text, const std::set<char>& separators, size_t prefLength);
 }

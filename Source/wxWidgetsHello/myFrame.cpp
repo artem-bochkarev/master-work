@@ -11,12 +11,13 @@
 #include "CleverAnt3/CleverAnt3Map.h"
 
 #include "Tools/errorMsg.hpp"
+#include "Tools/StringProcessor.h"
 
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-    MyFrame *frame = new MyFrame( _("Hello World"), wxPoint(50, 50), wxSize(650, 550) );
+    MyFrame *frame = new MyFrame( _("Genetic laboratory"), wxPoint(50, 50), wxSize(650, 550) );
     frame->Show(true);
     SetTopWindow(frame);
     return true;
@@ -53,6 +54,16 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
 
     itemStaticBitmap = new wxStaticBitmap( this, wxID_STATIC, wxNullBitmap, wxDefaultPosition, wxSize(500, 400), 0 );
+
+	wxBoxSizer* textBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+	infoLab = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 50), 0);
+	infoLab->SetLabel("Load Laboratory file");
+	infoPerf = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 50), 0);
+	infoPerf->SetLabel("Performance info");
+	textBoxSizer->Add(infoLab, 0, wxALIGN_LEFT);
+	textBoxSizer->Add(infoPerf, 0, wxALIGN_RIGHT);
+
+	itemBoxSizerV->Add(textBoxSizer, 0, wxEXPAND, 5);
     itemBoxSizerV->Add(itemStaticBitmap, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
     itemBoxSizerV->Add( button, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
@@ -92,6 +103,13 @@ void MyFrame::initLaboratory(const std::string fName)
 		maps.clear();
 		maps.push_back(map1);
 		laboratory->setMaps(maps);
+		std::string text = laboratory->getStrategy()->getDeviceType();
+		text.append(",");
+		text.append(laboratory->getStrategy()->getPoolInfo());
+		std::set<char> sepSet;
+		sepSet.insert(',');
+		sepSet.insert('.');
+		infoLab->SetLabel(Tools::splitToManyLines(text, sepSet, 25));
 		drawGraph();
 	}
 	catch (std::exception& err)
@@ -189,8 +207,8 @@ MyFrame::~MyFrame()
 
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-    wxMessageBox( _("This is a wxWidgets Hello world sample"),
-                  _("About Hello World"), 
+    wxMessageBox( _("This is a Genetic laboratory"),
+                  _("author Bochkarev Artem\n artem.bochkarev@gmail.com"), 
                   wxOK | wxICON_INFORMATION, this );
 }
 

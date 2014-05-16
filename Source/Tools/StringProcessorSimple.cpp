@@ -63,9 +63,10 @@ std::string Tools::splitToManyLines(const std::string& text, const std::set<char
 	size_t curLength = 0;
 	for (size_t i = 0; i < text.length(); ++i)
 	{
-		result.push_back(text[i]);
+		if (!((i == text.length() - 1) && ( text[i] == '\n' )))
+			result.push_back(text[i]);
 		++curLength;
-		if (separators.find(text[i]) != separators.end())
+		if ((i < text.length()-1) && (separators.find(text[i]) != separators.end()))
 		{
 			if (curLength >= prefLength)
 			{

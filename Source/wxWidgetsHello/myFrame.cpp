@@ -13,6 +13,8 @@
 #include "Tools/errorMsg.hpp"
 #include "Tools/StringProcessor.h"
 
+#include "TimeRun/CTimeCounter.h"
+
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
@@ -111,6 +113,7 @@ void MyFrame::initLaboratory(const std::string fName)
 		sepSet.insert('.');
 		infoLab->SetLabel(Tools::splitToManyLines(text, sepSet, 25));
 		drawGraph();
+		GetTimeManager().clean();
 	}
 	catch (std::exception& err)
 	{
@@ -119,6 +122,44 @@ void MyFrame::initLaboratory(const std::string fName)
 		wxMessageBox(_(err.what()), _("Can't load config!"),
 			wxOK | wxICON_INFORMATION, this);
 	}
+}
+
+void MyFrame::showPerformance()
+{
+	std::stringstream out;
+	bool bUseSeconds = false;
+	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
+	{
+		if (boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) >= boost::chrono::milliseconds(10000))
+		{
+			bUseSeconds = true;
+			break;
+		}
+	}
+
+	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
+	{
+		boost::chrono::microseconds mcs = boost::chrono::duration_cast<boost::chrono::microseconds>(val.second.duration);
+		double speed = (double)val.second.counter / mcs.count();
+		speed *= 1000000;
+		int a = speed;
+		int b = speed * 1000 - a * 1000;
+		if (!bUseSeconds)
+		{
+			out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << "("
+				<< a << "." << b << ")";
+		}
+		else
+		{
+			out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::seconds>(val.second.duration) << "("
+				<< a << "." << b << ")";
+		}
+	}
+	std::string text = out.str();
+	std::set<char> sepSet;
+	sepSet.insert(',');
+	sepSet.insert(')');
+	infoPerf->SetLabel(Tools::splitToManyLines(text, sepSet, 30));
 }
 
 void MyFrame::free()
@@ -246,6 +287,7 @@ void MyFrame::onButton(wxCommandEvent& event)
         laboratory->pause();
         button->SetLabel("Start");
 		timer.Stop();
+		showPerformance();
     }else
     {
         laboratory->start();

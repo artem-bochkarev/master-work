@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClCompile Include="CInvoker.cpp" />
     <ClCompile Include="CSimpleTask.cpp" />
+    <ClCompile Include="CTimeCounter.cpp" />
     <ClCompile Include="CTimeResult.cpp" />
     <ClCompile Include="CTimeRunner.cpp" />
   </ItemGroup>
@@ -88,6 +89,7 @@
     <ClInclude Include="CInvoker.h" />
     <ClInclude Include="CSimpleTask.h" />
     <ClInclude Include="CTask.h" />
+    <ClInclude Include="CTimeCounter.h" />
     <ClInclude Include="CTimeResult.h" />
     <ClInclude Include="CTimeRunner.h" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include "GeneticCommon/CleverAntStrategy.hpp"
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/spirit/include/qi.hpp>
+#include "performanceInfo.h"
 
 CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntCommon, CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>* res,
 	CCleverAnt3FitnesPtr fitnes,
@@ -38,9 +39,11 @@ void CGeneticStrategyImpl::run()
 
 void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 {
+	CTimeCounter counter(perfNextGeneration);
 	std::vector<ANT_FITNES_TYPE> results(individuals.size());
 	fitnesFunctor->fitnes(individuals, results);
 
+	CTimeCounter counter2(perfNextGenerationNF);
 	ANT_FITNES_TYPE avg = 0;
 	uint k = 0;
 	for (uint i = 0; i < individuals.size(); ++i)

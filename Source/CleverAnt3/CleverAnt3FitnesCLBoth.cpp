@@ -3,6 +3,7 @@
 #include "CleverAnt3Map.h"
 #include <boost/spirit/include/qi.hpp>
 #include <boost/lexical_cast.hpp>
+#include "performanceInfo.h"
 
 CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string >& strings, Tools::Logger& log)
 {
@@ -77,6 +78,7 @@ void CCleverAnt3FitnesCLBoth::fitnes(const std::vector<AUTOMAT>& individs, std::
 {
 	//individs
 	//individs
+	CTimeCounter counter(perfFitnesFunction);
 	const AUTOMAT* individsCPU = individs.data();
 	ANT_FITNES_TYPE* resultCPU = result.data();
 

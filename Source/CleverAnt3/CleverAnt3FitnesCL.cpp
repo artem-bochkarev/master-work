@@ -8,6 +8,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include "Tools/StringProcessor.h"
 #include <boost/lexical_cast.hpp>
+#include "performanceInfo.h"
 
 CCleverAnt3FitnesCL::~CCleverAnt3FitnesCL()
 {
@@ -243,6 +244,7 @@ void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vect
 	fitCPU.fitnes(&individs[0]);*/
 
 	//m_size = individs.size();
+	CTimeCounter counter(perfFitnesFunction);
 	if (m_size != individs.size())
 		Tools::throwFailed("Different sizes!!!", &logger);
 	prepareData(individs.data());

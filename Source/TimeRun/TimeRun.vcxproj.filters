@@ -27,6 +27,9 @@
     <ClCompile Include="CInvoker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CTimeCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CInvoker.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CTimeRunner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTimeCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

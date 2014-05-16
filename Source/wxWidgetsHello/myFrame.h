@@ -29,6 +29,7 @@ private:
     void onTimer(wxTimerEvent& event);
     void onButton(wxCommandEvent& event);
 	void initLaboratory(const std::string fName);
+	void showPerformance();
 
     wxStaticBitmap* itemStaticBitmap;
     wxButton* button;

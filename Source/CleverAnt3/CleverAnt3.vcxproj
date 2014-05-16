@@ -76,6 +76,7 @@
     <ClInclude Include="CleverAnt3Map.h" />
     <ClInclude Include="GeneticParams.h" />
     <ClInclude Include="GeneticStrategyImpl.h" />
+    <ClInclude Include="performanceInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CleverAnt3FitnesCLBoth.cpp" />

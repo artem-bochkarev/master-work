@@ -3,7 +3,7 @@
 #include "GeneticCommon/Test.hpp"
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/spirit/include/qi.hpp>
-
+#include "performanceInfo.h"
 
 void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
 {
@@ -84,7 +84,7 @@ void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vec
 	{
 		result[i] = fitnes(&individs[i]);
 	}*/
-
+	CTimeCounter counter(perfFitnesFunction);
 	boost::thread_group group;
 	size_t N = individs.size();
 	size_t cnt = 4;

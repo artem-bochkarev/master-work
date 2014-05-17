@@ -169,6 +169,7 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     for ( int i=0; i<cnt; ++i )
     {
 		CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, newArgs);
+		GetTimeManager().clean();
 
         laboratory->runForTime( timeSec * 1000 );
         values[i] = laboratory->getRunCount();

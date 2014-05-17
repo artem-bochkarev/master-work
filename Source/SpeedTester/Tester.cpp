@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
+#include "TimeRun/CTimeCounter.h"
 
 typedef boost::tokenizer<boost::char_separator<char> > 
     tokenizer;
@@ -126,6 +127,7 @@ Tester::Commands Tester::parseStr( const std::string& in, std::vector<std::strin
 
 bool Tester::runCmd( std::vector<std::string> &args )
 {
+	GetTimeManager().clean();
 	CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, args);
 
     laboratory->writeInfo( std::cout );

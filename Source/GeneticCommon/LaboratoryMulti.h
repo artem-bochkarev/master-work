@@ -32,6 +32,8 @@ public:
 	CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor();
 	const CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* getFitnesFunctor() const;
 
+	void writeResult(std::ostream& out) const;
+
     virtual ~CLaboratoryMulti();
 private:
  //   CLaboratoryMulti();

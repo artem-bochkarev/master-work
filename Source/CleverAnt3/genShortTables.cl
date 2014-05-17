@@ -20,7 +20,7 @@ __constant uint rand_c = 2531011;
 
 //probablility in % (0..100)
 __constant uint mutation_probability = 0;*/
-#include "../CleverAnt3/CleverAntCommon.hcl"
+#include "CleverAnt3/CleverAntCommon.hcl"
 
 uint getMask( __global const uint* maskPtr, uint index)
 {

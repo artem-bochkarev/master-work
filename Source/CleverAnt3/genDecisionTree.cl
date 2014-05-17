@@ -2,7 +2,7 @@
 //#type=shortTables
 //version 2.0
 
-#include "../CleverAnt3/CleverAntCommon.hcl"
+#include "CleverAnt3/CleverAntCommon.hcl"
 
 #define INPUT_PARAMS_COUNT 8
 #define STATES_COUNT 4

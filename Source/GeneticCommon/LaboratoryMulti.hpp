@@ -3,6 +3,7 @@
 //#include "CGeneticStrategyImpl.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/chrono.hpp>
+#include "TimeRun/CTimeCounter.h"
 
 const long sleep_time = 100; //millisec
 
@@ -97,6 +98,51 @@ template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
 const CCleverAntFitnes<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>* CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getFitnesFunctor() const
 {
     return strategy->getFitnesFunctor();
+}
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
+void CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::writeResult(std::ostream& out) const
+{
+	if (m_pTimeResult.get() != 0)
+		out << "Result: " << m_pTimeResult->getRunCount() << std::endl;
+	else
+	if (m_pInvoker != 0)
+		out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
+	else
+		out << "No Invoker - No Result: " << std::endl;
+
+	if (GetTimeManager().getTimers().size() > 0)
+	{
+		std::stringstream out;
+		bool bUseSeconds = false;
+		for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
+		{
+			if (boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) >= boost::chrono::milliseconds(10000))
+			{
+				bUseSeconds = true;
+				break;
+			}
+		}
+		for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
+		{
+			boost::chrono::microseconds mcs = boost::chrono::duration_cast<boost::chrono::microseconds>(val.second.duration);
+			double speed = (double)val.second.counter / mcs.count();
+			speed *= 1000000;
+			int a = speed;
+			int b = speed * 1000 - a * 1000;
+			if (!bUseSeconds)
+			{
+				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << "ms"<< ", Speed="
+					<< a << "." << b << "\n";
+			}
+			else
+			{
+				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::seconds>(val.second.duration) << "s" << ", Speed="
+					<< a << "." << b << "\n";
+			}
+		}
+
+	}
 }
 
 /*void CLaboratoryMulti::getFitnesFunctor()

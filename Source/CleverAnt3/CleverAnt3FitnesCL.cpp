@@ -143,6 +143,25 @@ std::string CCleverAnt3FitnesCL::getOptions() const
 	{
 		params.append(" -D __check_space=__global");
 	}
+
+	using namespace boost::filesystem;
+	path curPath = current_path();
+	if (exists(curPath / "CleverAnt3"))
+	{
+		params.append(" -I ");
+		params.append(curPath.string());
+	}
+	else
+	{
+		curPath = curPath / "../";
+		if (exists(curPath / "CleverAnt3"))
+		{
+			params.append(" -I ");
+			params.append(curPath.string());
+		}
+		else Tools::throwDetailedFailed("Can't compile openCL file", "Can't find folder CleverAnt3 with headers", &logger);
+	}
+
 	return params;
 }
 

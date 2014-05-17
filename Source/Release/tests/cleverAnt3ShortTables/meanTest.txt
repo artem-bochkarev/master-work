@@ -2,24 +2,81 @@ SET( OUTFILE, CleverAnt3ShortTablesMeanresults1.4.txt );
 SET( VERSION, 1.0 );
 SET( TIME, 10 );
 
-AR_MEAN( ../Release/tests/cleverAnt3ShortTables/config_cl_cpu_3072.txt, 4 );
-AR_MEAN( tests/cleverAnt3ShortTables/config_cl_cpu_16384.txt, 4 );
-
-AR_MEAN( tests/cleverAnt3ShortTables/config_cl_gpu_3072.txt, 4 );
-AR_MEAN( tests/cleverAnt3ShortTables/config_cl_gpu_16384.txt, 4 );
-
-AR_MEAN( tests/cleverAnt3ShortTables/config_cl_both_3072.txt, 4 );
-AR_MEAN( tests/cleverAnt3ShortTables/config_cl_both_16384.txt, 4 );
-
-#AR_MEAN( tests/cleverAnt3ShortTables/config_nocl_3072.txt, 4 );
-#AR_MEAN( tests/cleverAnt3ShortTables/config_nocl_16384.txt, 4 );
-
-AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_cl_cpu_3072.txt, 4 );
-AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_cl_cpu_16384.txt, 4 );
-
-AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_cl_gpu_3072.txt, 4 );
-AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_cl_gpu_16384.txt, 4 );
+SET( AUTOMAT, SHORT_TABLES );
+SET( STEPS_COUNT, 100 );
+SET( USE_OPENCL, true );
 
 
-#AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_nocl_3072.txt, 4 );
-#AR_MEAN( tests/cleverAnt3ShortTables/steps1000/config_nocl_16384.txt, 4 );
+#-------------------------------
+SET( DEVICE_TYPE, CPU );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+#-------------------------------
+SET( DEVICE_TYPE, GPU );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+#-------------------------------
+SET( DEVICE_TYPE, BOTH );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+#-------------------------------
+SET( DEVICE_TYPE, CPU );
+SET( USE_OPENCL, false );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+SET( STEPS_COUNT, 1000 );
+#-------------------------------
+SET( USE_OPENCL, true );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+#-------------------------------
+SET( DEVICE_TYPE, GPU );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+#-------------------------------
+SET( DEVICE_TYPE, BOTH );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+
+
+#-------------------------------
+SET( DEVICE_TYPE, CPU );
+SET( USE_OPENCL, false );
+
+SET( GENERATION_SIZE, 3072 );
+AR_MEAN( auto_generated, 4 );
+SET( GENERATION_SIZE, 16384 );
+AR_MEAN( auto_generated, 4 );
+

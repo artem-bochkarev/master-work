@@ -8,7 +8,7 @@
 int main(int argc, char *argv[])
 {
 	Tools::Logger logger;
-	const char* testFile = "../Release/tests/cleverAnt3ShortTables/testIt.txt";
+	const char* testFile = "../Release/tests/cleverAnt3DecisionTree/meanTest.txt";
 	if (argc > 1)
 		testFile = argv[1];
 

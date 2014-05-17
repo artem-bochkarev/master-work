@@ -15,7 +15,7 @@ typedef boost::tokenizer<boost::char_separator<char> >
 
 
 Tester::Tester(const char *inFileName, const char *outFileName, const char* clFileName, const char* configFileName, Tools::Logger& logger)
-:in(inFileName), pOut(new std::ofstream(outFileName)), logger(logger), timeSec(1), m_configFileName(configFileName), m_clFileName(clFileName)
+:in(inFileName), pOut(new std::ofstream(outFileName)), logger(logger), timeSec(1), m_configFileName(configFileName), m_clFileName(clFileName), m_bCreateConfig(false)
 {
 	m_configFileNameTmp = m_configFileName;
 	m_configFileNameTmp.append(".tmp");
@@ -151,6 +151,17 @@ bool Tester::runCmd( std::vector<std::string> &args )
     return true;
 }
 
+void Tester::createConfigFile(const boost::filesystem::path& tmp_config)
+{
+	std::ofstream ofs(tmp_config.string().c_str());
+	ofs << "GENERATION_SIZE=" << m_genSize << ";" << std::endl;
+	ofs << "STEPS_COUNT=" << m_stepsCount << ";" << std::endl;
+	ofs << "USE_OPENCL=" << m_useOpencl << ";" << std::endl;
+	ofs << "DEVICE_TYPE=" << m_deviceType << ";" << std::endl;
+	ofs << "AUTOMAT=" << m_automatType << ";" << std::endl;
+	ofs.flush();
+}
+
 bool Tester::meanCmd( std::vector<std::string>& args )
 {
     int cnt = boost::lexical_cast<int>( args[1] );
@@ -165,6 +176,22 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 	newArgs[0] = args[0];
 	for (size_t i = 2; i < args.size(); ++i)
 		newArgs[i - 1] = args[i];
+
+	boost::filesystem::path tmp_config("tmp_config_file");
+	if (m_bCreateConfig)
+	{
+		createConfigFile(tmp_config);
+		newArgs[0] = tmp_config.string();
+
+		std::stringstream ss;
+		std::string m_type = "NoCL";
+		if (m_useOpencl[0] == 't')
+			m_type = m_deviceType;
+		ss << "size=" << m_genSize << ", type=" << m_type << ", steps=" << m_stepsCount  << std::endl;
+		m_type = ss.str();
+		std::cout << ss.str();
+		*pOut << ss.str();
+	}
 
     for ( int i=0; i<cnt; ++i )
     {
@@ -210,6 +237,8 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 	}
 	std::cout << std::endl;
 	*pOut << std::endl;
+
+	remove(tmp_config);
     return true;
 }
 
@@ -245,5 +274,41 @@ bool Tester::setCmd( std::vector<std::string> &args )
         pOut = ofstreamPtr( new std::ofstream(args[1].c_str()));
         return true;
     }
+
+	if (args[0] == "GENERATION_SIZE")
+	{
+		m_genSize = args[1];
+		m_bCreateConfig = true;
+		return true;
+	}
+
+	if (args[0] == "STEPS_COUNT")
+	{
+		m_stepsCount = args[1];
+		m_bCreateConfig = true;
+		return true;
+	}
+
+	if (args[0] == "USE_OPENCL")
+	{
+		m_useOpencl = args[1];
+		m_bCreateConfig = true;
+		return true;
+	}
+
+	if (args[0] == "DEVICE_TYPE")
+	{
+		m_deviceType = args[1];
+		m_bCreateConfig = true;
+		return true;
+	}
+
+	if (args[0] == "AUTOMAT")
+	{
+		m_automatType = args[1];
+		m_bCreateConfig = true;
+		return true;
+	}
+
     throw (std::runtime_error("Tester::setCmd : Illegal argument"));
 }

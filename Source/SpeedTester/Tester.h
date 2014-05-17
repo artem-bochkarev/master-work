@@ -23,6 +23,7 @@ private:
     bool setCmd( std::vector<std::string>& args );
     bool meanCmd( std::vector<std::string>& args );
     bool process( const std::string& in );
+	void createConfigFile(const boost::filesystem::path& tmp_config);
     std::ifstream in;
     typedef boost::shared_ptr<std::ofstream> ofstreamPtr;
     ofstreamPtr pOut;
@@ -32,4 +33,6 @@ private:
 	std::string m_configFileNameTmp, m_clFileNameTmp;
 
     int timeSec;
+	std::string m_genSize, m_stepsCount, m_useOpencl, m_deviceType, m_automatType;
+	bool m_bCreateConfig;
 };

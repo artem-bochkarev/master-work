@@ -4,6 +4,7 @@
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/spirit/include/qi.hpp>
 #include "performanceInfo.h"
+#include "Tools/SuperQueue.h"
 
 void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
 {
@@ -48,22 +49,23 @@ class CLocalInvoker
 {
 	const std::vector<AUTOMAT>& m_individs;
 	std::vector<ANT_FITNES_TYPE>& m_result;
-	size_t start, finish;
+	size_t size;
+	SuperQueue& queue;
 	boost::barrier& barrier;
 	const CCleverAnt3FitnesCPU* m_fitnesFunc;
-	mutable CRandomImpl rand;
 public:
-	CLocalInvoker( const CCleverAnt3FitnesCPU* fitnesFunc, const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result, size_t start,
-		size_t finish, boost::barrier& barrier)
-		:m_fitnesFunc(fitnesFunc), m_individs(individs), m_result(result), start(start), finish(finish),
-		barrier(barrier), rand(std::clock()) {}
+	CLocalInvoker(const CCleverAnt3FitnesCPU* fitnesFunc, const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result, SuperQueue& queue, size_t size, boost::barrier& barrier)
+		:m_fitnesFunc(fitnesFunc), m_individs(individs), m_result(result), size(size), queue(queue),
+		barrier(barrier) {}
 
 	void operator ()() const
 	{
 		boost::this_thread::disable_interruption di;
-		for (size_t i = start; i < finish; ++i)
+		uint32_t i = queue.getNext();
+		while (i < size)
 		{
 			m_result[i] = m_fitnesFunc->fitnes(&m_individs[i]);
+			i = queue.getNext();
 		}
 		barrier.wait();
 		boost::this_thread::interruption_point();
@@ -80,30 +82,19 @@ private:
 
 void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
 {
-	/*for (size_t i = 0; i < individs.size(); ++i)
-	{
-		result[i] = fitnes(&individs[i]);
-	}*/
 	CTimeCounter counter(perfFitnesFunction);
 	boost::thread_group group;
 	size_t N = individs.size();
-	size_t cnt = 4;
-	size_t step = std::max((size_t)1, N / cnt);
-	
-	size_t prev = 0;
-	size_t next = prev + step;
+	unsigned int nthreads = boost::thread::hardware_concurrency();
 
-	boost::barrier firstBarrier(cnt + 1);
+	boost::barrier firstBarrier(nthreads + 1);
 	boost::this_thread::disable_interruption di;
-	for (size_t i = 0; i<cnt; ++i)
+	SuperQueue queue;
+	for (size_t i = 0; i<nthreads; ++i)
 	{
-		if (i == cnt - 1)
-			next = N;
-		CLocalInvoker<AUTOMAT> invoker(this, individs, result, prev, next,
+		CLocalInvoker<AUTOMAT> invoker(this, individs, result, queue, individs.size(),
 			firstBarrier);
 		group.create_thread(invoker);
-		prev = next;
-		next += step;
 	}
 
 	firstBarrier.wait();

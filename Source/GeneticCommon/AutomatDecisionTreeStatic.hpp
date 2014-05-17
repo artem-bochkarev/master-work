@@ -138,26 +138,18 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
 COUNTERS_TYPE CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
-	const COUNTERS_TYPE* treePtr = buffer + commonDataSize + currentState*TREE_SIZE;
-	size_t position = 0;
-	size_t depth = 0;
-	while (depth < MAX_DEPTH)
-	{
-		const COUNTERS_TYPE* curPtr = treePtr + position*NODE_SIZE;
-		if (*curPtr == 0)
-			break;
-		if (input[(*curPtr) - 1])
-			position = curPtr[1];
-		else
-			position = curPtr[2];
-		++depth;
-	}
-	BOOST_ASSERT(treePtr[position*NODE_SIZE] == 0);
-	return treePtr[position*NODE_SIZE + 1];
+	return getNextStateAction(currentState, input).first;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
 COUNTERS_TYPE CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
+{
+	return getNextStateAction(currentState, input).second;
+}
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>
+std::pair<COUNTERS_TYPE, COUNTERS_TYPE> CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT>::getNextStateAction(COUNTERS_TYPE currentState,
+	const std::vector<INPUT_TYPE>& input) const
 {
 	const COUNTERS_TYPE* treePtr = buffer + commonDataSize + currentState*TREE_SIZE;
 	size_t position = 0;
@@ -174,7 +166,11 @@ COUNTERS_TYPE CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, I
 		++depth;
 	}
 	BOOST_ASSERT(treePtr[position*NODE_SIZE] == 0);
-	return treePtr[position*NODE_SIZE + 2];
+
+	std::pair<COUNTERS_TYPE, COUNTERS_TYPE> res;
+	res.first = treePtr[position*NODE_SIZE + 1];
+	res.second = treePtr[position*NODE_SIZE + 2];
+	return res;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t MAX_DEPTH, size_t INPUT_PARAMS_COUNT, size_t STATES_COUNT>

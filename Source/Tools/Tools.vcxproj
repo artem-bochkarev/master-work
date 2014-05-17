@@ -73,6 +73,7 @@
   <ItemGroup>
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="StringProcessorSimple.cpp" />
+    <ClCompile Include="SuperQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="errorMsg.hpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="StringProcessor.h" />
     <ClInclude Include="StringProcessorSimple.h" />
+    <ClInclude Include="SuperQueue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

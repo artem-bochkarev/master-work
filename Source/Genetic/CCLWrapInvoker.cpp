@@ -2,44 +2,7 @@
 #include "COpenCLWrapInvoker.h"
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/thread_time.hpp>
-#include <boost/interprocess/detail/atomic.hpp>
-
-class SuperQueue
-{
-public:
-	SuperQueue()
-	{
-		value = 0;
-	}
-	boost::uint32_t getNext()
-	{
-		boost::uint32_t oldVal;
-		boost::uint32_t newVal;
-		do
-		{
-			oldVal = value;
-			newVal = oldVal + 1;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
-		return newVal;
-	}
-	boost::uint32_t getNextN( boost::uint32_t n )
-	{
-		boost::uint32_t oldVal;
-		boost::uint32_t newVal;
-		do
-		{
-			oldVal = value;
-			newVal = oldVal + n;
-		}while ( oldVal != boost::interprocess::ipcdetail::atomic_cas32( &value, newVal, oldVal) );
-		return newVal;
-	}
-	int reset()
-	{
-		value = 0;
-	}
-private:
-	boost::uint32_t value;
-};
+#include "Tools/SuperQueue.h"
 
 class CLocalCLWrapInvoker 
 {

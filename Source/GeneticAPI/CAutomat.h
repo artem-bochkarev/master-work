@@ -8,6 +8,7 @@ class CAutomat
 {
 public:
     virtual void generateRandom( CRandom* rand ) = 0;
+	virtual std::pair<NUMBERS_TYPE, NUMBERS_TYPE> getNextStateAction(NUMBERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const = 0;
 	virtual NUMBERS_TYPE getNextState(NUMBERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const = 0;
 	virtual NUMBERS_TYPE getAction(NUMBERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const = 0;
 	virtual NUMBERS_TYPE getStartState() const = 0;

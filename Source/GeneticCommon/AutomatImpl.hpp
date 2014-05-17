@@ -133,7 +133,18 @@ COUNTERS_TYPE CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::getAction(COUNTERS_TYPE c
 	COUNTERS_TYPE * ptrActions = ptrStates + stateSize;
 	COUNTERS_TYPE action = *(ptrActions + index);
 	return action;
-    return 0;
+}
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE>
+std::pair<COUNTERS_TYPE, COUNTERS_TYPE> CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::getNextStateAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
+{
+	size_t index = countIndex(input);
+	COUNTERS_TYPE * ptrStates = buffer + currentState * 2 * stateSize;
+	COUNTERS_TYPE * ptrActions = ptrStates + stateSize;
+	std::pair<COUNTERS_TYPE, COUNTERS_TYPE> res;
+	res.first = *(ptrStates + index);
+	res.second = *(ptrActions + index);
+	return res;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE>

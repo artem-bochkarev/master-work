@@ -19,8 +19,11 @@ bool CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::makeMove()
     //CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
     //CAutomatImpl* autImpl = static_cast<CAutomatImpl*>(automat);
     //mapImpl->getInput( x, y, currentDirection, input );
-    char action = automat->getAction( currentState, map->getInput(x, y, currentDirection) );
-	currentState = automat->getNextState(currentState, map->getInput(x, y, currentDirection));
+	std::pair<COUNTERS_TYPE, COUNTERS_TYPE> next = automat->getNextStateAction(currentState, map->getInput(x, y, currentDirection));
+    //char action = automat->getAction( currentState, map->getInput(x, y, currentDirection) );
+	//currentState = automat->getNextState(currentState, map->getInput(x, y, currentDirection));
+	int action = next.second;
+	currentState = next.first;
     switch (action)
     {
         case 0:
@@ -98,8 +101,11 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
 				printf("%i ", input[j]);
 			printf("\n");
 		}*/
-        char action = automat->getAction( curState, input );
-        curState = automat->getNextState( curState, input );
+        //char action = automat->getAction( curState, input );
+        //curState = automat->getNextState( curState, input );
+		std::pair<COUNTERS_TYPE, COUNTERS_TYPE> next = automat->getNextStateAction(curState, input);
+		int action = next.second;
+		curState = next.first;
 		/*if (i < 10)
 		{
 			printf("\tCOORDS: %i, %i\n", x, y);

@@ -22,6 +22,7 @@ public:
 	virtual COUNTERS_TYPE getStartState() const override;
 	virtual COUNTERS_TYPE getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
 	virtual COUNTERS_TYPE getAction(COUNTERS_TYPE currentState, INPUT_TYPE* input) const;
+	virtual std::pair<COUNTERS_TYPE, COUNTERS_TYPE> getNextStateAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const;
 	size_t countIndex(const std::vector<INPUT_TYPE>& input) const;
 	size_t countIndex(INPUT_TYPE* input) const;
     virtual void mutate( CRandom* rand ) override;

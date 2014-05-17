@@ -27,6 +27,7 @@ public:
     virtual void generateRandom( CRandom* rand ) override;
 	virtual COUNTERS_TYPE getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
 	virtual COUNTERS_TYPE getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
+	virtual std::pair<COUNTERS_TYPE, COUNTERS_TYPE> getNextStateAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const override;
 	virtual COUNTERS_TYPE getStartState() const override;
 
 	virtual void mutate(CRandom* rand) override;

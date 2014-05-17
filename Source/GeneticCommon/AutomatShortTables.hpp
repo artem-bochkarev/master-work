@@ -144,19 +144,25 @@ COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
 COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getNextState(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
-	size_t index = countIndex(input, currentState);
-	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * stateSize + maskSize;
-	COUNTERS_TYPE state = *(currentTable + recordSize*index + stateShift);
-	return state;
+	return getNextStateAction(currentState, input).first;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
 COUNTERS_TYPE CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getAction(COUNTERS_TYPE currentState, const std::vector<INPUT_TYPE>& input) const
 {
+	return getNextStateAction(currentState, input).second;
+}
+
+template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
+std::pair<COUNTERS_TYPE, COUNTERS_TYPE> CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::getNextStateAction(COUNTERS_TYPE currentState, 
+	const std::vector<INPUT_TYPE>& input) const
+{
 	size_t index = countIndex(input, currentState);
-	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * (stateSize)+maskSize;
-	COUNTERS_TYPE action = *(currentTable + recordSize*index + actionShift);
-	return action;
+	COUNTERS_TYPE * currentTable = buffer + commonDataSize + currentState * stateSize + maskSize;
+	std::pair<COUNTERS_TYPE, COUNTERS_TYPE> res;
+	res.first = *(currentTable + recordSize*index + stateShift);
+	res.second = *(currentTable + recordSize*index + actionShift);
+	return res;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>

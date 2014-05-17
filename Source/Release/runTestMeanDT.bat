@@ -1,0 +1,1 @@
+speedTester.exe "../Release/tests/cleverAnt3DecisionTree/meanTest.txt"

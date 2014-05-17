@@ -20,7 +20,7 @@ static const size_t DEFAULT_STEPS_COUNT = 100;
 #include "GeneticCommon/AutomatShortTablesStatic.hpp"
 #include "GeneticCommon/AutomatDecisionTreeStatic.hpp"
 
-//typedef CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
-//const char* clFilePath = "../CleverAnt3/genShortTables.cl";
-typedef CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
-static const char* clFilePath = "../CleverAnt3/genDecisionTree.cl";
+typedef CAutomatShortTablesStatic<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
+static const char* clFilePath = "../CleverAnt3/genShortTables.cl";
+//typedef CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARAMS_COUNT, STATES_COUNT> AUTOMAT;
+//static const char* clFilePath = "../CleverAnt3/genDecisionTree.cl";

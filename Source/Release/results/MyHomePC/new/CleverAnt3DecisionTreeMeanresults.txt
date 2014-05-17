@@ -1,0 +1,62 @@
+VERSION=1.0
+TIME=10
+mean test on "tests/cleverAnt3DecisionTree/config_cl_cpu_3072.txt"
+    mean=160.50  deviation=1.12 good=99.30%
+Fitnes function avg. speed=55.673
+Next generation function avg. speed=15.949
+Next generation(no fitnes) avg. speed=22.360
+
+mean test on "tests/cleverAnt3DecisionTree/config_cl_cpu_16384.txt"
+    mean=28.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=40.494
+Next generation function avg. speed=11.76
+Next generation(no fitnes) avg. speed=15.252
+
+mean test on "tests/cleverAnt3DecisionTree/config_cl_gpu_3072.txt"
+    mean=162.00  deviation=14.20 good=91.24%
+Fitnes function avg. speed=41.497
+Next generation function avg. speed=10.965
+Next generation(no fitnes) avg. speed=14.908
+
+mean test on "tests/cleverAnt3DecisionTree/config_cl_gpu_16384.txt"
+    mean=32.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=40.714
+Next generation function avg. speed=10.141
+Next generation(no fitnes) avg. speed=13.513
+
+mean test on "tests/cleverAnt3DecisionTree/config_cl_both_3072.txt"
+    mean=167.50  deviation=0.50 good=99.70%
+Fitnes function avg. speed=43.163
+Next generation function avg. speed=10.389
+Next generation(no fitnes) avg. speed=13.684
+
+mean test on "tests/cleverAnt3DecisionTree/config_cl_both_16384.txt"
+    mean=29.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=41.813
+Next generation function avg. speed=10.2
+Next generation(no fitnes) avg. speed=13.149
+
+mean test on "tests/cleverAnt3DecisionTree/steps1000/config_cl_cpu_3072.txt"
+    mean=5590.25  deviation=17.24 good=99.69%
+Fitnes function avg. speed=249.62
+Next generation function avg. speed=60.3
+Next generation(no fitnes) avg. speed=79.67
+
+mean test on "tests/cleverAnt3DecisionTree/steps1000/config_cl_cpu_16384.txt"
+    mean=20.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=309.21
+Next generation function avg. speed=80.159
+Next generation(no fitnes) avg. speed=108.308
+
+mean test on "tests/cleverAnt3DecisionTree/steps1000/config_cl_gpu_3072.txt"
+    mean=5591.75  deviation=25.91 good=99.54%
+Fitnes function avg. speed=410.185
+Next generation function avg. speed=110.433
+Next generation(no fitnes) avg. speed=151.171
+
+mean test on "tests/cleverAnt3DecisionTree/steps1000/config_cl_gpu_16384.txt"
+    mean=21.25  deviation=0.43 good=97.96%
+Fitnes function avg. speed=441.75
+Next generation function avg. speed=121.14
+Next generation(no fitnes) avg. speed=166.839
+

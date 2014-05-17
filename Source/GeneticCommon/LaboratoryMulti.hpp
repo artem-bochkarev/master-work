@@ -110,10 +110,9 @@ void CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::writeResult(std::
 		out << "Result: " << m_pInvoker->getLoopCounter() << std::endl;
 	else
 		out << "No Invoker - No Result: " << std::endl;
-
+		
 	if (GetTimeManager().getTimers().size() > 0)
 	{
-		std::stringstream out;
 		bool bUseSeconds = false;
 		for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 		{
@@ -132,13 +131,11 @@ void CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::writeResult(std::
 			int b = speed * 1000 - a * 1000;
 			if (!bUseSeconds)
 			{
-				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << "ms"<< ", Speed="
-					<< a << "." << b << "\n";
+				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << ", Speed=" << a << "." << b << std::endl;
 			}
 			else
 			{
-				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::seconds>(val.second.duration) << "s" << ", Speed="
-					<< a << "." << b << "\n";
+				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::seconds>(val.second.duration) << ", Speed=" << a << "." << b << std::endl;
 			}
 		}
 

@@ -1,0 +1,146 @@
+VERSION=1.0
+TIME=30
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 1024, Steps on map = 100
+Result: 1549
+Fitnes function: 9 seconds, Speed=171.197
+Next generation function: 30 seconds, Speed=51.581
+Next generation(no fitnes): 20 seconds, Speed=73.825
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 2048, Steps on map = 100
+Result: 729
+Fitnes function: 8 seconds, Speed=84.199
+Next generation function: 29 seconds, Speed=24.313
+Next generation(no fitnes): 21 seconds, Speed=34.184
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 4098, Steps on map = 100
+Result: 369
+Fitnes function: 8 seconds, Speed=43.85
+Next generation function: 29 seconds, Speed=12.306
+Next generation(no fitnes): 21 seconds, Speed=17.227
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 100
+Result: 88
+Fitnes function: 8 seconds, Speed=10.663
+Next generation function: 30 seconds, Speed=2.900
+Next generation(no fitnes): 22 seconds, Speed=3.983
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 1024, Steps on map = 100
+Result: 1392
+Fitnes function: 11 seconds, Speed=126.210
+Next generation function: 30 seconds, Speed=46.353
+Next generation(no fitnes): 18 seconds, Speed=73.320
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 2048, Steps on map = 100
+Result: 631
+Fitnes function: 11 seconds, Speed=56.256
+Next generation function: 30 seconds, Speed=21.23
+Next generation(no fitnes): 18 seconds, Speed=33.567
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 4098, Steps on map = 100
+Result: 403
+Fitnes function: 6 seconds, Speed=62.854
+Next generation function: 29 seconds, Speed=13.447
+Next generation(no fitnes): 23 seconds, Speed=17.108
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 16384, Steps on map = 100
+Result: 101
+Fitnes function: 4 seconds, Speed=20.232
+Next generation function: 30 seconds, Speed=3.340
+Next generation(no fitnes): 25 seconds, Speed=4.3
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 1024, Steps on map = 100
+Result: 1258
+Fitnes function: 12 seconds, Speed=97.628
+Next generation function: 30 seconds, Speed=41.913
+Next generation(no fitnes): 17 seconds, Speed=73.510
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 2048, Steps on map = 100
+Result: 608
+Fitnes function: 11 seconds, Speed=51.80
+Next generation function: 30 seconds, Speed=20.235
+Next generation(no fitnes): 18 seconds, Speed=33.540
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 4098, Steps on map = 100
+Result: 299
+Fitnes function: 11 seconds, Speed=25.21
+Next generation function: 29 seconds, Speed=9.977
+Next generation(no fitnes): 18 seconds, Speed=16.594
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 100
+Result: 73
+Fitnes function: 11 seconds, Speed=6.357
+Next generation function: 30 seconds, Speed=2.427
+Next generation(no fitnes): 18 seconds, Speed=3.929
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 1024, Steps on map = 1000
+Result: 1113
+Fitnes function: 14 seconds, Speed=75.738
+Next generation function: 30 seconds, Speed=37.82
+Next generation(no fitnes): 15 seconds, Speed=72.727
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 2048, Steps on map = 1000
+Result: 541
+Fitnes function: 14 seconds, Speed=37.613
+Next generation function: 29 seconds, Speed=18.34
+Next generation(no fitnes): 15 seconds, Speed=34.679
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 4098, Steps on map = 1000
+Result: 259
+Fitnes function: 14 seconds, Speed=17.756
+Next generation function: 30 seconds, Speed=8.615
+Next generation(no fitnes): 15 seconds, Speed=16.736
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 1000
+Result: 63
+Fitnes function: 14 seconds, Speed=4.432
+Next generation function: 30 seconds, Speed=2.74
+Next generation(no fitnes): 16 seconds, Speed=3.898
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 1024, Steps on map = 1000
+Result: 1070
+Fitnes function: 15 seconds, Speed=71.298
+Next generation function: 30 seconds, Speed=35.630
+Next generation(no fitnes): 15 seconds, Speed=71.224
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 2048, Steps on map = 1000
+Result: 628
+Fitnes function: 11 seconds, Speed=55.297
+Next generation function: 30 seconds, Speed=20.923
+Next generation(no fitnes): 18 seconds, Speed=33.659
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 4098, Steps on map = 1000
+Result: 187
+Fitnes function: 13 seconds, Speed=13.730
+Next generation function: 30 seconds, Speed=6.220
+Next generation(no fitnes): 16 seconds, Speed=11.373
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 16384, Steps on map = 1000
+Result: 67
+Fitnes function: 11 seconds, Speed=6.49
+Next generation function: 30 seconds, Speed=2.210
+Next generation(no fitnes): 19 seconds, Speed=3.483
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 1024, Steps on map = 1000
+Result: 360
+Fitnes function: 24 seconds, Speed=14.477
+Next generation function: 30 seconds, Speed=11.994
+Next generation(no fitnes): 5 seconds, Speed=69.929
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 2048, Steps on map = 1000
+Result: 179
+Fitnes function: 24 seconds, Speed=7.327
+Next generation function: 30 seconds, Speed=5.945
+Next generation(no fitnes): 5 seconds, Speed=31.522
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 4098, Steps on map = 1000
+Result: 90
+Fitnes function: 24 seconds, Speed=3.649
+Next generation function: 30 seconds, Speed=2.983
+Next generation(no fitnes): 5 seconds, Speed=16.343
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+Result: 22
+Fitnes function: 24 seconds, Speed=0.908
+Next generation function: 30 seconds, Speed=0.724
+Next generation(no fitnes): 6 seconds, Speed=3.588

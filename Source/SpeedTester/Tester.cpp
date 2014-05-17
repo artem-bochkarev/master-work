@@ -15,7 +15,7 @@ typedef boost::tokenizer<boost::char_separator<char> >
 
 
 Tester::Tester(const char *inFileName, const char *outFileName, const char* clFileName, const char* configFileName, Tools::Logger& logger)
-:in(inFileName), pOut(new std::ofstream(outFileName)), logger(logger), timeSec(30), m_configFileName(configFileName), m_clFileName(clFileName)
+:in(inFileName), pOut(new std::ofstream(outFileName)), logger(logger), timeSec(1), m_configFileName(configFileName), m_clFileName(clFileName)
 {
 	m_configFileNameTmp = m_configFileName;
 	m_configFileNameTmp.append(".tmp");
@@ -138,7 +138,9 @@ bool Tester::runCmd( std::vector<std::string> &args )
         laboratory->runForTime( timeSec * 1000 );
 
         laboratory->writeResult( std::cout );
+		std::cout << std::endl;
         laboratory->writeResult( *pOut );
+		*pOut << std::endl;
 
         logger << "[SUCCESS] " << "\n";
     }catch( std::runtime_error& err )
@@ -154,6 +156,7 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     int cnt = boost::lexical_cast<int>( args[1] );
     std::vector<size_t> values(cnt);
     size_t sum = 0;
+	std::map<std::string, double> speedSum;
 	
     std::cout << "Started mean test on " << args[0] << std::endl;
     *pOut << "mean test on \"" << args[0] << "\"" << std::endl;
@@ -171,7 +174,19 @@ bool Tester::meanCmd( std::vector<std::string>& args )
         values[i] = laboratory->getRunCount();
         sum += values[i];
         std::cout << i+1 << " ";
+
+		for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
+		{
+			boost::chrono::microseconds mcs = boost::chrono::duration_cast<boost::chrono::microseconds>(val.second.duration);
+			double speed = (double)val.second.counter / mcs.count();
+			speed *= 1000000;
+			if (speedSum.find(val.first) == speedSum.end())
+				speedSum[val.first] = speed;
+			else
+				speedSum[val.first] += speed;
+		}
     }
+	
     std::cout << std::endl;
     double mean = (double)sum / cnt;
     double dev = 0.0;
@@ -183,6 +198,17 @@ bool Tester::meanCmd( std::vector<std::string>& args )
     dev = sqrt( dev );
     std::cout << boost::format("    mean=%.2f  deviation=%.2f good=%.2f") % mean % dev % (100*(mean-dev)/mean) << "%" << std::endl;
     *pOut << boost::format("    mean=%.2f  deviation=%.2f good=%.2f") % mean % dev % (100*(mean-dev)/mean) << "%" << std::endl;
+
+	for (std::map<std::string, double>::value_type val : speedSum)
+	{
+		double speed = val.second / cnt;
+		int a = speed;
+		int b = speed * 1000 - a * 1000;
+		std::cout << val.first << " avg. speed=" << a << "." << b << std::endl;
+		*pOut << val.first << " avg. speed=" << a << "." << b << std::endl;
+	}
+	std::cout << std::endl;
+	*pOut << std::endl;
     return true;
 }
 

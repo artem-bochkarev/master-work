@@ -1,1 +1,1 @@
-speedTester.exe "../Release/tests/cleverAnt3ShortTables/testIt.txt"
+speedTester.exe "../Release/tests/cleverAnt3DecisionTree/testIt.txt"

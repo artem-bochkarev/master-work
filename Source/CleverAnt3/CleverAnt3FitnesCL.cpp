@@ -24,7 +24,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 	setFromStrings(strings);
 	bufSize = sizeof(AUTOMAT)* m_size;
 	globalRange = cl::NDRange(m_size);
-	localRange = cl::NullRange;
+	localRange = cl::NDRange(256);
 	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
 	//stateSize = 16;//1 << statesCount;
 	try
@@ -216,7 +216,7 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 	getMap(0)->toIntBuffer(oneMap);
 
 	mapBufCL = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * mapSize * sizeof(int) );
-	mapBufConst = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * mapSize * sizeof(int));
+	mapBufConst = cl::Buffer(context, CL_MEM_READ_ONLY, m_size * mapSize * sizeof(int));
 	for (size_t i = 0; i < m_size; ++i)
 	{
 		memcpy(mapsBuffer + i*mapSize, oneMap, mapSize*sizeof(int));
@@ -228,6 +228,7 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 	//__global int* mapBuffer, __constant int* maps, __global float* resultCache)
 	try
 	{
+		queue.enqueueWriteBuffer(mapBufConst, CL_FALSE, 0, m_size * mapSize * sizeof(int), mapsBuffer);
 		kernelGen.setArg(0, statesBufCL1);
 		kernelGen.setArg(1, sizesBuf);
 		kernelGen.setArg(2, mapBufCL);
@@ -245,8 +246,8 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 		sizes[3] = aut.getBufferOffset();
 		sizes[4] = mapSize;
 
-		queue.enqueueWriteBuffer(mapBufConst, CL_TRUE, 0, m_size * mapSize * sizeof(int), mapsBuffer);
-		queue.enqueueWriteBuffer(sizesBuf, CL_TRUE, 0, 5 * 4, sizes);
+		queue.enqueueWriteBuffer(sizesBuf, CL_FALSE, 0, 5 * 4, sizes);
+		queue.finish();
 	}
 	catch (cl::Error& error)
 	{
@@ -284,8 +285,8 @@ void CCleverAnt3FitnesCL::prepareData(const AUTOMAT* individs)
 {
 	try
 	{
+		queue.enqueueWriteBuffer(statesBufCL1, CL_FALSE, 0, bufSize, individs);
 		queue.enqueueCopyBuffer(mapBufConst, mapBufCL, 0, 0, m_size * mapSize * sizeof(int));
-		queue.enqueueWriteBuffer(statesBufCL1, CL_TRUE, 0, bufSize, individs);
 	}
 	catch (cl::Error& error)
 	{
@@ -300,6 +301,7 @@ void CCleverAnt3FitnesCL::run() const
 	{
 		//queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );
 		boost::this_thread::disable_interruption di;
+		queue.finish();
 		queue.enqueueNDRangeKernel(kernelGen, cl::NullRange, globalRange, localRange);
 		queue.finish();
 		queue.enqueueReadBuffer(resultCache, CL_TRUE, 0, m_size*sizeof(float), cachedResults);

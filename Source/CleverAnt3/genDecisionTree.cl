@@ -84,8 +84,6 @@ __kernel void genetic_1d( __check_space const uint* individs, __constant const u
 			printf("%i, ", individs[i]);
 		}
 	}*/
-    uint myBuf = myPos * bufSize;
-
     
     __global int* myMapsPtr = mapBuffer + myPos*mapSize;    
     __global const uint* myBuffer = individs + myPos*bufSize  + bufOffset;// = (1-koeff)*inBuffer + koeff*outBuffer;

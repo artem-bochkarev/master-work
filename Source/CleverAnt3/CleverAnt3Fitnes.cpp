@@ -82,7 +82,7 @@ private:
 
 void CCleverAnt3FitnesCPU::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
 {
-	CTimeCounter counter(perfFitnesFunction);
+	CTimeCounter counter(perfFitnesFunctionCPU);
 	boost::thread_group group;
 	size_t N = individs.size();
 	unsigned int nthreads = boost::thread::hardware_concurrency();

@@ -17,21 +17,25 @@ uint2 getNext( const uint* input, __check_space const uint* treePtr )
 {
     uint2 next;
 	uint position = 0;
+	uint tmp = 0;
+	uint4 preget = 0;
+	#pragma unroll
 	for (uint depth = 0; depth < MAX_DEPTH; ++depth)
 	{
-		uint currentVal = treePtr[position*NODE_SIZE];
-		position = select( position, treePtr[position*NODE_SIZE + 1], (currentVal)&&(input[currentVal-1]) );
-		position = select( position, treePtr[position*NODE_SIZE + 2], (currentVal)&&(!input[currentVal-1]) );
+		tmp = position*NODE_SIZE;
+		preget = vload4(0, treePtr + tmp);
+		uint currentVal = preget.x;
+		position = select( position, preget.y, (currentVal)&&(input[currentVal-1]) );
+		position = select( position, preget.z, (currentVal)&&(!input[currentVal-1]) );
 	}
-	next.x = treePtr[position*NODE_SIZE + 1];
-	next.y = treePtr[position*NODE_SIZE + 2];
+	next.x = preget.y;
+	next.y = preget.z;
 	return next;
 }
 
 float run( __check_space const uint* ind, __global int* map )
 {
 	float cnt = 0.0f;
-	uint myId=get_global_id(0);
 	
 	__global int * myMap = map + 2;
     

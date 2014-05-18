@@ -264,7 +264,7 @@ void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vect
 	fitCPU.fitnes(&individs[0]);*/
 
 	//m_size = individs.size();
-	CTimeCounter counter(perfFitnesFunction);
+	CTimeCounter counter(perfFitnesFunctionCL);
 	if (m_size != individs.size())
 		Tools::throwFailed("Different sizes!!!", &logger);
 	prepareData(individs.data());

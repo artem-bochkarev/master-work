@@ -78,7 +78,7 @@ void CCleverAnt3FitnesCLBoth::fitnes(const std::vector<AUTOMAT>& individs, std::
 {
 	//individs
 	//individs
-	CTimeCounter counter(perfFitnesFunction);
+	CTimeCounter counter(perfFitnesFunctionBoth);
 	const AUTOMAT* individsCPU = individs.data();
 	ANT_FITNES_TYPE* resultCPU = result.data();
 

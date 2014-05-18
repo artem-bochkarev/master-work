@@ -29,6 +29,8 @@ class CTimeCounter
 public:
 	CTimeCounter(const std::string&);
 	~CTimeCounter();
+	//force stop
+	void stop();
 private:
 	CTimeCounter();
 	CTimeCounter(const CTimeCounter&);
@@ -39,5 +41,6 @@ private:
 
 	boost::chrono::system_clock::time_point startTime, stopTime;
 	std::string m_name;
+	bool m_bRunning;
 };
 

@@ -230,8 +230,8 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 	for (std::map<std::string, double>::value_type val : speedSum)
 	{
 		double speed = val.second / cnt;
-		int a = speed;
-		int b = speed * 1000 - a * 1000;
+		int a = static_cast<int>(speed);
+		int b = static_cast<int>(speed * 1000 - a * 1000);
 		std::cout << val.first << " avg. speed=" << a << "." << b << std::endl;
 		*pOut << val.first << " avg. speed=" << a << "." << b << std::endl;
 	}

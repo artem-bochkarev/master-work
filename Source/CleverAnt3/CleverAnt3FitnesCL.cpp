@@ -264,7 +264,10 @@ void CCleverAnt3FitnesCL::fitnes(const std::vector<AUTOMAT>& individs, std::vect
 	fitCPU.fitnes(&individs[0]);*/
 
 	//m_size = individs.size();
-	CTimeCounter counter(perfFitnesFunctionCL);
+	std::string counterName = perfFitnesFunctionCL_CPU;
+	if ( deviceType == CL_DEVICE_TYPE_GPU )
+		std::string counterName = perfFitnesFunctionCL_GPU;
+	CTimeCounter counter(counterName);
 	if (m_size != individs.size())
 		Tools::throwFailed("Different sizes!!!", &logger);
 	prepareData(individs.data());
@@ -276,6 +279,10 @@ void CCleverAnt3FitnesCL::fitnes(const AUTOMAT* individs, ANT_FITNES_TYPE* resul
 {
 	//if (m_size != individs.size())
 	//	Tools::throwFailed("Different sizes!!!", &logger);
+	std::string counterName = perfFitnesFunctionCL_CPU;
+	if (deviceType == CL_DEVICE_TYPE_GPU)
+		std::string counterName = perfFitnesFunctionCL_GPU;
+	CTimeCounter counter(counterName);
 	prepareData(individs);
 	run();
 	getData(result);
@@ -302,8 +309,15 @@ void CCleverAnt3FitnesCL::run() const
 		//queue.enqueueNDRangeKernel( kernelGen, cl::NullRange, cl::NDRange(N, M), cl::NullRange );
 		boost::this_thread::disable_interruption di;
 		queue.finish();
+
+		std::string counterName = perfFitnesFunctionCLJustKernelCPU;
+		if (deviceType == CL_DEVICE_TYPE_GPU)
+			std::string counterName = perfFitnesFunctionCLJustKernelGPU;
+
+		CTimeCounter counter(counterName);
 		queue.enqueueNDRangeKernel(kernelGen, cl::NullRange, globalRange, localRange);
 		queue.finish();
+		counter.stop();
 		queue.enqueueReadBuffer(resultCache, CL_TRUE, 0, m_size*sizeof(float), cachedResults);
 	}
 	catch (cl::Error& error)

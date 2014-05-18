@@ -127,8 +127,8 @@ void CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::writeResult(std::
 			boost::chrono::microseconds mcs = boost::chrono::duration_cast<boost::chrono::microseconds>(val.second.duration);
 			double speed = (double)val.second.counter / mcs.count();
 			speed *= 1000000;
-			int a = speed;
-			int b = speed * 1000 - a * 1000;
+			int a = static_cast<int>(speed);
+			int b = static_cast<int>(speed * 1000 - a * 1000);
 			if (!bUseSeconds)
 			{
 				out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << ", Speed=" << a << "." << b << std::endl;

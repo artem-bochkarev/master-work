@@ -132,3 +132,29 @@ void getInput( uint* answ, uint x, uint y, uint direction, const __global int* m
 		answ[7] = myMap[x2 + c_x_size*y2];		
 	//#endif
 }
+
+uint8 getInputCA3( uint x, uint y, uint direction, const __global int* map )
+{
+    const __global int * myMap = map + 2;
+    int x1 = x, y1 = y;
+    x1 = moveX( x, direction );
+    y1 = moveY( y, direction );
+	
+		uint8 out;
+		out.s0 = myMap[x1 + c_x_size*y1];
+		out.s1 = myMap[ moveX( x1, left( direction ) ) + c_x_size*moveY( y1, left( direction ) ) ];
+		out.s2 = myMap[ moveX( x1, right( direction ) ) + c_x_size*moveY( y1, right( direction ) ) ];
+		out.s3 = myMap[ moveX( x1, direction ) + c_x_size*moveY( y1, direction ) ];
+		
+		x1 = moveX(x, left(direction)); y1 = moveY(y, left(direction));
+		out.s4 = myMap[x1 + c_x_size*y1];
+		int x2 = moveX(x, right(direction)); int y2 = moveY(y, right(direction));
+		out.s5 = myMap[x2 + c_x_size*y2];
+		
+		x1 = moveX(x1, left(direction)); y1 = moveY(y1, left(direction));
+		out.s6 = myMap[x1 + c_x_size*y1];
+		x2 = moveX(x2, right(direction)); y2 = moveY(y2, right(direction));
+		out.s7 = myMap[x2 + c_x_size*y2];
+	return out;
+	//#endif
+}

@@ -1,0 +1,170 @@
+VERSION=1.0
+TIME=10
+mean test on "auto_generated"
+size=5120, type=CPU, steps=100
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 5120, Steps on map = 100
+    mean=93.00  deviation=0.71 good=99.24%
+Fitnes function CL on CPU avg. speed=33.454
+Fitnes function CL on CPU(only kernel time) avg. speed=167.455
+Next generation function avg. speed=9.275
+Next generation(no fitnes) avg. speed=12.834
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=100
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 100
+    mean=27.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=10.151
+Fitnes function CL on CPU(only kernel time) avg. speed=49.470
+Next generation function avg. speed=2.680
+Next generation(no fitnes) avg. speed=3.642
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=100
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 100
+    mean=92.50  deviation=0.50 good=99.46%
+Fitnes function CL on GPU avg. speed=34.32
+Fitnes function CL on GPU(only kernel time) avg. speed=101.857
+Next generation function avg. speed=9.207
+Next generation(no fitnes) avg. speed=12.629
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=100
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 100
+    mean=31.75  deviation=0.43 good=98.64%
+Fitnes function CL on GPU avg. speed=19.310
+Fitnes function CL on GPU(only kernel time) avg. speed=64.619
+Next generation function avg. speed=3.108
+Next generation(no fitnes) avg. speed=3.705
+
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=100
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 0
+    mean=100.50  deviation=0.87 good=99.14%
+Fitnes function CL on CPU avg. speed=52.713
+Fitnes function CL on CPU(only kernel time) avg. speed=302.702
+Fitnes function CL on GPU avg. speed=47.737
+Fitnes function CL on GPU(only kernel time) avg. speed=111.302
+Fitnes function CPU+GPU avg. speed=44.167
+Next generation function avg. speed=10.7
+Next generation(no fitnes) avg. speed=12.943
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=100
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 0
+    mean=31.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=16.850
+Fitnes function CL on CPU(only kernel time) avg. speed=97.928
+Fitnes function CL on GPU avg. speed=23.891
+Fitnes function CL on GPU(only kernel time) avg. speed=93.753
+Fitnes function CPU+GPU avg. speed=16.636
+Next generation function avg. speed=3.39
+Next generation(no fitnes) avg. speed=3.719
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=100
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 100
+    mean=83.50  deviation=0.50 good=99.40%
+Fitnes function no CL avg. speed=23.718
+Next generation function avg. speed=8.263
+Next generation(no fitnes) avg. speed=12.684
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=100
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 100
+    mean=25.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=7.437
+Next generation function avg. speed=2.438
+Next generation(no fitnes) avg. speed=3.629
+
+mean test on "auto_generated"
+size=5120, type=CPU, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 5120, Steps on map = 1000
+    mean=64.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=12.821
+Fitnes function CL on CPU(only kernel time) avg. speed=18.846
+Next generation function avg. speed=6.358
+Next generation(no fitnes) avg. speed=12.623
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor,
+Size of generation = 16384, Steps on map = 1000
+    mean=18.75  deviation=0.43 good=97.69%
+Fitnes function CL on CPU avg. speed=3.812
+Fitnes function CL on CPU(only kernel time) avg. speed=5.425
+Next generation function avg. speed=1.825
+Next generation(no fitnes) avg. speed=3.503
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 1000
+    mean=75.00  deviation=1.00 good=98.67%
+Fitnes function CL on GPU avg. speed=22.468
+Fitnes function CL on GPU(only kernel time) avg. speed=30.433
+Next generation function avg. speed=7.439
+Next generation(no fitnes) avg. speed=11.123
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 1000
+    mean=20.50  deviation=0.50 good=97.56%
+Fitnes function CL on GPU avg. speed=5.374
+Fitnes function CL on GPU(only kernel time) avg. speed=6.688
+Next generation function avg. speed=2.2
+Next generation(no fitnes) avg. speed=3.193
+
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 0
+    mean=75.50  deviation=0.50 good=99.34%
+Fitnes function CL on CPU avg. speed=21.205
+Fitnes function CL on CPU(only kernel time) avg. speed=31.289
+Fitnes function CL on GPU avg. speed=18.968
+Fitnes function CL on GPU(only kernel time) avg. speed=24.633
+Fitnes function CPU+GPU avg. speed=18.264
+Next generation function avg. speed=7.471
+Next generation(no fitnes) avg. speed=12.645
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD Phenom(tm) II X4 955 Processor + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 0
+    mean=24.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=7.49
+Fitnes function CL on CPU(only kernel time) avg. speed=10.836
+Fitnes function CL on GPU avg. speed=8.536
+Fitnes function CL on GPU(only kernel time) avg. speed=14.316
+Fitnes function CPU+GPU avg. speed=7.1
+Next generation function avg. speed=2.381
+Next generation(no fitnes) avg. speed=3.614
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 1000
+    mean=25.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=3.143
+Next generation function avg. speed=2.481
+Next generation(no fitnes) avg. speed=11.785
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+    mean=8.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=0.982
+Next generation function avg. speed=0.758
+Next generation(no fitnes) avg. speed=3.330
+

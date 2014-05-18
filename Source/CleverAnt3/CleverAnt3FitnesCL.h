@@ -70,6 +70,7 @@ public:
 	virtual void setMaps(std::vector<CMapPtr> maps) override;
 	std::string getInfo() const override;
 protected:
+	void checkSizes();
 	CCleverAnt3FitnesCLPtr clCPUFitnes, clGPUFitnes;
-	size_t gpuCount, cpuCount;
+	size_t gpuCount, cpuCount, m_size;
 };

@@ -6,11 +6,11 @@
 #include "performanceInfo.h"
 
 CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string >& strings, Tools::Logger& log)
+:m_size(0)
 {
 	using namespace boost::spirit::qi;
 	std::string deviceTypeStr;
 	char c = 'C';
-	size_t m_size = 0;
 	std::vector< std::string > stringsCPU;
 	std::vector< std::string > stringsGPU;
 	for (size_t i = 0; i < strings.size(); ++i)
@@ -98,6 +98,31 @@ void CCleverAnt3FitnesCLBoth::fitnes(const std::vector<AUTOMAT>& individs, std::
 	firstBarrier.wait();
 	group.interrupt_all();
 	group.join_all();
+	checkSizes();
+}
+
+void CCleverAnt3FitnesCLBoth::checkSizes()
+{
+	int64_t cpuTime = GetTimeManager().getTimers().at(perfFitnesFunctionCL_CPU).counter;
+	int64_t gpuTime = GetTimeManager().getTimers().at(perfFitnesFunctionCL_GPU).counter;
+	if (cpuTime > gpuTime)
+	{
+		double diff = (double)(gpuTime) / cpuTime;
+		if (diff < 0.7)
+		{
+			gpuCount -= 256;
+			cpuCount = m_size - gpuCount;
+		}
+	}
+	else
+	{
+		double diff = (double)(cpuTime) / gpuTime;
+		if (diff < 0.7)
+		{
+			gpuCount += 256;
+			cpuCount = m_size - gpuCount;
+		}
+	}
 }
 
 void CCleverAnt3FitnesCLBoth::setMaps(std::vector<CMapPtr> maps) 

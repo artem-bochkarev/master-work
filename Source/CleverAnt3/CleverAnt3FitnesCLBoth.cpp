@@ -21,6 +21,11 @@ CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string 
 			continue;
 		}
 		else
+		if (phrase_parse(str.begin(), str.end(), "DEVICE_TYPE=" >> int_ >> ";", space, m_size))
+		{
+			continue;
+		}
+		else
 		{
 			stringsCPU.push_back(str);
 			stringsGPU.push_back(str);
@@ -31,6 +36,8 @@ CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string 
 	cpuCount = m_size - gpuCount;
 	stringsGPU.push_back("GENERATION_SIZE=" + boost::lexical_cast<std::string, size_t>(gpuCount)+";");
 	stringsCPU.push_back("GENERATION_SIZE=" + boost::lexical_cast<std::string, size_t>(cpuCount)+";");
+	stringsCPU.push_back("DEVICE_TYPE=CPU");
+	stringsGPU.push_back("DEVICE_TYPE=GPU");
 	clCPUFitnes = CCleverAnt3FitnesCLPtr(new CCleverAnt3FitnesCL(stringsCPU, log));
 	clGPUFitnes = CCleverAnt3FitnesCLPtr(new CCleverAnt3FitnesCL(stringsGPU, log));
 }
@@ -105,7 +112,7 @@ void CCleverAnt3FitnesCLBoth::checkSizes()
 {
 	int64_t cpuTime = GetTimeManager().getTimers().at(perfFitnesFunctionCL_CPU).counter;
 	int64_t gpuTime = GetTimeManager().getTimers().at(perfFitnesFunctionCL_GPU).counter;
-	if (cpuTime > gpuTime)
+	/*if (cpuTime > gpuTime)
 	{
 		double diff = (double)(gpuTime) / cpuTime;
 		if (diff < 0.7)
@@ -122,7 +129,7 @@ void CCleverAnt3FitnesCLBoth::checkSizes()
 			gpuCount += 256;
 			cpuCount = m_size - gpuCount;
 		}
-	}
+	}*/
 }
 
 void CCleverAnt3FitnesCLBoth::setMaps(std::vector<CMapPtr> maps) 

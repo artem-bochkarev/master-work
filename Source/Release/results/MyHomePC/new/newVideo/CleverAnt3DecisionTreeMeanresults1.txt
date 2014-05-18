@@ -1,0 +1,114 @@
+VERSION=1.0
+TIME=10
+mean test on "auto_generated"
+size=3072, type=CPU, steps=100
+    mean=159.50  deviation=0.50 good=99.69%
+Fitnes function avg. speed=56.587
+Next generation function avg. speed=15.963
+Next generation(no fitnes) avg. speed=22.239
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=100
+    mean=28.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=10.481
+Next generation function avg. speed=2.736
+Next generation(no fitnes) avg. speed=3.702
+
+mean test on "auto_generated"
+size=3072, type=GPU, steps=100
+    mean=145.25  deviation=0.43 good=99.70%
+Fitnes function avg. speed=42.816
+Next generation function avg. speed=14.458
+Next generation(no fitnes) avg. speed=21.832
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=100
+    mean=31.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=17.178
+Next generation function avg. speed=3.46
+Next generation(no fitnes) avg. speed=3.704
+
+mean test on "auto_generated"
+size=3072, type=BOTH, steps=100
+    mean=164.50  deviation=0.50 good=99.70%
+Fitnes function avg. speed=66.645
+Next generation function avg. speed=16.463
+Next generation(no fitnes) avg. speed=21.866
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=100
+    mean=29.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=12.689
+Next generation function avg. speed=2.863
+Next generation(no fitnes) avg. speed=3.697
+
+mean test on "auto_generated"
+size=3072, type=NoCL, steps=100
+    mean=138.50  deviation=1.50 good=98.92%
+Fitnes function avg. speed=38.314
+Next generation function avg. speed=13.834
+Next generation(no fitnes) avg. speed=21.655
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=100
+    mean=24.25  deviation=0.43 good=98.21%
+Fitnes function avg. speed=7.42
+Next generation function avg. speed=2.392
+Next generation(no fitnes) avg. speed=3.623
+
+mean test on "auto_generated"
+size=3072, type=CPU, steps=1000
+    mean=113.25  deviation=0.43 good=99.62%
+Fitnes function avg. speed=23.513
+Next generation function avg. speed=11.263
+Next generation(no fitnes) avg. speed=21.622
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=1000
+    mean=20.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=4.142
+Next generation function avg. speed=1.923
+Next generation(no fitnes) avg. speed=3.591
+
+mean test on "auto_generated"
+size=3072, type=GPU, steps=1000
+    mean=136.75  deviation=0.43 good=99.68%
+Fitnes function avg. speed=37.718
+Next generation function avg. speed=13.622
+Next generation(no fitnes) avg. speed=21.328
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=1000
+    mean=17.75  deviation=0.43 good=97.56%
+Fitnes function avg. speed=3.718
+Next generation function avg. speed=1.720
+Next generation(no fitnes) avg. speed=3.204
+
+mean test on "auto_generated"
+size=3072, type=BOTH, steps=1000
+    mean=117.25  deviation=1.30 good=98.89%
+Fitnes function avg. speed=25.565
+Next generation function avg. speed=11.702
+Next generation(no fitnes) avg. speed=21.598
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=1000
+    mean=20.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=4.486
+Next generation function avg. speed=1.988
+Next generation(no fitnes) avg. speed=3.573
+
+mean test on "auto_generated"
+size=3072, type=NoCL, steps=1000
+    mean=41.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=5.105
+Next generation function avg. speed=4.55
+Next generation(no fitnes) avg. speed=19.766
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000
+    mean=8.00  deviation=0.00 good=100.00%
+Fitnes function avg. speed=0.953
+Next generation function avg. speed=0.741
+Next generation(no fitnes) avg. speed=3.330
+

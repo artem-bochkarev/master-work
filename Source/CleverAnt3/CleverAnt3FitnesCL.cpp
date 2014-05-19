@@ -24,7 +24,7 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 	setFromStrings(strings);
 	bufSize = sizeof(AUTOMAT)* m_size;
 	globalRange = cl::NDRange(m_size);
-	localRange = cl::NDRange(256);
+	localRange = cl::NDRange(cl::NullRange);
 	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
 	//stateSize = 16;//1 << statesCount;
 	try
@@ -73,12 +73,22 @@ CCleverAnt3FitnesCL::CCleverAnt3FitnesCL(const std::vector< std::string >& strin
 	}
 	catch (cl::Error& error)
 	{
-		Tools::throwDetailedFailed("Failed to create CCleverAnt3FitnesCL", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
+		std::string msg = "Failed to create CCleverAnt3FitnesCL";
+		if (deviceType == CL_DEVICE_TYPE_CPU)
+			msg.append("(CPU): ");
+		else
+			msg.append("(GPU): ");
+		Tools::throwDetailedFailed(msg, streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
 	} 
 	catch (std::runtime_error& err)
 	{
-		throw std::runtime_error(std::string("Failed to create GeneticStrategy: ").append(
-			err.what()));
+		std::string msg = "Failed to create CCleverAnt3FitnesCL";
+		if (deviceType == CL_DEVICE_TYPE_CPU)
+			msg.append("(CPU): ");
+		else
+			msg.append("(GPU): ");
+
+		Tools::throwDetailedFailed(msg, err.what(), &logger);
 	}
 	cachedResults = new float[m_size];
 }
@@ -200,9 +210,22 @@ void CCleverAnt3FitnesCL::createProgram(const boost::filesystem::path& sourceFil
 
 void CCleverAnt3FitnesCL::initCLBuffers()
 {
-	statesBufCL1 = cl::Buffer(context, CL_MEM_READ_ONLY, m_size*sizeof(AUTOMAT) );
-	sizesBuf = cl::Buffer(context, CL_MEM_READ_ONLY, 5 * sizeof(int));
-	resultCache = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(float));
+	std::string lastCreated = "no one created)";
+	try
+	{
+		statesBufCL1 = cl::Buffer(context, CL_MEM_READ_ONLY, m_size*sizeof(AUTOMAT));
+		lastCreated = "statesBufCL1)";
+		sizesBuf = cl::Buffer(context, CL_MEM_READ_ONLY, 5 * sizeof(int));
+		lastCreated = "sizesBuf)";
+		resultCache = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(float));
+		lastCreated = "resultCache)";
+	}
+	catch (cl::Error& err)
+	{
+		std::string msg = "Failed to init buffers(last was ";
+		msg.append(lastCreated);
+		throwDetailedFailed( msg, streamsdk::getOpenCLErrorCodeStr(err.err()), &logger);
+	}
 }
 
 void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)

@@ -9,14 +9,14 @@ CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::CAutomatImpl( CAntCommon<COUNTERS_TYPE>
 :startState(0), pAntCommon(pAntCommon)
 {
 	stateSize = 1 << pAntCommon->statesCount();
-	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount()*stateSize);
+	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount() * stateSize * sizeof(COUNTERS_TYPE));
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE>
 CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>::CAutomatImpl(const CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE> &automat)
 :startState(automat.startState), stateSize(automat.stateSize), pAntCommon(automat.pAntCommon)
 {
-	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount() * stateSize);
+	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount() * stateSize * sizeof(COUNTERS_TYPE));
 	memcpy(buffer, automat.buffer, 2 * pAntCommon->statesCount() * stateSize);
 }
 
@@ -25,7 +25,7 @@ CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>& CAutomatImpl<COUNTERS_TYPE, INPUT_TYPE>
 {
     stateSize = automat.stateSize;
 	pAntCommon = automat.pAntCommon;
-	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount() * stateSize);
+	buffer = (COUNTERS_TYPE*)malloc(2 * pAntCommon->statesCount() * stateSize * sizeof(COUNTERS_TYPE));
 	memcpy(buffer, automat.buffer, 2 * pAntCommon->statesCount() * stateSize);
     startState = automat.startState;
     return *this;

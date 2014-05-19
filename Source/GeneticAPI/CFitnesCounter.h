@@ -4,6 +4,7 @@
 template< typename NUMBERS_TYPE, typename INPUT_TYPE, typename FITNESS_TYPE > class CFitnesCounter
 {
 public:
+	virtual ~CFitnesCounter() {};
     virtual FITNESS_TYPE fitnes( const CAutomat<NUMBERS_TYPE, INPUT_TYPE>* automat ) const = 0;
 };
 

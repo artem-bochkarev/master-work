@@ -7,6 +7,7 @@
 class CSimpleTask
 {
 public:
+	virtual ~CSimpleTask();
     virtual void run();
     boost::chrono::milliseconds getMillis() const;
     boost::chrono::nanoseconds getNanos() const;

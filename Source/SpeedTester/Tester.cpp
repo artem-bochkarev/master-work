@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 #include "TimeRun/CTimeCounter.h"
+#include "Tools/errorMsg.hpp"
 
 typedef boost::tokenizer<boost::char_separator<char> > 
     tokenizer;
@@ -51,12 +52,12 @@ void Tester::run()
             process( str );
         }catch( std::runtime_error& err )
         {
-            std::cout << "[WARNING] " << err.what() << std::endl;
-            logger << "[FAILED] " << err.what() << "\n";
+            std::cout << "[WARNING] Tester::run(): " << err.what() << std::endl;
+            logger << "[FAILED] Tester::run(): " << err.what() << "\n";
         }catch( std::exception& ex )
         {
-            std::cout << "[WARNING] " << ex.what() << std::endl;
-            logger << "[FAILED] " << ex.what() << "\n";
+            std::cout << "[WARNING] Tester::run(): " << ex.what() << std::endl;
+            logger << "[FAILED] Tester::run(): " << ex.what() << "\n";
         }catch( ... )
         {
             std::cout << "[WARNING] " << "unknown exception" << std::endl;
@@ -195,7 +196,24 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 
     for ( int i=0; i<cnt; ++i )
     {
-		CTimeRunnerPtr laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, newArgs);
+		CTimeRunnerPtr laboratory;
+		try
+		{
+			laboratory = CleverAnt3LaboratoryFactory::createLaboratory(logger, newArgs);
+		}
+		catch (std::runtime_error& err)
+		{
+			std::cout << "[WARNING] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << std::endl;
+			logger << "[FAILED] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << "\n";
+			Tools::throwDetailedFailed("[ERROR] CleverAnt3LaboratoryFactory::createLaboratory: ", err.what(), 0);
+		}
+		catch (std::exception& err)
+		{
+			std::cout << "[WARNING] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << std::endl;
+			logger << "[FAILED] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << "\n";
+			Tools::throwDetailedFailed("[ERROR] CleverAnt3LaboratoryFactory::createLaboratory: ", err.what(), 0);
+		}
+
 		if (i == 0)
 		{
 			laboratory->writeInfo(std::cout);
@@ -203,7 +221,23 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 		}
 		GetTimeManager().clean();
 
-        laboratory->runForTime( timeSec * 1000 );
+		try
+		{
+			laboratory->runForTime(timeSec * 1000);
+		}
+		catch (std::runtime_error& err)
+		{
+			std::cout << "[WARNING] laboratory->runForTime: " << err.what() << std::endl;
+			logger << "[FAILED] laboratory->runForTime: " << err.what() << "\n";
+			Tools::throwDetailedFailed("[ERROR] laboratory->runForTime: ", err.what(), 0);
+		}
+		catch (std::exception& err)
+		{
+			std::cout << "[WARNING] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << std::endl;
+			logger << "[FAILED] CleverAnt3LaboratoryFactory::createLaboratory: " << err.what() << "\n";
+			Tools::throwDetailedFailed("[ERROR] CleverAnt3LaboratoryFactory::createLaboratory: ", err.what(), 0);
+		}
+
         values[i] = laboratory->getRunCount();
         sum += values[i];
         std::cout << i+1 << " ";
@@ -218,6 +252,7 @@ bool Tester::meanCmd( std::vector<std::string>& args )
 			else
 				speedSum[val.first] += speed;
 		}
+		logger << "[SUCCESS] Finished-------------------------------------------------------" << "\n";
     }
 	
     std::cout << std::endl;

@@ -42,12 +42,28 @@ double CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::getMaxFitness(s
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
-CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> antCommonPtr,
-	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE> strategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult)
-	:antCommonPtr(antCommonPtr), strategy(strategy), results(labResult)
+CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CLaboratoryMulti(CAntCommonPtr<COUNTERS_TYPE> pAntCommon,
+	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE> pStrategy, CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResult)
 {
-    m_pTask = strategy;
-	m_pTimeResult = results;
+	try
+	{
+		antCommonPtr = pAntCommon;
+		strategy = pStrategy;
+		results = labResult;
+		m_pTask = pStrategy;
+		m_pTimeResult = results;
+	}
+	catch (std::runtime_error& err)
+	{
+		std::cout << "[FAILED] LaboratoryMulti::Init<>: " << err.what() << std::endl;
+		Tools::throwDetailedFailed("[FAILED] LaboratoryMulti::Init<>: ", err.what(), 0);
+	}
+	catch (std::exception& err)
+	{
+		std::cout << "[FAILED] LaboratoryMulti::Init<>: " << err.what() << std::endl;
+		Tools::throwDetailedFailed("[FAILED] LaboratoryMulti::Init<>: ", err.what(), 0);
+		throw err;
+	}
     //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyImpl( states, actions, &results ));
     //strategy = static_cast<CGeneticAlgorithm*>(new CGeneticStrategyCL( states, actions, &results ));
 }

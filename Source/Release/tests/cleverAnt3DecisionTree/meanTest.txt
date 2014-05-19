@@ -7,42 +7,6 @@ SET( STEPS_COUNT, 100 );
 SET( USE_OPENCL, true );
 
 
-#-------------------------------
-SET( DEVICE_TYPE, CPU );
-
-SET( GENERATION_SIZE, 5120 );
-AR_MEAN( auto_generated, 4 );
-SET( GENERATION_SIZE, 16384 );
-AR_MEAN( auto_generated, 4 );
-
-
-#-------------------------------
-SET( DEVICE_TYPE, GPU );
-
-SET( GENERATION_SIZE, 5120 );
-AR_MEAN( auto_generated, 4 );
-SET( GENERATION_SIZE, 16384 );
-AR_MEAN( auto_generated, 4 );
-
-
-#-------------------------------
-SET( DEVICE_TYPE, BOTH );
-
-SET( GENERATION_SIZE, 5120 );
-AR_MEAN( auto_generated, 4 );
-SET( GENERATION_SIZE, 16384 );
-AR_MEAN( auto_generated, 4 );
-
-#-------------------------------
-SET( DEVICE_TYPE, CPU );
-SET( USE_OPENCL, false );
-
-SET( GENERATION_SIZE, 5120 );
-AR_MEAN( auto_generated, 4 );
-SET( GENERATION_SIZE, 16384 );
-AR_MEAN( auto_generated, 4 );
-
-
 SET( STEPS_COUNT, 1000 );
 #-------------------------------
 SET( USE_OPENCL, true );
@@ -63,7 +27,8 @@ AR_MEAN( auto_generated, 4 );
 
 
 #-------------------------------
-SET( DEVICE_TYPE, BOTH );
+SET( DEVICE_TYPE, CPU );
+SET( USE_OPENCL, false );
 
 SET( GENERATION_SIZE, 5120 );
 AR_MEAN( auto_generated, 4 );
@@ -72,8 +37,7 @@ AR_MEAN( auto_generated, 4 );
 
 
 #-------------------------------
-SET( DEVICE_TYPE, CPU );
-SET( USE_OPENCL, false );
+SET( DEVICE_TYPE, BOTH );
 
 SET( GENERATION_SIZE, 5120 );
 AR_MEAN( auto_generated, 4 );

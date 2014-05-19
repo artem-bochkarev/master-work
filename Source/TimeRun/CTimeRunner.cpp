@@ -8,6 +8,10 @@ const long sleep_time = 100; //millisec
 CTimeRunner::CTimeRunner()
 :running(false), m_pInvoker(0) {}
 
+CTimeRunner::~CTimeRunner()
+{
+}
+
 size_t CTimeRunner::getRunCount() const
 {
     if ( m_pTask->getError() )

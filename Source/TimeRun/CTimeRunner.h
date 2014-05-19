@@ -7,6 +7,7 @@ class CTimeRunner
 {
 public:
     CTimeRunner();
+	virtual ~CTimeRunner();
 
     virtual void start();
     virtual void runForTime( int milisec );

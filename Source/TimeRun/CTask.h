@@ -8,6 +8,7 @@ class CInvoker;
 class CTask
 {
 public:
+	virtual ~CTask() {};
     virtual void run() = 0;
     virtual const boost::exception_ptr& getError() const = 0;
     virtual CInvoker* getInvoker() const = 0;

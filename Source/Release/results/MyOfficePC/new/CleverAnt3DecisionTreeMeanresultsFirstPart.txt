@@ -1,0 +1,76 @@
+VERSION=1.0
+TIME=10
+mean test on "auto_generated"
+size=5120, type=CPU, steps=100
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz,
+Size of generation = 5120, Steps on map = 100
+    mean=130.50  deviation=2.60 good=98.01%
+Fitnes function CL on CPU avg. speed=33.902
+Fitnes function CL on CPU(only kernel time) avg. speed=71.195
+Next generation function avg. speed=12.988
+Next generation(no fitnes) avg. speed=21.58
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=100
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz,
+Size of generation = 16384, Steps on map = 100
+    mean=38.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=10.778
+Fitnes function CL on CPU(only kernel time) avg. speed=23.312
+Next generation function avg. speed=3.772
+Next generation(no fitnes) avg. speed=5.803
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=100
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 5120, Steps on map = 100
+    mean=155.25  deviation=0.43 good=99.72%
+Fitnes function CL on GPU avg. speed=57.450
+Fitnes function CL on GPU(only kernel time) avg. speed=255.991
+Next generation function avg. speed=15.537
+Next generation(no fitnes) avg. speed=21.323
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=100
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 16384, Steps on map = 100
+    mean=46.00  deviation=0.00 good=100.00%
+Fitnes function CL on GPU avg. speed=18.905
+Fitnes function CL on GPU(only kernel time) avg. speed=82.610
+Next generation function avg. speed=4.568
+Next generation(no fitnes) avg. speed=6.24
+
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=100
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz + OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 5120, Steps on map = 0
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=100
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=100
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 100
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=100
+mean test on "auto_generated"
+size=5120, type=CPU, steps=1000
+mean test on "auto_generated"
+size=16384, type=CPU, steps=1000
+mean test on "auto_generated"
+size=5120, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 5120, Steps on map = 1000
+mean test on "auto_generated"
+size=16384, type=GPU, steps=1000
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz + OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 5120, Steps on map = 0
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=1000
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 1000
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000

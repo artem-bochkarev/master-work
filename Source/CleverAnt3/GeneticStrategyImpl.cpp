@@ -46,8 +46,10 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	CTimeCounter counter2(perfNextGenerationNF);
 	ANT_FITNES_TYPE avg = 0;
 	uint k = 0;
+	std::vector<std::pair<ANT_FITNES_TYPE, int>> sorted(individuals.size());
 	for (uint i = 0; i < individuals.size(); ++i)
 	{
+		sorted[i] = std::pair<ANT_FITNES_TYPE, int>(results[i], i);
 		avg += results[i];
 		if (results[i] > results[k])
 			k = i;
@@ -55,6 +57,7 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	avg /= individuals.size();
 	ANT_FITNES_TYPE max = results[k];
 	m_pResults->addGeneration(CAutomatPtr<COUNTERS_TYPE, INPUT_TYPE>(new AUTOMAT(individuals[k])), max, avg);
+	std::sort(sorted.begin(), sorted.end());
 
 	std::vector<AUTOMAT> tournamentWinners(N);
 	for (int i = 0; i < N; ++i)
@@ -75,8 +78,9 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 	}
 
 	std::vector<AUTOMAT> newGeneration(individuals.size());
-	float SPLIT_KOEFF = 0.7f;
-	size_t z = static_cast<size_t>(individuals.size() * SPLIT_KOEFF);
+	float SPLIT_KOEFF = 0.3f;
+	float ELITE_KOEFF = 0.05f;
+	size_t z = static_cast<size_t>(individuals.size() * (1 - SPLIT_KOEFF - ELITE_KOEFF));
 	for (size_t i = 0; i < z; ++i)
 	{
 		int a = rand->nextUINT() % N;
@@ -85,10 +89,17 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 		//newGeneration[i] = tournamentWinners[a];
 		//newGeneration[i].mutate(rand);
 	}
-	for (size_t i = z; i < individuals.size(); ++i)
+	size_t z1 = static_cast<size_t>(individuals.size() * (1 - ELITE_KOEFF));
+	for (size_t i = z; i < z1; ++i)
 	{
 		int a = rand->nextUINT() % N;
 		newGeneration[i] = tournamentWinners[a];
+	}
+
+	for (size_t i = z1; i < individuals.size(); ++i)
+	{
+		int a = sorted[i].second;
+		newGeneration[i] = individuals[a];
 	}
 	individuals.swap(newGeneration);
 }

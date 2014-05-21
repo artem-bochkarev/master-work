@@ -14,6 +14,7 @@ protected:
 public:
 	CInvoker(CTask* task, boost::exception_ptr & error);
 	CInvoker& operator= (const CInvoker& inv);
+	virtual ~CInvoker() {};
 	virtual void operator ()();
 	virtual threadPtr getThread();
 	virtual size_t getLoopCounter() const;

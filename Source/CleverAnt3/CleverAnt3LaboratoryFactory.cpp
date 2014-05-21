@@ -42,12 +42,15 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 	}
 
 	CActionContainerPtr<COUNTERS_TYPE> actions(new CActionContainerImpl<COUNTERS_TYPE>());
+	logger << "Actions=OK, ";
 	actions->addAction(0, "move forward");
 	actions->addAction(1, "turn right");
 	actions->addAction(2, "turn left");
 	CAntCommonPtr<COUNTERS_TYPE> antCommon(new CAntCommon<COUNTERS_TYPE>(4, actions));
+	logger << "AntCommon=OK, ";
 
 	CLabResultMultiPtr<COUNTERS_TYPE, INPUT_TYPE> labResults(new CLabResultMulti<COUNTERS_TYPE, INPUT_TYPE>());
+	logger << "CLabResultMultiPtr=OK, ";
 
 	bool useOpenCL = false;
 	using namespace boost::spirit::qi;
@@ -70,15 +73,17 @@ CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3Labora
 	}
 	else
 		fitnesFunctor = CCleverAnt3FitnesPtr(new CCleverAnt3FitnesCPU(strings));
-	
+	logger << "fitnesFunctor=OK, ";
 
 
 	CGeneticStrategyCommonPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> strategy(
 		new CGeneticStrategyImpl/*< CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, 3, INPUT_PARAMS_COUNT> >*/
 		(antCommon, labResults.get(), fitnesFunctor, strings, logger));
+	logger << "GeneticStrategy=OK, ";
 
 	return CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(
 		new CLaboratoryMulti<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE>(antCommon, strategy, labResults));
+	logger << "LaboratoryMulti=OK\n";
 }
 
 CLaboratoryMultiPtr<COUNTERS_TYPE, INPUT_TYPE, ANT_FITNES_TYPE> CleverAnt3LaboratoryFactory::noFile(Tools::Logger& logger)

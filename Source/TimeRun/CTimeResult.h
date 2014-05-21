@@ -7,6 +7,7 @@ class CTimeResult
 public:
     virtual size_t getRunCount() const = 0;
     virtual boost::mutex& getMutex();
+	virtual ~CTimeResult() {};
 protected:
     boost::mutex m_mutex;
 };

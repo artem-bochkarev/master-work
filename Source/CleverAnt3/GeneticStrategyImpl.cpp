@@ -22,13 +22,29 @@ CGeneticStrategyImpl::CGeneticStrategyImpl(CAntCommonPtr<COUNTERS_TYPE> pAntComm
 			continue;
 	}
 
-	M = 2;
-	N = generation_size;
-	for (int i = 0; i < N; ++i)
+	try
 	{
-		AUTOMAT aut(pAntCommon.get());
-		aut.generateRandom(m_pRandom.get());
-		individuals.push_back(aut);
+		M = 2;
+		N = generation_size;
+		individuals.resize(N);
+		for (int i = 0; i < N; ++i)
+		{
+			AUTOMAT aut(pAntCommon.get());
+			aut.generateRandom(m_pRandom.get());
+			individuals[i] = aut;
+		}
+	}
+	catch (std::runtime_error& err)
+	{
+		std::cout << "[WARNING] CGeneticStrategyImpl::Init<>: arr size =" << N*sizeof(AUTOMAT)/(1024*1024) << "MB(" << N << ")" << err.what() << std::endl;
+		logger << "[FAILED] CGeneticStrategyImpl::Init<>: " << N*sizeof(AUTOMAT) / (1024 * 1024) << "MB(" << N << ")" << err.what() << "\n";
+		throw err;
+	}
+	catch (std::exception& err)
+	{
+		std::cout << "[WARNING] CGeneticStrategyImpl::Init<>: arr size =" << N*sizeof(AUTOMAT) / (1024 * 1024) << "MB(" << N << ")" << err.what() << std::endl;
+		logger << "[FAILED] CGeneticStrategyImpl::Init<>: " << N*sizeof(AUTOMAT) / (1024 * 1024) << "MB(" << N << ")" << err.what() << "\n";
+		throw err;
 	}
 }
 

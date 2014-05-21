@@ -1,0 +1,78 @@
+VERSION=1.0
+TIME=10
+mean test on "auto_generated"
+size=5120, type=, steps=1000
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz,
+Size of generation = 5120, Steps on map = 1000
+    mean=49.00  deviation=1.22 good=97.50%
+Fitnes function CL on CPU avg. speed=6.634
+Fitnes function CL on CPU(only kernel time) avg. speed=7.396
+Next generation function avg. speed=4.864
+Next generation(no fitnes) avg. speed=18.233
+
+mean test on "auto_generated"
+size=16384, type=, steps=1000
+Clever ant 3 standard, OpenCL on CPU, Intel(R) Corporation: Intel(R) Core(TM) i7 CPU         860  @ 2.80GHz,
+Size of generation = 16384, Steps on map = 1000
+    mean=15.50  deviation=0.50 good=96.77%
+Fitnes function CL on CPU avg. speed=2.107
+Fitnes function CL on CPU(only kernel time) avg. speed=2.346
+Next generation function avg. speed=1.506
+Next generation(no fitnes) avg. speed=5.285
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 5120, Steps on map = 1000
+    mean=96.50  deviation=2.06 good=97.86%
+Fitnes function CL on GPU avg. speed=21.366
+Fitnes function CL on GPU(only kernel time) avg. speed=31.87
+Next generation function avg. speed=9.597
+Next generation(no fitnes) avg. speed=17.427
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Barts,
+Size of generation = 16384, Steps on map = 1000
+    mean=29.00  deviation=0.00 good=100.00%
+Fitnes function CL on GPU avg. speed=6.500
+Fitnes function CL on GPU(only kernel time) avg. speed=8.841
+Next generation function avg. speed=2.865
+Next generation(no fitnes) avg. speed=5.128
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 1000
+    mean=32.75  deviation=0.43 good=98.68%
+Fitnes function no CL avg. speed=3.953
+Next generation function avg. speed=3.218
+Next generation(no fitnes) avg. speed=17.317
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+    mean=10.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=1.208
+Next generation function avg. speed=0.976
+Next generation(no fitnes) avg. speed=5.77
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 1000
+    mean=33.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=3.950
+Next generation function avg. speed=3.224
+Next generation(no fitnes) avg. speed=17.555
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+    mean=10.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=1.211
+Next generation function avg. speed=0.977
+Next generation(no fitnes) avg. speed=5.67
+

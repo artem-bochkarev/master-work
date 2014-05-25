@@ -103,13 +103,14 @@ void CGeneticStrategyImpl::nextGeneration(CRandom* rand)
 		int b = rand->nextUINT() % N;
 		newGeneration[i].crossover(&tournamentWinners[a], &tournamentWinners[b], rand);
 		//newGeneration[i] = tournamentWinners[a];
-		//newGeneration[i].mutate(rand);
+		newGeneration[i].mutate(rand);
 	}
 	size_t z1 = static_cast<size_t>(individuals.size() * (1 - ELITE_KOEFF));
 	for (size_t i = z; i < z1; ++i)
 	{
 		int a = rand->nextUINT() % N;
 		newGeneration[i] = tournamentWinners[a];
+		newGeneration[i].mutate(rand);
 	}
 
 	for (size_t i = z1; i < individuals.size(); ++i)

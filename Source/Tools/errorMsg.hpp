@@ -4,6 +4,10 @@
 #include <sstream>
 #include "Logger.h"
 
+/*#ifdef _DEBUG
+#include <..\um\debugapi.h>
+#endif*/
+
 namespace Tools
 {
 	class detailed_exception : public std::runtime_error
@@ -19,9 +23,9 @@ namespace Tools
 	{
 		std::stringstream str;
 		str << msg << std::endl;
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 		OutputDebugStringA(str.str().c_str());
-#endif
+#endif*/
 		std::clog << str.str();
 		//std::clo
 		if (logger != 0)
@@ -35,9 +39,9 @@ namespace Tools
 			*logger << "[DESCRIPTION] " << descr << "\n";
 		std::stringstream str;
 		str << "    :" << descr << std::endl;
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 		OutputDebugStringA(str.str().c_str());
-#endif
+#endif*/
 	}
 
     inline void throwFailed( const std::string& msg, Tools::Logger* logger )

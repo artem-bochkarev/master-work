@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CleverAnt3", "CleverAnt3\Cl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticCommon", "GeneticCommon\GeneticCommon.vcxproj", "{CC1E3925-B43F-4FFE-802B-04D6C6A31472}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticTests", "GeneticTests\GeneticTests.vcxproj", "{712F056D-55FD-4D5F-9E9F-9AEC0819DCCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -79,6 +81,10 @@ Global
 		{CC1E3925-B43F-4FFE-802B-04D6C6A31472}.Debug|Win32.Build.0 = Debug|Win32
 		{CC1E3925-B43F-4FFE-802B-04D6C6A31472}.Release|Win32.ActiveCfg = Release|Win32
 		{CC1E3925-B43F-4FFE-802B-04D6C6A31472}.Release|Win32.Build.0 = Release|Win32
+		{712F056D-55FD-4D5F-9E9F-9AEC0819DCCB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{712F056D-55FD-4D5F-9E9F-9AEC0819DCCB}.Debug|Win32.Build.0 = Debug|Win32
+		{712F056D-55FD-4D5F-9E9F-9AEC0819DCCB}.Release|Win32.ActiveCfg = Release|Win32
+		{712F056D-55FD-4D5F-9E9F-9AEC0819DCCB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -122,7 +122,7 @@ Tester::Commands Tester::parseStr( const std::string& in, std::vector<std::strin
         if ( cmdName == "AR_MEAN" )
             return AR_MEAN;
     }
-    return ERROR;
+	return Tester::ERROR;
     //throw (std::runtime_error("Illegal command"));
 }
 

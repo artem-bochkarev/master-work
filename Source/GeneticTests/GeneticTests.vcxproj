@@ -69,12 +69,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SimpleGeneticAlgorithm.h" />
     <ClInclude Include="Test.hpp" />
     <ClInclude Include="TestAutomat.h" />
     <ClInclude Include="testCommon.h" />
     <ClInclude Include="TestFitnes.h" />
     <ClInclude Include="TestGroup.hpp" />
-    <ClInclude Include="Transition.h" />
+    <ClInclude Include="Transition.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestFitnes.cpp" />

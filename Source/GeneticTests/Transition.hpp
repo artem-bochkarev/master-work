@@ -5,6 +5,14 @@
 #include "GeneticAPI/CRandom.h"
 #include <boost/algorithm/string/trim.hpp>
 
+template<typename T>
+T getRandomFromSet(const std::set<T>& set, CRandom* rand)
+{
+	std::set<T>::const_iterator iter;
+	std::advance(iter, rand->nextUINT(set.size()));
+	return *iter;
+}
+
 class Transition 
 {
 private:
@@ -50,7 +58,7 @@ public:
 		}
 		else if (type == 1) {
 			// Меняем входное воздействие
-			return new Transition(setOfInputs[rand->nextINT(setOfInputs.size())], outputSize, nextState);
+			return new Transition(getRandomFromSet(setOfInputs, rand), outputSize, nextState);
 		}
 		else {
 			// Change output size
@@ -134,7 +142,8 @@ public:
 		map[s] = i + 1;
 	}
 
-	void labelByMostFrequent() {
+	void labelByMostFrequent() 
+	{
 		int max = -1;
 		INPUT_TYPE best = input_null;
 		for (auto s : map) {
@@ -151,50 +160,57 @@ public:
 		}
 	}
 
-	public void beginLabeling() {
-		if (map.size() > 0) {
-			throw new RuntimeException();
-		}
+	void beginLabeling() 
+	{
+		BOOST_ASSERT(map.size() == 0);
 		map.clear();
 	}
 
-	public void markUnused() {
+	void markUnused() 
+	{
 		used = false;
 	}
 
-	public void markUsed() {
+	void markUsed() 
+	{
 		used = true;
 	}
 
-	public boolean isUsedByNegativeTest() {
+	bool isUsedByNegativeTest() 
+	{
 		return usedByNegativeTest;
 	}
 
-	public void setUsedByNegativeTest(boolean usedByNegativeTest) {
-		this.usedByNegativeTest = usedByNegativeTest;
+	void setUsedByNegativeTest(bool used) 
+	{
+		usedByNegativeTest = used;
 	}
 
 	/**
 	* is this transition in the counterexample
 	* @return true if transition in the counterexample
 	*/
-	public boolean isUsedByVerifier() {
+	bool isUsedByVerifier() 
+	{
 		return usedByVerifier;
 	}
 
-	public void setUsedByVerifier(boolean usedByVerifier) {
-		this.usedByVerifier = usedByVerifier;
+	void setUsedByVerifier(bool used) 
+	{
+		usedByVerifier = used;
 	}
 
 	/**
 	* Is this transition satisfy the LTL statement
 	* @return true, if trastition satisfy
 	*/
-	public boolean isVerified() {
+	bool isVerified() 
+	{
 		return verified;
 	}
 
-	public void setVerified(boolean verified) {
-		this.verified = verified;
+	void setVerified(bool ver) 
+	{
+		verified = ver;
 	}
 };

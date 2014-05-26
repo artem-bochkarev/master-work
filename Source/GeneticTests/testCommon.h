@@ -11,7 +11,6 @@ typedef std::string FORMULA_TYPE;
 typedef Test<INPUT_TYPE, OUTPUT_TYPE> TEST;
 typedef TEST TEST_TYPE;
 
-typedef int Transition;
 static const int max_transitions = 5;
 static const int input_any = -1;
 static const int input_null = -2;

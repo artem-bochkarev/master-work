@@ -1,6 +1,15 @@
 #include "GeneticAPI/CRandom.h"
 #include <set>
 #include "testCommon.h"
+#include "Transition.hpp"
+
+template<typename T>
+T getNfromSet(const std::set<T>& set, size_t n)
+{
+	std::set<T>::const_iterator iter;
+	std::advance(iter, n);
+	return *iter;
+}
 
 class TestAutomat {
 
@@ -57,14 +66,13 @@ public:
 			states[i].resize(degree);
 
 			for (int j = 0; j < degree; j++) {
-				states[i][j] = Transition(setOfInputs[p[j]], 1, RANDOM.nextInt(stateNumber));
+				states[i][j] = Transition(getNfromSet(setOfInputs, p[j]), 1, rand->nextINT(stateNumber));
 			}
-			states[i] = currentState;
 		}
-		return new TestAutomat(states, RANDOM.nextInt(stateNumber), setOfInputs, setOfOutputs);
+		return new TestAutomat(states, stateNumber, rand->nextINT(stateNumber), setOfInputs, setOfOutputs);
 	}
 
-	public static FST[] crossOver(FST fst1, FST fst2, List<TestGroup> groups) {
+	/*static TestAutomat[] crossOver(FST fst1, FST fst2, List<TestGroup> groups) {
 		switch (RANDOM.nextInt(3)) {
 		case 0:
 			return fst1.crossOver(fst2);
@@ -75,9 +83,12 @@ public:
 		default:
 			throw new RuntimeException("Unexpected crossover type.");
 		}
-	}
+	}*/
 
-	private void markUsedTransitions(List<Path> tests) {
+protected:
+
+	/*void markUsedTransitions(std::vector<TEST_TYPE> tests) 
+	{
 		ArrayList<Pair> tlist = new ArrayList<Pair>();
 		for (Path t : tests) {
 			tlist.add(new Pair(t, fitnessCalculator.calcFitnessForTest(this, t) * t.size()));
@@ -105,17 +116,17 @@ public:
 				}
 			}
 		}
-	}
+	}*/
 
-	private void markUnused() {
-		for (Transition[] state : states) {
+	void markUnused() {
+		for (std::vector<Transition>& state : states) {
 			for (Transition t : state) {
 				t.markUnused();
 			}
 		}
 	}
 
-	public FST[] crossOverBasedOnTests(FST that, List<TestGroup> groups) {
+	/*public FST[] crossOverBasedOnTests(FST that, List<TestGroup> groups) {
 		this.markUnused();
 		that.markUnused();
 		for (TestGroup g : groups) {
@@ -249,9 +260,9 @@ public:
 			new FST(states1, initialState1, setOfInputs, setOfOutputs),
 				new FST(states2, initialState2, setOfInputs, setOfOutputs)
 		};
-	}
+	}*/
 
-	public FST[] crossOver(FST that) {
+	/*public FST[] crossOver(FST that) {
 		int initialState1;
 		int initialState2;
 
@@ -417,28 +428,22 @@ public:
 			}
 		}
 		return res;
-	}
+	}*/
+protected:
+	bool fitnessCalculated;
+	double fitness;
 
-	private boolean fitnessCalculated = false;
-	private double fitness;
-
-	public double getFitness() {
-		if (!fitnessCalculated) {
-			cntFitnessRun++;
-			fitness = fitnessCalculator.calcFitness(this);
-			fitnessCalculated = true;
-		}
-		return fitness;
-	}
+public:
 
 	/**
 	* Get all transitions count
 	* @return transition count
 	*/
-	public int getTransitionsCount() {
+	int getTransitionsCount() 
+	{
 		int res = 0;
 		for (int i = 0; i < stateNumber; i++) {
-			res += states[i].length;
+			res += states[i].size();
 		}
 		return res;
 	}
@@ -447,22 +452,33 @@ public:
 	* Get reached transitions count
 	* @return reached transtions count
 	*/
-	public int getUsedTransitionsCount() {
-		return getUsedTransitionsCount(initialState, new boolean[states.length]);
+	int getUsedTransitionsCount() 
+	{
+		bool *visited = new bool[states.size()];
+		for (int i = 0; i < states.size(); ++i)
+			visited[i] = false;
+		int res = getUsedTransitionsCount(initialState, visited);
+		delete[] visited;
+		return res;
 	}
 
-	private int getUsedTransitionsCount(int state, boolean[] vizited) {
+protected:
+	int getUsedTransitionsCount(int state, bool *vizited) 
+	{
 		vizited[state] = true;
-		int res = states[state].length;
-		for (Transition t : states[state]) {
-			if (!vizited[t.getNewState()]) {
-				res += getUsedTransitionsCount(t.getNewState(), vizited);
+		int res = states[state].size();
+		for (Transition t : states[state]) 
+		{
+			if (!vizited[t.getNextState()]) 
+			{
+				res += getUsedTransitionsCount(t.getNextState(), vizited);
 			}
 		}
 		return res;
 	}
 
-	public void doLabelling(ArrayList<Path> tests) {
+public:
+	/*void doLabelling(ArrayList<Path> tests) {
 		if (isLabelled) {
 			return;
 		}
@@ -523,31 +539,31 @@ public:
 			}
 		}
 		isLabelled = true;
-	}
+	}*/
 
-	public String[] transform(String[] inputSequence) {
-		ArrayList<String> list = new ArrayList<String>();
+	std::vector<OUTPUT_TYPE> transform(const std::vector<INPUT_TYPE>& inputSequence) {
+		std::vector<OUTPUT_TYPE> list;
 		int currentState = initialState;
-		for (String s : inputSequence) {
-			boolean found = false;
+		for (INPUT_TYPE s : inputSequence) {
+			bool found = false;
 			for (Transition t : states[currentState]) {
 				if (t.accepts(s)) {
-					for (String s1 : t.getOutput()) {
-						list.add(s1);
+					for (INPUT_TYPE s1 : t.getOutput()) {
+						list.push_back(s1);
 					}
-					currentState = t.getNewState();
+					currentState = t.getNextState();
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				return null;
+				return list;
 			}
 		}
-		return list.toArray(new String[0]);
+		return list;
 	}
 
-	public boolean validateNegativeTest(String[] inputSequence) {
+	/*public boolean validateNegativeTest(String[] inputSequence) {
 		if (ArrayUtils.isEmpty(inputSequence)) {
 			throw new IllegalArgumentException("Unexpected inputSequence");
 		}
@@ -573,10 +589,10 @@ public:
 			lastTransition.setUsedByNegativeTest(true);
 			return false;
 		}
-	}
+	}*/
 
-	public void unmarkAllTransitions() {
-		for (Transition[] s : states) {
+	void unmarkAllTransitions() {
+		for (std::vector<Transition>& s : states) {
 			for (Transition t : s) {
 				t.markUnused();
 				t.setUsedByNegativeTest(false);
@@ -586,7 +602,7 @@ public:
 		}
 	}
 
-	public static void printAutomaton(Writer out, FST fst, List<Path> tests) {
+	/*static void printAutomaton(std::ostream& out, const TestAutomat& fst, const std::vector<TEST_TYPE>& tests) {
 		/*out.println(fst.getFitness());
 		out.println(fst.stateNumber + " " + fst.initialState);
 		for (int i = 0; i < fst.setOfInputs.length; i++) {
@@ -607,12 +623,12 @@ public:
 		out.println(Arrays.toString(output));
 		out.println();
 		}*/
-		try {
+		/*try {
 			UnimodModelWriter.write(out, fst, "ru.ifmo.ControlledObjectStub", "ru.ifmo.EventPrividerStub");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-}
+};

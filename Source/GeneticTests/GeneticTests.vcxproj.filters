@@ -30,7 +30,10 @@
     <ClInclude Include="TestAutomat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Transition.h">
+    <ClInclude Include="Transition.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleGeneticAlgorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

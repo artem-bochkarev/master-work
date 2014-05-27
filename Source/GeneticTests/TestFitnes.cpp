@@ -14,6 +14,9 @@ FITNES_TYPE TestFitnes::calcFitnessForTest(TEST_AUTOMAT fst, TEST test) {
 	return 1 - t;
 }
 
+void TestFitnes::calcFitness(std::vector<TEST_AUTOMAT>& fst, std::vector<FITNES_TYPE>& results) {
+}
+
 FITNES_TYPE TestFitnes::calcFitness(TEST_AUTOMAT fst) {
 	int transitionCount = fst.getUsedTransitionsCount();
 	if (transitionCount == 0) {

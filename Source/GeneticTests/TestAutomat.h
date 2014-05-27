@@ -45,7 +45,7 @@ public:
 		return initialState;
 	}
 
-	static TestAutomat* randomIndividual(int stateNumber, const std::set<INPUT_TYPE>& setOfInputs, const std::set<OUTPUT_TYPE>& setOfOutputs, CRandom* rand) {
+	static TestAutomat randomIndividual(int stateNumber, const std::set<INPUT_TYPE>& setOfInputs, const std::set<OUTPUT_TYPE>& setOfOutputs, CRandom* rand) {
 		int inputsCnt = setOfInputs.size;
 		int outputsCnt = setOfOutputs.size;
 		std::vector<std::vector<Transition>> states(stateNumber);

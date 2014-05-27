@@ -78,6 +78,7 @@
     <ClInclude Include="Transition.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SimpleGeneticAlgorithm.cpp" />
     <ClCompile Include="TestFitnes.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

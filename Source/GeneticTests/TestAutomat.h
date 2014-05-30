@@ -1,3 +1,4 @@
+#pragma once
 #include "GeneticAPI/CRandom.h"
 #include <set>
 #include "testCommon.h"
@@ -11,7 +12,8 @@ T getNfromSet(const std::set<T>& set, size_t n)
 	return *iter;
 }
 
-class TestAutomat {
+class TestAutomat 
+{
 
 public:
 	//static FitnessCalculator fitnessCalculator = null;
@@ -37,6 +39,10 @@ public:
 	{
 	}
 
+	TestAutomat()
+		:initialState(666), stateNumber(0), isLabelled(false)
+	{}
+
 	std::vector<std::vector<Transition>>& getStates() {
 		return states;
 	}
@@ -46,8 +52,8 @@ public:
 	}
 
 	static TestAutomat randomIndividual(int stateNumber, const std::set<INPUT_TYPE>& setOfInputs, const std::set<OUTPUT_TYPE>& setOfOutputs, CRandom* rand) {
-		int inputsCnt = setOfInputs.size;
-		int outputsCnt = setOfOutputs.size;
+		int inputsCnt = setOfInputs.size();
+		int outputsCnt = setOfOutputs.size();
 		std::vector<std::vector<Transition>> states(stateNumber);
 
 		for (int i = 0; i < stateNumber; i++) {
@@ -69,7 +75,7 @@ public:
 				states[i][j] = Transition(getNfromSet(setOfInputs, p[j]), 1, rand->nextINT(stateNumber));
 			}
 		}
-		return new TestAutomat(states, stateNumber, rand->nextINT(stateNumber), setOfInputs, setOfOutputs);
+		return TestAutomat(states, stateNumber, rand->nextINT(stateNumber), setOfInputs, setOfOutputs);
 	}
 
 	/*static TestAutomat[] crossOver(FST fst1, FST fst2, List<TestGroup> groups) {

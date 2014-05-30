@@ -1,6 +1,6 @@
 #include "SimpleGeneticAlgorithm.h"
 
-SimpleGeneticAlgorithm::SimpleGeneticAlgorithm(Parameters parameters,
+SimpleGeneticAlgorithm::SimpleGeneticAlgorithm(const TestParameters& parameters,
 	const std::set<INPUT_TYPE>& inputs, const std::set<OUTPUT_TYPE>& outputs, std::vector< TestGroup<TEST_TYPE, FORMULA_TYPE> > groups)
 {
 	populationSize = parameters.getPopulationSize();
@@ -33,7 +33,7 @@ SimpleGeneticAlgorithm::SimpleGeneticAlgorithm(Parameters parameters,
 void SimpleGeneticAlgorithm::init() {
 	curGeneration.resize(populationSize);
 	for (int i = 0; i < populationSize; i++) {
-		curGeneration[i] = TestAutomat::randomIndividual(maxStates, setOfInputs, setOfOutputs);
+		curGeneration[i] = TestAutomat::randomIndividual(maxStates, setOfInputs, setOfOutputs, rand);
 	}
 }
 
@@ -154,7 +154,7 @@ TestAutomat SimpleGeneticAlgorithm::go()
 			while (num1 == num2) {
 				num2 = rand->nextINT(populationSize);
 			}
-			if ((double)rand->nextUINT(BIG_INT)/(double)BIG_INT > Const.MUTATION_PROBABILITY) {
+			if ((double)rand->nextUINT(BIG_INT)/(double)BIG_INT > test_const::MUTATION_PROBABILITY) {
 				/*FST[] toAdd = FST.crossOver(curGeneration[num1], curGeneration[num2], groups);
 				for (int j = 0; j < 2; j++) {
 					nextGeneration[nextCnt++] = toAdd[j];

@@ -75,6 +75,7 @@
     <ClInclude Include="testCommon.h" />
     <ClInclude Include="TestFitnes.h" />
     <ClInclude Include="TestGroup.hpp" />
+    <ClInclude Include="TestParameters.hpp" />
     <ClInclude Include="Transition.hpp" />
   </ItemGroup>
   <ItemGroup>

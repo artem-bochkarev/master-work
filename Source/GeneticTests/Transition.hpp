@@ -1,3 +1,4 @@
+#pragma once
 #include "testCommon.h"
 #include <map>
 #include <set>
@@ -32,6 +33,10 @@ private:
 public:
 	Transition(INPUT_TYPE input, int outputSize, int newState) 
 		:input(input), outputSize(outputSize), nextState(newState)
+	{}
+
+	Transition()
+		:input(input_null), outputSize(0), nextState(0)
 	{}
 
 	bool accepts(INPUT_TYPE s) {

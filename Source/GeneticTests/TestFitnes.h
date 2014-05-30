@@ -1,14 +1,18 @@
+#pragma once
 #include "TestGroup.hpp"
 #include "testCommon.h"
+#include "TestAutomat.h"
 #include <vector>
 
 class TestFitnes
 {
+	const double TESTS_COST = 1;
+	const double FORMULAS_COST = TESTS_COST;
 public:
-	FITNES_TYPE calcFitnessForTest(TEST_AUTOMAT fst, TEST test);
+	FITNES_TYPE calcFitnessForTest(TestAutomat fst, TEST test);
 
-	FITNES_TYPE calcFitness(TEST_AUTOMAT fst);
-	void calcFitness(std::vector<TEST_AUTOMAT>& fst, std::vector<FITNES_TYPE>& results);
+	FITNES_TYPE calcFitness(TestAutomat fst);
+	void calcFitness(std::vector<TestAutomat>& fst, std::vector<FITNES_TYPE>& results);
 
 protected:
 	bool same(std::vector<OUTPUT_TYPE> output, std::vector<OUTPUT_TYPE> answer);

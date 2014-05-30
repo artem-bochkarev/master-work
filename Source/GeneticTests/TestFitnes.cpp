@@ -1,7 +1,7 @@
 #include "TestFitnes.h"
 #include <algorithm>
 
-FITNES_TYPE TestFitnes::calcFitnessForTest(TEST_AUTOMAT fst, TEST test) {
+FITNES_TYPE TestFitnes::calcFitnessForTest(TestAutomat fst, TEST test) {
 	std::vector<OUTPUT_TYPE> output = fst.transform(test.getInput());
 	std::vector<OUTPUT_TYPE> answer = test.getOutput();
 	FITNES_TYPE t;
@@ -14,21 +14,21 @@ FITNES_TYPE TestFitnes::calcFitnessForTest(TEST_AUTOMAT fst, TEST test) {
 	return 1 - t;
 }
 
-void TestFitnes::calcFitness(std::vector<TEST_AUTOMAT>& fst, std::vector<FITNES_TYPE>& results) {
+void TestFitnes::calcFitness(std::vector<TestAutomat>& fst, std::vector<FITNES_TYPE>& results) {
 }
 
-FITNES_TYPE TestFitnes::calcFitness(TEST_AUTOMAT fst) {
+FITNES_TYPE TestFitnes::calcFitness(TestAutomat fst) {
 	int transitionCount = fst.getUsedTransitionsCount();
 	if (transitionCount == 0) {
 		return 0.0;
 	}
 
 	fst.unmarkAllTransitions();
-	fst.doLabelling(this.tests);
+	fst.doLabelling(tests);
 
 	FITNES_TYPE res = 0; //fitness
 	int i = 0;      //group number
-	for (TestGroup group : groups) {
+	for (TestGroup<TEST_TYPE, FORMULA_TYPE> group : groups) {
 		FITNES_TYPE pSum = 0;   //positive tests sum
 		int nSum = 0;      //negative tests sum
 		int cntOk = 0;
@@ -51,7 +51,7 @@ FITNES_TYPE TestFitnes::calcFitness(TEST_AUTOMAT fst) {
 			}
 		}
 
-		for (Path p : group.getNegativeTests()) {
+		for (TEST p : group.getNegativeTests()) {
 			if (!fst.validateNegativeTest(p.getInput())) {
 				nSum++;
 			}

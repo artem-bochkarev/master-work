@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 
 template<typename INPUT_TYPE, typename OUTPUT_TYPE>

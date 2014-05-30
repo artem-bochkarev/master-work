@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 
 template <typename TEST_TYPE, typename FORMULA_TYPE>
@@ -25,4 +26,4 @@ public:
 	const std::vector<FORMULA_TYPE>& getFormulas() {
 		return formulas;
 	}
-}
+};

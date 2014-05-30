@@ -1,9 +1,8 @@
+#pragma once
 #include <string>
 typedef float FITNES_TYPE;
 typedef int INPUT_TYPE;
 typedef int OUTPUT_TYPE;
-
-typedef int TEST_AUTOMAT;
 
 typedef std::string FORMULA_TYPE;
 

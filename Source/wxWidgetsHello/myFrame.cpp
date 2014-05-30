@@ -19,7 +19,7 @@ IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
-    MyFrame *frame = new MyFrame( _("Genetic laboratory"), wxPoint(50, 50), wxSize(650, 550) );
+    MyFrame *frame = new MyFrame( _("Genetic laboratory"), wxPoint(50, 50), wxSize(840, 600) );
     frame->Show(true);
     SetTopWindow(frame);
     return true;
@@ -49,7 +49,11 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
 
     wxBoxSizer* itemBoxSizerV = new wxBoxSizer(wxVERTICAL);
-    this->SetSizer(itemBoxSizerV);
+
+	wxBoxSizer* mainSizerH = new wxBoxSizer(wxHORIZONTAL);
+
+	this->SetSizer(mainSizerH);
+	
 
     button = new wxButton(this, wxID_OK, wxT("Start"),
         wxPoint(200, 200));
@@ -57,17 +61,20 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 
     itemStaticBitmap = new wxStaticBitmap( this, wxID_STATIC, wxNullBitmap, wxDefaultPosition, wxSize(500, 400), 0 );
 
-	wxBoxSizer* textBoxSizer = new wxBoxSizer(wxHORIZONTAL);
-	infoLab = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 50), 0);
+	wxBoxSizer* textBoxSizer = new wxBoxSizer(wxVERTICAL);
+	infoLab = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 200), 0);
 	infoLab->SetLabel("Load Laboratory file");
-	infoPerf = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 50), 0);
+	infoPerf = new wxStaticText(this, wxID_STATIC, _("0"), wxDefaultPosition, wxSize(300, 200), 0);
 	infoPerf->SetLabel("Performance info");
-	textBoxSizer->Add(infoLab, 0, wxALIGN_LEFT);
-	textBoxSizer->Add(infoPerf, 0, wxALIGN_RIGHT);
+	textBoxSizer->Add(infoLab, 0, wxALIGN_TOP | wxUP | wxRIGHT, 20);
+	textBoxSizer->Add(infoPerf, 0, wxALIGN_BOTTOM | wxRIGHT, 20);
 
-	itemBoxSizerV->Add(textBoxSizer, 0, wxEXPAND, 5);
-    itemBoxSizerV->Add(itemStaticBitmap, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	//itemBoxSizerV->Add(textBoxSizer, 0, wxEXPAND, 5);
+    itemBoxSizerV->Add(itemStaticBitmap, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 20);
     itemBoxSizerV->Add( button, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+	mainSizerH->Add(itemBoxSizerV, 0, wxALIGN_LEFT);
+	mainSizerH->Add(textBoxSizer, 0, wxALIGN_RIGHT);
 
     this->Connect( ID_Quit, wxEVT_COMMAND_MENU_SELECTED,
         wxCommandEventHandler(MyFrame::OnQuit) );
@@ -111,7 +118,9 @@ void MyFrame::initLaboratory(const std::string fName)
 		std::set<char> sepSet;
 		sepSet.insert(',');
 		sepSet.insert('.');
-		infoLab->SetLabel(Tools::splitToManyLines(text, sepSet, 25));
+		sepSet.insert('+');
+		//sepSet.insert(' ');
+		infoLab->SetLabel(Tools::splitToManyLines(text, sepSet, 35));
 		drawGraph();
 		GetTimeManager().clean();
 	}
@@ -147,19 +156,19 @@ void MyFrame::showPerformance()
 		if (!bUseSeconds)
 		{
 			out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::milliseconds>(val.second.duration) << "("
-				<< a << "." << b << ")";
+				<< a << "." << b << ")\n";
 		}
 		else
 		{
 			out << val.first << ": " << boost::chrono::duration_cast<boost::chrono::seconds>(val.second.duration) << "("
-				<< a << "." << b << ")";
+				<< a << "." << b << ")\n";
 		}
 	}
 	std::string text = out.str();
 	std::set<char> sepSet;
 	sepSet.insert(',');
-	sepSet.insert(')');
-	infoPerf->SetLabel(Tools::splitToManyLines(text, sepSet, 30));
+	sepSet.insert(':');
+	infoPerf->SetLabel(Tools::splitToManyLines(text, sepSet, 40));
 }
 
 void MyFrame::free()

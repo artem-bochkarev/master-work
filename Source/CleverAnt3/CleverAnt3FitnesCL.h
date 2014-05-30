@@ -68,6 +68,8 @@ public:
 	virtual void fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result) override;
 
 	virtual void setMaps(std::vector<CMapPtr> maps) override;
+	virtual const CMapPtr getMap(size_t i) override;
+	virtual size_t getMapsCount() override;
 	std::string getInfo() const override;
 protected:
 	void checkSizes();

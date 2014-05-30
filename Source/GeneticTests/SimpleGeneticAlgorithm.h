@@ -1,7 +1,9 @@
+#pragma once
 #include "TestAutomat.h"
 #include "TestGroup.hpp"
 #include "Test.hpp"
 #include "TestFitnes.h"
+#include "TestParameters.hpp"
 
 class SimpleGeneticAlgorithm 
 {
@@ -48,7 +50,7 @@ class SimpleGeneticAlgorithm
 	void init();
 
 public:
-	SimpleGeneticAlgorithm(Parameters parameters,
+	SimpleGeneticAlgorithm(const TestParameters& parameters,
 		const std::set<INPUT_TYPE>& inputs, const std::set<OUTPUT_TYPE>& outputs, std::vector< TestGroup<TEST_TYPE, FORMULA_TYPE> > groups);
 
 	std::vector<FITNES_TYPE> generations;

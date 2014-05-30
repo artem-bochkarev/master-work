@@ -14,7 +14,7 @@ void CCleverAnt3Fitnes::setMaps(std::vector<CMapPtr> maps)
 const CMapPtr CCleverAnt3Fitnes::getMap(size_t i)
 {
 	CMapPtr pMap(new CleverAnt3Map(maps[i]));
-	return maps[i];
+	return pMap;
 }
 
 size_t CCleverAnt3Fitnes::getMapsCount()

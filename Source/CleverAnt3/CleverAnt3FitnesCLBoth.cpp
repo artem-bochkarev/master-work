@@ -8,7 +8,7 @@
 CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string >& strings, Tools::Logger& log)
 :m_size(0)
 {
-	using namespace boost::spirit::qi;
+	using namespace boost::spirit;
 	std::string deviceTypeStr;
 	char c = 'C';
 	std::vector< std::string > stringsCPU;
@@ -16,17 +16,20 @@ CCleverAnt3FitnesCLBoth::CCleverAnt3FitnesCLBoth(const std::vector< std::string 
 	for (size_t i = 0; i < strings.size(); ++i)
 	{
 		const std::string& str = strings[i];
-		if (phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> int_ >> ";", space, m_size))
+		std::string tmp;
+		if (qi::phrase_parse(str.begin(), str.end(), "GENERATION_SIZE=" >> qi::int_ >> ";", qi::space, m_size))
 		{
 			continue;
 		}
 		else
-		if (phrase_parse(str.begin(), str.end(), "DEVICE_TYPE=" >> int_ >> ";", space, m_size))
+		if (qi::phrase_parse(str.begin(), str.end(), "DEVICE_TYPE=" >> +qi::char_ >> ";", qi::space, tmp))
 		{
 			continue;
 		}
 		else
 		{
+			if (qi::phrase_parse(str.begin(), str.end(), "STEPS_COUNT=" >> qi::int_ >> ";", qi::space, m_steps))
+				continue;
 			stringsCPU.push_back(str);
 			stringsGPU.push_back(str);
 		}
@@ -136,6 +139,16 @@ void CCleverAnt3FitnesCLBoth::setMaps(std::vector<CMapPtr> maps)
 {
 	clCPUFitnes->setMaps(maps);
 	clGPUFitnes->setMaps(maps);
+}
+
+const CMapPtr CCleverAnt3FitnesCLBoth::getMap(size_t i)
+{
+	return clCPUFitnes->getMap(i);
+}
+
+size_t CCleverAnt3FitnesCLBoth::getMapsCount()
+{
+	return clCPUFitnes->getMapsCount();
 }
 
 std::string CCleverAnt3FitnesCLBoth::getInfo() const

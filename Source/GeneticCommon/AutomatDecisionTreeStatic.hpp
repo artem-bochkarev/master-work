@@ -315,6 +315,7 @@ void CAutomatDecisionTreeStatic<COUNTERS_TYPE, INPUT_TYPE, MAX_DEPTH, INPUT_PARA
 {
 	const CAutomatDecisionTreeStatic* motherPtr = static_cast<const CAutomatDecisionTreeStatic*>(mother);
 	const CAutomatDecisionTreeStatic* fatherPtr = static_cast<const CAutomatDecisionTreeStatic*>(father);
+	pAntCommon = motherPtr->pAntCommon;
 
 	for (size_t stateNumber = 0; stateNumber < STATES_COUNT; ++stateNumber)
 	{

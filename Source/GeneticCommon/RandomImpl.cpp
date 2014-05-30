@@ -26,3 +26,18 @@ uint CRandomImpl::nextUINT()
     return value;
     //return std::rand();
 }
+
+uint CRandomImpl::nextUINT(uint mod)
+{
+	return nextUINT() % mod;
+}
+
+int CRandomImpl::nextINT()
+{
+	return nextUINT();
+}
+
+int CRandomImpl::nextINT(int mod)
+{
+	return nextUINT() % mod;
+}

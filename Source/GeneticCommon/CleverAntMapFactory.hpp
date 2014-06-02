@@ -22,7 +22,7 @@ CMapPtr CMapFactory<MAP_TYPE>::getMap(const char *filename)
     {
         in.getline( tmp, 250 );
         for ( int j=0; j<m; ++j )
-            if ( tmp[j] != '_' )
+            if ( tmp[j] == '+' )
                 map->map[i][j] = 1;
     }
     in.close();

@@ -18,13 +18,20 @@ CMapPtr CMapFactory<MAP_TYPE>::getMap(const char *filename)
 
     char tmp[300];
     in.getline( tmp, 250 );
+	size_t foodCnt = 0;
     for ( int i=0; i<n; ++i )
     {
-        in.getline( tmp, 250 );
-        for ( int j=0; j<m; ++j )
-            if ( tmp[j] == '+' )
-                map->map[i][j] = 1;
+		in.getline(tmp, 250);
+		for (int j = 0; j < m; ++j)
+		{
+			if (tmp[j] == '+')
+			{
+				map->map[i][j] = 1;
+				++foodCnt;
+			}
+		}
     }
+	map->m_foodCnt = foodCnt;
     in.close();
     return CMapPtr( map );
 }

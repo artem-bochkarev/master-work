@@ -232,7 +232,7 @@ void CCleverAnt3FitnesCL::setMaps(std::vector<CMapPtr> maps)
 {
 	CCleverAnt3Fitnes::setMaps( maps );
 
-	mapSize = (2 + getMap(0)->width()*getMap(0)->height());
+	mapSize = getMap(0)->getSizeInts();
 	mapCL = cl::Buffer(context, CL_MEM_READ_ONLY, mapSize * 4);
 	mapsBuffer = new int[mapSize * m_size];
 	int* oneMap = new int[mapSize];

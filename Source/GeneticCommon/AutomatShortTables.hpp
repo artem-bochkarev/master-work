@@ -304,8 +304,8 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
 	for (size_t index = 0; index < maxIndex; ++index)
 	{
-		size_t motherIndex = createParentIndex(toMother, myMas, index, rand);
-		size_t fatherIndex = createParentIndex(toFather, myMas, index, rand);
+		size_t motherIndex = createParentIndex(toMother, index, rand);
+		size_t fatherIndex = createParentIndex(toFather, index, rand);
 		COUNTERS_TYPE * childTable = childMask + maskSize;
 		const COUNTERS_TYPE * motherTable = motherMask + maskSize;
 		const COUNTERS_TYPE * fatherTable = fatherMask + maskSize;
@@ -317,13 +317,13 @@ void CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_P
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, size_t SHORT_TABLE_COLUMNS, size_t INPUT_PARAMS_COUNT>
-size_t CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand)
+size_t CAutomatShortTables<COUNTERS_TYPE, INPUT_TYPE, SHORT_TABLE_COLUMNS, INPUT_PARAMS_COUNT>::createParentIndex(const size_t* toParent, size_t index, CRandom* rand)
 {
 	size_t maxIndex = Tools::twoPow(SHORT_TABLE_COLUMNS);
 	size_t parentIndex = index;// rand->nextUINT()&(maxIndex - 1);
 	for (size_t i = 0; i < SHORT_TABLE_COLUMNS; ++i)
 	{
-		size_t myBit = Tools::checkBit(index, myArray[i]);
+		size_t myBit = Tools::checkBit(index, i);
 		if (toParent[i])
 		{
 			if (myBit)

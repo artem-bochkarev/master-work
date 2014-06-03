@@ -48,7 +48,7 @@ public:
 	static void randomMask(COUNTERS_TYPE* mask, CRandom* rand);
 	static void mutateTable(COUNTERS_TYPE* currentTable, CRandom* rand, CAntCommon<COUNTERS_TYPE>* );
 	static void randomTable(COUNTERS_TYPE* table, CRandom* rand, CAntCommon<COUNTERS_TYPE>* );
-	static size_t createParentIndex(const size_t* toParent, const size_t* myArray, size_t index, CRandom* rand);
+	static size_t createParentIndex(const size_t* toParent, size_t index, CRandom* rand);
 protected:
 	size_t countIndex(const std::vector<INPUT_TYPE>& input, size_t currentsState) const;
 private:

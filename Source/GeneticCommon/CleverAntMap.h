@@ -34,6 +34,8 @@ public:
     virtual size_t toCharBuffer( char* buffer, size_t max_size=0 ) const = 0;
     virtual size_t toIntBuffer( int* buffer, size_t max_size=0 ) const = 0;
     virtual ~CMap() {};
+	virtual size_t getSizeInts() const = 0;
+	virtual size_t getSizeBytes() const = 0;
     CMap() {};
 private:
     CMap( size_t width, size_t geight, size_t foodCounter );

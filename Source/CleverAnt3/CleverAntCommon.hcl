@@ -4,6 +4,7 @@
 #define c_y_size 32
 #define m_x_size 31
 #define m_y_size 31
+#define MAP_HEADER_SIZE 4
 
 void setBit(uint* value, uint pos)
 {
@@ -104,7 +105,7 @@ uint moveYa( uint y, uint direction, uint action )
 void getInput( uint* answ, uint x, uint y, uint direction, const __global int* map )
 //#endif
 {
-    const __global int * myMap = map + 2;
+    const __global int * myMap = map + MAP_HEADER_SIZE;
     int x1 = x, y1 = y;
     x1 = moveX( x, direction );
     y1 = moveY( y, direction );
@@ -133,9 +134,14 @@ void getInput( uint* answ, uint x, uint y, uint direction, const __global int* m
 	//#endif
 }
 
+uint getFoodNumber(const __global int* map)
+{
+	return map[2];
+}
+
 uint8 getInputCA3( uint x, uint y, uint direction, const __global int* map )
 {
-    const __global int * myMap = map + 2;
+    const __global int * myMap = map + MAP_HEADER_SIZE;
     int x1 = x, y1 = y;
     x1 = moveX( x, direction );
     y1 = moveY( y, direction );

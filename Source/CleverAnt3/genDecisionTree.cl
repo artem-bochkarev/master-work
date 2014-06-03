@@ -42,6 +42,7 @@ float run( __check_space const uint* ind, __global int* map )
     uint x = 0, y = 0;
     uint direction = 2;
     uint curState = (*ind);
+	uint lastEatedStep = 0;
 	
     for ( uint i=0; i<STEPS_COUNT; ++i )
     {
@@ -58,10 +59,12 @@ float run( __check_space const uint* ind, __global int* map )
 		
 		uint f = x + c_x_size*y;
         cnt += myMap[f];
+		lastEatedStep = select( lastEatedStep, i+1, myMap[f] ); 
         myMap[f] = 0;
         direction = actionTurn( direction, action );
     }
-    return cnt;
+    float last = lastEatedStep;
+    return cnt - last / STEPS_COUNT;
 }
 
 //constSizes[0] - statesCount

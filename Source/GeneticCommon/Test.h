@@ -27,6 +27,6 @@ private:
 	CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat;
     CMap* map;
     char currentState;
-    size_t m_foodEaten;
+	size_t m_foodEaten, m_lastEated;
     EDirection currentDirection;
 };

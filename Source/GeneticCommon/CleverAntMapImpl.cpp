@@ -52,7 +52,7 @@ EDirection right( EDirection d )
 }
 
 CMapImpl::CMapImpl(size_t width, size_t height, size_t foodCounter)
-:x_size(width), y_size(height), map(0)
+:x_size(width), y_size(height), map(0), m_foodCnt(foodCounter)
 {
     map = new int*[width];
     for ( size_t i=0; i<width; ++i)
@@ -72,7 +72,7 @@ CMapImpl::CMapImpl(size_t width, size_t height, size_t foodCounter)
 }
 
 CMapImpl::CMapImpl(const CMapImpl &cmap)
-:x_size(cmap.x_size), y_size(cmap.y_size)
+:x_size(cmap.x_size), y_size(cmap.y_size), m_foodCnt(cmap.m_foodCnt)
 {
     map = new int*[x_size];
     for ( size_t i=0; i<x_size; ++i)
@@ -86,11 +86,20 @@ CMapImpl::CMapImpl( const CMap* cmap )
 :x_size(cmap->width()), y_size(cmap->height())
 {
     map = new int*[x_size];
+	m_foodCnt = 0;
     for ( size_t i=0; i<x_size; ++i)
     {
         map[i] = new int[y_size];
         cmap->getLine( map[i], i );
+		for (size_t j = 0; j < y_size; ++j)
+		if (map[i][j] > 0)
+			++m_foodCnt;
     }
+}
+
+size_t CMapImpl::getFoodNumber() const
+{
+	return m_foodCnt;
 }
 
 void CMapImpl::getLine( int * buf, size_t n ) const
@@ -269,12 +278,14 @@ void CMapImpl::getInput( size_t x, size_t y, EDirection direct, int* output ) co
 
 size_t CMapImpl::toCharBuffer( char* buffer, size_t max_size ) const
 {
-   size_t realSize = x_size * y_size + 2;
+	BOOST_ASSERT("deprecated");
+	size_t realSize = x_size * y_size + HEADER_SIZE;
    if ((max_size > 0)&&( realSize > max_size ))
        return 0;
    buffer[0] = (char)x_size;
    buffer[1] = (char)y_size;
-   buffer += 2;
+   buffer[2] = (char)m_foodCnt;
+   buffer += HEADER_SIZE;
    for ( size_t i=0; i<y_size; ++i )
        for ( size_t j=0; j<x_size; ++j )
        {
@@ -286,12 +297,13 @@ size_t CMapImpl::toCharBuffer( char* buffer, size_t max_size ) const
 
 size_t CMapImpl::toIntBuffer( int* buffer, size_t max_size ) const
 {
-   size_t realSize = x_size * y_size + 2;
+	size_t realSize = getSizeInts();
    if ((max_size > 0)&&( realSize > max_size ))
        return 0;
    buffer[0] = (int)x_size;
    buffer[1] = (int)y_size;
-   buffer += 2;
+   buffer[3] = (int)m_foodCnt;
+   buffer += HEADER_SIZE;
    for ( size_t i=0; i<y_size; ++i )
        for ( size_t j=0; j<x_size; ++j )
        {
@@ -299,4 +311,14 @@ size_t CMapImpl::toIntBuffer( int* buffer, size_t max_size ) const
            ++buffer;
        }
    return realSize;
+}
+
+size_t CMapImpl::getSizeInts() const
+{
+	return x_size * y_size + HEADER_SIZE;
+}
+
+size_t CMapImpl::getSizeBytes() const
+{
+	return getSizeInts() * sizeof(x_size);
 }

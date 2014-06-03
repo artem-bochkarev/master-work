@@ -6,7 +6,7 @@
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>
 CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::CTest(CAutomat<COUNTERS_TYPE, INPUT_TYPE>* automat, CMap* map, size_t moves, int x, int y, EDirection dir)
     :moves(moves), automat(automat), map(map), movesCnt(0), m_foodEaten(0), 
-        currentState( automat->getStartState() ), currentDirection( dir ), x(x), y(y)
+	currentState(automat->getStartState()), currentDirection(dir), x(x), y(y), m_lastEated(0)
 {
 }
 
@@ -45,7 +45,12 @@ bool CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::makeMove()
 			default:
 				BOOST_ASSERT(0);
             }
-            m_foodEaten += map->eatFood( x, y );
+			size_t k = map->eatFood(x, y);
+			if (k)
+			{
+				m_foodEaten += k;
+				m_lastEated = movesCnt + 1;
+			}
         }break;
         case 1:
         {
@@ -89,6 +94,7 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
     CMapImpl* mapImpl = static_cast<CMapImpl*>(map);
     //const CAutomatImpl* autImpl = static_cast<const CAutomatImpl*>(automat);
     char curState = automat->getStartState();
+	size_t lastEated = 0;
     for ( size_t i=0; i<moves; ++i )
     {
         //int input[4];
@@ -131,8 +137,12 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
                         y = (y+1) % map->height();
                         break;
                     }
-                double tmp = map->eatFood( x, y );
-                cnt += tmp;
+				size_t k = map->eatFood(x, y);
+				if (k)
+				{
+					cnt += k;
+					lastEated = i + 1;
+				}
             }break;
             case 1:
             {
@@ -145,7 +155,8 @@ FITNES_TYPE CTest<COUNTERS_TYPE, INPUT_TYPE, FITNES_TYPE>::run(const CAutomat<CO
         }
     }
     //return (cnt - lem*1.0/moves);
-    return cnt;
+	FITNES_TYPE last = lastEated;
+	return cnt - last / moves;
 }
 
 template<typename COUNTERS_TYPE, typename INPUT_TYPE, typename FITNES_TYPE>

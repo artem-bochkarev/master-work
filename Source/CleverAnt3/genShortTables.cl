@@ -10,7 +10,7 @@
 #define RECORD_SIZE 2
 #define TABLE_SIZE (2 * (1 << SHORT_TABLE_COLUMNS))
 #define STATE_SIZE_UINTS (TABLE_SIZE + MASK_SIZE)
-#define STEPS_COUNT 100
+#define STEPS_COUNT 200
 
 /*
 // rand like in MSVC
@@ -71,6 +71,7 @@ float run( __check_space const uint* ind, __global int* map )
 	
 	//if (myId==0)
 	//	printf("\t%i, %i\n", x, y);
+	uint lastEatedStep = 0;
 	
     for ( uint i=0; i<STEPS_COUNT; ++i )
     {
@@ -107,10 +108,12 @@ float run( __check_space const uint* ind, __global int* map )
 		//if (myId==0 && myMap[f] > 0)
 			//printf("eated!\n");
         cnt += myMap[f];
+		lastEatedStep = select( lastEatedStep, i+1, myMap[f] ); 
         myMap[f] = 0;
         direction = actionTurn( direction, action );
     }
-    return cnt;
+	float last = lastEatedStep;
+    return cnt - last / STEPS_COUNT;
 }
 
 //constSizes[0] - statesCount

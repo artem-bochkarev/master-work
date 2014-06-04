@@ -1,4 +1,5 @@
 #include "SimpleGeneticAlgorithm.h"
+#include "TestParameters.hpp"
 
 SimpleGeneticAlgorithm::SimpleGeneticAlgorithm(const TestParameters& parameters,
 	const std::set<INPUT_TYPE>& inputs, const std::set<OUTPUT_TYPE>& outputs, std::vector< TestGroup<TEST_TYPE, FORMULA_TYPE> > groups)

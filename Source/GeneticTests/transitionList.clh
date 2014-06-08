@@ -1,0 +1,275 @@
+//transition list
+#include "random.clh"
+
+typedef struct tl_test_size
+{
+    uint inputLength;
+    uint outputLength;
+    uint offset;
+} TestInfo;
+
+typedef struct tl_sequence
+{
+    uint values[];
+}Sequence;
+
+typedef struct tl_transition
+{
+	uint outputs[MAX_OUTPUTS];
+    uint outputsCount;
+	uint nextState;
+    uint input;
+} Transition;
+
+typedef struct tl_transition_list
+{
+	Transition transitionsList[MAX_TRANSITIONS];
+	uint count;
+} TransitionList;
+
+typedef struct tl_transition_list_automat
+{
+	TransitionList states[STATES_NUMBER];
+	uint firstState;
+} TransitionListAutomat;
+
+void copyTListAutomat(TransitionListAutomat* to , const TransitionListAutomat* from)
+{
+    to->firstState = from->firstState;
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        to->states[state].count = from->states[state].count;
+        for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
+        {
+            to->states[state].transitionList[transition].outputsCount = from->states[state].transitionList[transition].outputsCount;
+            to->states[state].transitionList[transition].nextState = from->states[state].transitionList[transition].nextState;
+            to->states[state].transitionList[transition].input = from->states[state].transitionList[transition].input;
+            for (uint i=0; i<MAX_OUTPUTS; ++i)
+            {
+                to->states[state].transitionList[transition].outputs[i] = from->states[state].transitionList[transition].outputs[i];
+            }
+        }
+    }
+}
+
+uint mutateOutputSize(uint rand, uint oldSize)
+{
+    uint type = getValue1024(rand, 3);
+    uint result = oldSize;
+    
+    result = select(result, min(oldSize + 1, MAX_OUTPUTS), type == 1);
+    result = select(result, max(oldSize - 1, 0), type == 2);
+    result = select(result, 0, result > MAX_OUTPUTS );
+    
+    return result;
+}
+
+uint mutateTransition(Transition* t, uint rand)
+{
+    uint condition = randomProb256(rand, MUTATION_THRESHOLD); rand = nextUINT(rand);
+    uint type = getValue1024(rand, 3); rand = nextUINT(rand);
+    t->nextState = select(t->nextState, getValue1024(rand, STATES_NUMBER), condition && (type == 0));
+    rand = nextUINT(rand);
+    
+    t->input = select(t->input, getValue1024(rand, INPUTS_NUMBER), condition && (type == 1));
+    rand = nextUINT(rand);
+    
+    uint newSize = mutateOutputSize(rand, t->outputsCount); rand = nextUINT(rand);
+    t->outputsCount = select(t->outputsCount, newSize, condition && (type == 2));
+    
+    return rand;
+}
+
+uint deleteTransition(TransitionList* tl, uint rand, uint enableWrite)
+{
+    uint toDel = rand % tl->count;
+    rand = nextUINT(rand);
+    tl->count--;
+    tl->transitionList[toDel].nextState = tl->transitionList[tl->count].nextState;
+    tl->transitionList[toDel].input = tl->transitionList[tl->count].input;
+    tl->transitionList[toDel].outputsCnt = tl->transitionList[tl->count].outputsCnt;
+    return rand;
+}
+
+uint addTransition(TransitionList* tl, uint rand, uint enableWrite)
+{
+    tl->transitionList[tl->count].nextState = getValue1024(rand, STATES_NUMBER);
+    rand = nextUINT(rand);
+    
+    tl->transitionList[tl->count].input = getValue1024(rand, INPUTS_NUMBER);
+    rand = nextUINT(rand);
+    
+    tl->transitionList[tl->count].outputsCount = getValue1024(rand, MAX_OUTPUTS);
+    rand = nextUINT(rand);
+    tl->count++;
+    
+    return rand;
+}
+
+removeDuplicates(TransitionList* tl)
+{
+    uint arr[INPUTS_NUMBER];
+    for (uint i=0; i<INPUTS_NUMBER; ++i)
+        arr[i] = 0;
+    uint writePos = 0;
+    for (uint t=0; t<MAX_TRANSITIONS; ++t)
+    {
+        uint valid = (t < tl->count);
+
+        tl->transitions[writePos].input = select( tl->transitions[writePos].input, tl->transitions[t].input, valid);
+        tl->transitions[writePos].outputsCnt = select( tl->transitions[writePos].outputsCnt, tl->transitions[t].outputsCnt, valid);
+        tl->transitions[writePos].nextState = select( tl->transitions[writePos].nextState, tl->transitions[t].nextState, valid);
+        
+        uint condition = (arr[tl->transitions[t].input] == 0);
+        arr[tl->transitions[t].input] = 1;
+        writePos = select(writePos, writePos+1, valid && condition);
+    }
+    tl->count = writePos;
+}
+
+uint mutateMe(TransitionListAutomat* input, uint rand)
+{
+    uint condition = randomProb256(rand, MUTATION_THRESHOLD); rand = nextUINT(rand);
+    input->firstState = select( input->firstState, getValue(rand, STATES_NUMBER), condition);
+	rand = nextUINT(rand);
+    
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
+        {
+            rand = mutateTransition(&(input->states[state].transitionList[transition]), rand);
+        }
+    }
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        uint enabledAll = randomProb256(rand, MUTATION_THRESHOLD); rand = nextUINT(rand);
+        uint who = randomBool(rand); rand = nextUINT(rand);
+        uint enabledDelete = (who==0) && enabledAll && (input->states[state].count > 0);
+        uint enabledAdd = (who==1) && enabledAll && (input->states[state].count < MAX_TRANSITIONS);
+        rand = deleteTransition(&(input->states[state]), rand, enabledDelete );
+        rand = addTransition(&(input->states[state]), rand, enabledAdd );
+        
+        removeDuplicates(&(input->states[state]));
+    }
+}
+
+uint mutate(TransitionListAutomat* result, const TransitionListAutomat* input, uint rand)
+{
+    copyTListAutomat(result, input);
+    mutateMe(result, rand);
+}
+
+uint crossover1(const TransitionListAutomat* mother, const TransitionListAutomat* father, TransitionListAutomat* child, uint rand)
+{
+    child->firstState = select(mother->firstState, father->firstState, randomBool(rand));
+    rand = nextUINT(rand);
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        child->states[state].count = select(mother->states[state].count,
+            father->states[state].count, randomBool(rand));
+        rand = nextUINT(rand);
+        for (uint t=0; t<MAX_TRANSITIONS; ++t)
+        {
+            uint motherT = select(rand%mother->states[state].count, t, t < mother->states[state].count);
+            rand = nextUINT(rand);
+            uint fatherT = select(rand%father->states[state].count, t, t < father->states[state].count);
+            rand = nextUINT(rand);
+            
+            fromWho = randomBool(rand);
+            rand = nextUINT(rand);
+            
+            uint fatherT = t;
+            child->states[state].transitionList[t].nextState = select(mother->states[state].transitionList[motherT].nextState,
+                father->states[state].transitionList[fatherT].nextState, fromWho);
+            child->states[state].transitionList[t].outputsCnt = select(mother->states[state].transitionList[motherT].outputsCnt,
+                father->states[state].transitionList[fatherT].outputsCnt, fromWho);
+            child->states[state].transitionList[t].input = select(mother->states[state].transitionList[motherT].input,
+                father->states[state].transitionList[fatherT].input, fromWho);
+        }
+        removeDuplicates(&(child->states[state]));
+    }
+    return rand;
+}
+
+uint crossover2(const TransitionListAutomat* mother, const TransitionListAutomat* father, TransitionListAutomat* child1, TransitionListAutomat* child2)
+{
+}
+
+void clearLabels(TransitionListAutomat* aut)
+{
+}
+
+void doLabelling(TransitionListAutomat* aut, const TestInfo* testInfo, const uint* tests)
+{
+    for (uint test=0; test<TESTS_NUMBER; ++test)
+    {
+        const uint lInput = testInfo[test].inputLength;
+        const uint lOutput = testInfo[test].outputLength;
+        const uint* curInput = tests + testInfo[test].offset;
+        const uint* curOutput = tests + testInfo[test].offset + lInput;
+        uint currentState = aut->firstState;
+        uint pOutput = 0;
+        uint enableWrite = 1;
+        for (uint i=0; i<MAX_TEST_INPUT; ++i)
+        {
+            uint found = 0;
+            for (uint t=0; t<MAX_TRANSITIONS; ++t)
+            {
+                uint doIt = enableWrite && (t < aut->states[currentState].count) && (aut->states[currentState].transitionList[t].input == curInput[i]);
+                Sequence sequence;
+                for (uint k=0; k<MAX_OUTPUTS; ++k)
+                {
+                    uint nextOutput = select(MAX_TEST_OUTPUT+1, curOutput[pOutput], pOutput < lOutput);
+                    uint isNotEnd = k<aut->states[currentState].transitionList[t].outputsCount;
+                    sequence.values[k] = select(0, nextOutput, isNotEnd && doIt);
+                    pOutput = select(pOutput, pOutput+1, isNotEnd && doIt);
+                }
+                addOutputSequence(sequence, &(aut->states[currentState].transitionList[t]), doIt);
+                currentState = select( currentState, aut->states[currentState].transitionList[t].nextState, doIt);
+                found = select(0, 1, doIt);
+            }
+            enableWrite = select(enableWrite, 0, found==0);
+        }
+    }
+    
+    for (uint i=0; i<MAX_TEST_INPUT; ++i)
+    {
+        uint found = 0;
+        for (uint t=0; t<MAX_TRANSITIONS; ++t)
+        {
+            labelByMostFrequent(&(aut->states[currentState].transitionList[t]));
+        }
+    }
+}
+
+uint transform( TransitionListAutomat* aut, const TestInfo* testInfo, const uint* tests, uint test, uint* out)
+{
+    const uint lInput = testInfo[test].inputLength;
+    const uint* curInput = tests + testInfo[test].offset;
+    uint currentState = aut->firstState;
+    uint pOutput = 0;
+    uint broken = 0;
+    for (uint i=0; i<MAX_TEST_INPUT; ++i)
+    {
+        uint found = 0;
+        uint k = 0;
+        uint oldState = currentState;
+        for (uint t=0; t<MAX_TRANSITIONS; ++t)
+        {
+            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].transitionList[t].input == curInput[i]);
+            found = select(found, 1, good);
+            k = select(k, t, good);
+            currentState = select(currentState, aut->states[currentState].transitionList[t].nextState, good);
+        }
+        broken = select(broken, 1, (found==0));
+        
+        for (uint t = 0; t<MAX_OUTPUTS; ++t)
+        {
+            uint good = (t < aut->states[currentState].transitionList[k].outputsCount);
+            out[pOutput] = aut->states[currentState].transitionList[k].outputs[t];
+            pOutput = select(pOutput, pOutput + 1, good);
+        }
+    }
+    pOutput = select(pOutput, 0xFFFFFFFF, broken);
+    return pOutput;
+}

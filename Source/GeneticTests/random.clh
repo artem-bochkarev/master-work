@@ -1,0 +1,47 @@
+// rand like in MSVC
+__constant uint rand_m = 0x80000000;
+__constant uint rand_a = 214013;
+__constant uint rand_c = 2531011;
+
+uint nextUINT( uint x )
+{
+    return ( rand_a*x + rand_c );
+}
+
+uint4 nextUINT4( uint4 x )
+{
+    return ( rand_a*x + rand_c );
+}
+
+char16 nextUChar16( char16 x )
+{
+    char16 a = (char16)(17);
+    char16 b = (char16)(31);
+    return mad_hi( x, a, b);
+}
+
+//don't forget to call nextUINT before(after) random funcs
+uint randomBool( uint x )
+{
+    return select(0, 1, x & 0x00010000);
+}
+
+uint getValue1024(uint rand, uint mod)
+{
+    uint byte = (rand & 0x0003FF00) >> 8;
+    return byte%mod;
+}
+
+//probability is in interval = 0 - 255 
+uint randomProb256(uint rand, uint probability)
+{
+    uint byte = (rand & 0x0000FF00) >> 8;
+    return select(0, 1, probability > byte);
+}
+
+//probability is in interval = 0 - 1023 
+uint randomProb1024(uint rand, uint probability)
+{
+    uint byte = (rand & 0x0003FF00) >> 8;
+    return select(0, 1, probability > byte);
+}

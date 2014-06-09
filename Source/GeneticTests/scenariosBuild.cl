@@ -52,12 +52,18 @@ float calcFitness(TransitionListAutomat* aut, const TestInfo* testInfo, const ui
     }
 }
 
-void geneticAlgorithm(TransitionListAutomat* automats, const TestInfo* testInfo, const uint* tests, float* fr)
+void geneticAlgorithmElitismTrueGlobal(TransitionListAutomat* automats, const TestInfo* testInfo, const uint* tests, __global float* fr)
 {
     TransitionListAutomat* me = automats + get_global_id(0)*sizeof(TransitionListAutomat);
     doLabelling(me, testInfo, tests);
     float myFR = calcFitness(me, testInfo, tests);
     fr[get_global_id(0)] = myFR;
-    barrier( CLK_LOCAL_MEM_FENCE );
+    barrier( CLK_GLOBAL_MEM_FENCE );
     
+}
+
+__kernel void genetic_1d( __check_space const TransitionListAutomat* automats, __constant const uint* constSizes,
+                         __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache )
+{
+    geneticAlgorithm( automats, testInfo, tests, resultCache);
 }

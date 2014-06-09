@@ -10,20 +10,20 @@ typedef struct tl_test_size
 
 typedef struct tl_sequence
 {
-    uint values[];
+    uint values[MAX_OUTPUTS];
 }Sequence;
 
 typedef struct tl_transition
 {
-	uint outputs[MAX_OUTPUTS];
+    uint outputs[MAX_OUTPUTS];
     uint outputsCount;
-	uint nextState;
+    uint nextState;
     uint input;
 } Transition;
 
 typedef struct tl_transition_list
 {
-	Transition transitionsList[MAX_TRANSITIONS];
+	Transition list[MAX_TRANSITIONS];
 	uint count;
 } TransitionList;
 
@@ -41,12 +41,12 @@ void copyTListAutomat(TransitionListAutomat* to , const TransitionListAutomat* f
         to->states[state].count = from->states[state].count;
         for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
         {
-            to->states[state].transitionList[transition].outputsCount = from->states[state].transitionList[transition].outputsCount;
-            to->states[state].transitionList[transition].nextState = from->states[state].transitionList[transition].nextState;
-            to->states[state].transitionList[transition].input = from->states[state].transitionList[transition].input;
+            to->states[state].list[transition].outputsCount = from->states[state].list[transition].outputsCount;
+            to->states[state].list[transition].nextState = from->states[state].list[transition].nextState;
+            to->states[state].list[transition].input = from->states[state].list[transition].input;
             for (uint i=0; i<MAX_OUTPUTS; ++i)
             {
-                to->states[state].transitionList[transition].outputs[i] = from->states[state].transitionList[transition].outputs[i];
+                to->states[state].list[transition].outputs[i] = from->states[state].list[transition].outputs[i];
             }
         }
     }
@@ -57,9 +57,9 @@ uint mutateOutputSize(uint rand, uint oldSize)
     uint type = getValue1024(rand, 3);
     uint result = oldSize;
     
-    result = select(result, min(oldSize + 1, MAX_OUTPUTS), type == 1);
-    result = select(result, max(oldSize - 1, 0), type == 2);
-    result = select(result, 0, result > MAX_OUTPUTS );
+    result = select(result, min(oldSize + 1, (uint)MAX_OUTPUTS), type == 1);
+    result = select(result, max(oldSize - 1, (uint)0), type == 2);
+    result = select(result, (uint)0, result > MAX_OUTPUTS );
     
     return result;
 }
@@ -85,28 +85,28 @@ uint deleteTransition(TransitionList* tl, uint rand, uint enableWrite)
     uint toDel = rand % tl->count;
     rand = nextUINT(rand);
     tl->count--;
-    tl->transitionList[toDel].nextState = tl->transitionList[tl->count].nextState;
-    tl->transitionList[toDel].input = tl->transitionList[tl->count].input;
-    tl->transitionList[toDel].outputsCnt = tl->transitionList[tl->count].outputsCnt;
+    tl->list[toDel].nextState = tl->list[tl->count].nextState;
+    tl->list[toDel].input = tl->list[tl->count].input;
+    tl->list[toDel].outputsCount = tl->list[tl->count].outputsCount;
     return rand;
 }
 
 uint addTransition(TransitionList* tl, uint rand, uint enableWrite)
 {
-    tl->transitionList[tl->count].nextState = getValue1024(rand, STATES_NUMBER);
+    tl->list[tl->count].nextState = getValue1024(rand, STATES_NUMBER);
     rand = nextUINT(rand);
     
-    tl->transitionList[tl->count].input = getValue1024(rand, INPUTS_NUMBER);
+    tl->list[tl->count].input = getValue1024(rand, INPUTS_NUMBER);
     rand = nextUINT(rand);
     
-    tl->transitionList[tl->count].outputsCount = getValue1024(rand, MAX_OUTPUTS);
+    tl->list[tl->count].outputsCount = getValue1024(rand, MAX_OUTPUTS);
     rand = nextUINT(rand);
     tl->count++;
     
     return rand;
 }
 
-removeDuplicates(TransitionList* tl)
+void removeDuplicates(TransitionList* tl)
 {
     uint arr[INPUTS_NUMBER];
     for (uint i=0; i<INPUTS_NUMBER; ++i)
@@ -116,12 +116,12 @@ removeDuplicates(TransitionList* tl)
     {
         uint valid = (t < tl->count);
 
-        tl->transitions[writePos].input = select( tl->transitions[writePos].input, tl->transitions[t].input, valid);
-        tl->transitions[writePos].outputsCnt = select( tl->transitions[writePos].outputsCnt, tl->transitions[t].outputsCnt, valid);
-        tl->transitions[writePos].nextState = select( tl->transitions[writePos].nextState, tl->transitions[t].nextState, valid);
+        tl->list[writePos].input = select( tl->list[writePos].input, tl->list[t].input, valid);
+        tl->list[writePos].outputsCount = select( tl->list[writePos].outputsCount, tl->list[t].outputsCount, valid);
+        tl->list[writePos].nextState = select( tl->list[writePos].nextState, tl->list[t].nextState, valid);
         
-        uint condition = (arr[tl->transitions[t].input] == 0);
-        arr[tl->transitions[t].input] = 1;
+        uint condition = (arr[tl->list[t].input] == 0);
+        arr[tl->list[t].input] = 1;
         writePos = select(writePos, writePos+1, valid && condition);
     }
     tl->count = writePos;
@@ -130,14 +130,14 @@ removeDuplicates(TransitionList* tl)
 uint mutateMe(TransitionListAutomat* input, uint rand)
 {
     uint condition = randomProb256(rand, MUTATION_THRESHOLD); rand = nextUINT(rand);
-    input->firstState = select( input->firstState, getValue(rand, STATES_NUMBER), condition);
+    input->firstState = select( input->firstState, getValue1024(rand, STATES_NUMBER), condition);
 	rand = nextUINT(rand);
     
     for (uint state=0; state<STATES_NUMBER; ++state)
     {
         for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
         {
-            rand = mutateTransition(&(input->states[state].transitionList[transition]), rand);
+            rand = mutateTransition(&(input->states[state].list[transition]), rand);
         }
     }
     for (uint state=0; state<STATES_NUMBER; ++state)
@@ -179,12 +179,14 @@ uint crossover1(const TransitionListAutomat* mother, const TransitionListAutomat
             rand = nextUINT(rand);
             
             uint fatherT = t;
-            child->states[state].transitionList[t].nextState = select(mother->states[state].transitionList[motherT].nextState,
-                father->states[state].transitionList[fatherT].nextState, fromWho);
-            child->states[state].transitionList[t].outputsCnt = select(mother->states[state].transitionList[motherT].outputsCnt,
-                father->states[state].transitionList[fatherT].outputsCnt, fromWho);
-            child->states[state].transitionList[t].input = select(mother->states[state].transitionList[motherT].input,
-                father->states[state].transitionList[fatherT].input, fromWho);
+            child->states[state].list[t].nextState = select(mother->states[state].list[motherT].nextState,
+                father->states[state].list[fatherT].nextState, fromWho);
+					
+            child->states[state].list[t].outputsCnt = select(mother->states[state].list[motherT].outputsCnt,
+                father->states[state].list[fatherT].outputsCnt, fromWho);
+					
+            child->states[state].list[t].input = select(mother->states[state].list[motherT].input,
+                father->states[state].list[fatherT].input, fromWho);
         }
         removeDuplicates(&(child->states[state]));
     }

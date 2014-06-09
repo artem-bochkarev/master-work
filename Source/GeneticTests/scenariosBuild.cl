@@ -1,5 +1,3 @@
-
-
 #define MAX_TEST_INPUT 8
 #define MAX_TEST_OUTPUT 20
 #define TESTS_NUMBER 10
@@ -52,4 +50,14 @@ float calcFitness(TransitionListAutomat* aut, const TestInfo* testInfo, const ui
         float t = select( 1.0, distHamm(size, tmpOutput, lOutput, curOutput), size!=0xFFFFFFFF);
         pSum += 1.0 - t;
     }
+}
+
+void geneticAlgorithm(TransitionListAutomat* automats, const TestInfo* testInfo, const uint* tests, float* fr)
+{
+    TransitionListAutomat* me = automats + get_global_id(0)*sizeof(TransitionListAutomat);
+    doLabelling(me, testInfo, tests);
+    float myFR = calcFitness(me, testInfo, tests);
+    fr[get_global_id(0)] = myFR;
+    barrier( CLK_LOCAL_MEM_FENCE );
+    
 }

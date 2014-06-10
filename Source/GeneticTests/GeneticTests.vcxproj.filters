@@ -15,36 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TestFitnes.h">
+    <ClInclude Include="TestBuildRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="testCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestGroup.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Test.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestAutomat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transition.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleGeneticAlgorithm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestParameters.hpp">
+    <ClInclude Include="TypeDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestFitnes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleGeneticAlgorithm.cpp">
+    <ClCompile Include="TestBuildRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -52,7 +52,7 @@ float calcFitness(TransitionListAutomat* aut, const TestInfo* testInfo, const ui
     }
 }
 
-void geneticAlgorithmElitismTrueGlobal(TransitionListAutomat* automats, const TestInfo* testInfo, const uint* tests, __global float* fr)
+void geneticAlgorithmElitismTrueGlobal(TransitionListAutomat* automats, const TestInfo* testInfo, const uint* tests, __global float* fr, uint rand)
 {
     TransitionListAutomat* me = automats + get_global_id(0)*sizeof(TransitionListAutomat);
     doLabelling(me, testInfo, tests);
@@ -62,8 +62,10 @@ void geneticAlgorithmElitismTrueGlobal(TransitionListAutomat* automats, const Te
     
 }
 
-__kernel void genetic_1d( __check_space const TransitionListAutomat* automats, __constant const uint* constSizes,
+__kernel void genetic_1d( __check_space const TransitionListAutomat* autBuf1, __constant const uint* constSizes,
                          __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache )
 {
-    geneticAlgorithm( automats, testInfo, tests, resultCache);
+	uint srand = constSizes[0];
+    uint rand = nextInt( srand+(srand*get_global_id(0)) );
+    geneticAlgorithm( automats, testInfo, tests, resultCache, rand);
 }

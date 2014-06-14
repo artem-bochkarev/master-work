@@ -9,6 +9,7 @@
 # Declare files that will always have CRLF line endings on checkout.
 *.sln text eol=crlf
 *.txt text eol=crlf
+*.xml text eol=crlf
 
 # No conversion files
 *.pdf -text

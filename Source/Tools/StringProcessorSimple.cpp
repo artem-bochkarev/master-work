@@ -1,4 +1,4 @@
-#include "STringProcessorSimple.h"
+#include "StringProcessorSimple.h"
 #include <boost/lexical_cast.hpp>
 
 Tools::StringProcessorSimple::StringProcessorSimple( const std::vector<size_t>& vals )
@@ -44,7 +44,7 @@ void Tools::changeDefine(std::string& text, const Define& def)
 {
 	std::string toFind = "#define " + def.first;
 	int j = text.find(toFind);
-	if (j > 0)
+	if (j >= 0)
 	{
 		int a = text.find('\n', j+1);
 		if (a > j)

@@ -14,6 +14,8 @@ Release/*.lib
 Log.txt
 config.txt
 *.opensdf
+*.xcf
+*.exe
 Backup/
 Debug/
 UpgradeLog.htm

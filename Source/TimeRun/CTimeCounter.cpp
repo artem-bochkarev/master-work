@@ -16,7 +16,6 @@ CTimeCounter::CTimeCounter(const std::string& str)
 CTimeCounter::~CTimeCounter()
 {
 	stopTimer();
-	GetTimeManager().incrementCounter(m_name, boost::chrono::duration_cast<boost::chrono::nanoseconds>(stopTime - startTime));
 }
 
 void CTimeCounter::stop()
@@ -27,7 +26,7 @@ void CTimeCounter::stop()
 void CTimeCounter::startTimer()
 {
 	m_bRunning = true;
-	startTime = boost::chrono::system_clock::now();
+	startTime = CLOCK_TYPE::now();
 }
 
 void CTimeCounter::stopTimer()
@@ -35,7 +34,8 @@ void CTimeCounter::stopTimer()
 	if (m_bRunning)
 	{
 		m_bRunning = false;
-		stopTime = boost::chrono::system_clock::now();
+		stopTime = CLOCK_TYPE::now();
+		GetTimeManager().incrementCounter(m_name, boost::chrono::duration_cast<boost::chrono::nanoseconds>(stopTime - startTime));
 	}
 }
 

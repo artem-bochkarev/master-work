@@ -10,7 +10,7 @@
 
 #define MUTATION_THRESHOLD 15
 
-#include "transitionList.clh"
+#include "GeneticTests/transitionList.clh"
 
 float distSame(uint outSize, const uint* out, uint testSize, const uint* testOut)
 {

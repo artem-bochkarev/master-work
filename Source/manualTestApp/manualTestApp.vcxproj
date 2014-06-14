@@ -97,6 +97,9 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GeneticCommon\GeneticCommon.vcxproj">
+      <Project>{cc1e3925-b43f-4ffe-802b-04d6c6a31472}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\GeneticTests\GeneticTests.vcxproj">
       <Project>{712f056d-55fd-4d5f-9e9f-9aec0819dccb}</Project>
     </ProjectReference>

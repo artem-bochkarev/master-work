@@ -1,5 +1,5 @@
 //transition list
-#include "random.clh"
+#include "GeneticTests/random.clh"
 
 typedef struct tl_test_size
 {

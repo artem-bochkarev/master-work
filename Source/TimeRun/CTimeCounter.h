@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 
+typedef boost::chrono::steady_clock CLOCK_TYPE;
+
 struct TimerData
 {
 	TimerData();
@@ -39,7 +41,7 @@ private:
 	void startTimer();
 	void stopTimer();
 
-	boost::chrono::system_clock::time_point startTime, stopTime;
+	CLOCK_TYPE::time_point startTime, stopTime;
 	std::string m_name;
 	bool m_bRunning;
 };

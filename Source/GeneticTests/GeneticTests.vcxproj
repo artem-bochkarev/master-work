@@ -72,11 +72,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GeneticChecks.h" />
+    <ClInclude Include="MFETestRunner.h" />
     <ClInclude Include="TestBuildRunner.h" />
     <ClInclude Include="TypeDefines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneticChecks.cpp" />
+    <ClCompile Include="MFETestRunner.cpp" />
     <ClCompile Include="TestBuildRunner.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,87 @@
+typedef struct mfe_getter
+{
+    DATA_TYPE data[MFE_COUNTERS_SIZE];
+    uint counters[MFE_COUNTERS_SIZE];
+} mfeGetter;
+
+
+//returns .x = most frequent elements index, .y worst frequent
+uint2 check(const mfeGetter* getter)
+{
+    uint2 result = 0;
+    for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]) );
+        result.y = select(result.y, i, (count < getter->counters[result.y]) );
+    }
+    return result;
+}
+
+uint2 checkLocal(__local const mfeGetter* getter)
+{
+    uint2 result = 0;
+    for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]));
+        result.y = select(result.y, i, (count < getter->counters[result.y]));
+    }
+    return result;
+}
+
+void increment(mfeGetter* getter, const DATA_TYPE* element)
+{
+    uint4 result = 0;
+    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]) );
+        result.y = select(result.y, i, (count < getter->counters[result.y]) );
+        uint condition = equals( &(getter->data[i]), element );
+        result.z = select(result.z, (uint)1, condition );
+        result.w = select(result.w, i, condition );
+    }
+    
+    //use founded or minimum(if not exists)
+    result.w = select(result.y, result.w, result.z );
+    getter->counters[result.w]++;
+    //always rewrite data
+    getter->data[result.w] = *element;
+}
+
+void incrementLocal(__local mfeGetter* getter, __global const DATA_TYPE* element)
+{
+    /*if (DEBUG_ME)
+    {
+        printf("increment: %f \n", *element);
+        printf("\t");
+        for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+        {
+            printf("%4.1f ", getter->data[i]);
+        }
+        printf("\n\t");
+        for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+        {
+            printf("%4i ", getter->counters[i]);
+        }
+        printf("\n------------------------\n");
+    }*/
+    uint4 result = 0;
+    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select( result.x, i, ( count > getter->counters[result.x]) );
+        result.y = select( result.y, i, ( count < getter->counters[result.y]) );
+        uint condition = equalsDiff( &(getter->data[i]), element );
+        result.z = select(result.z, (uint)1, condition );
+        result.w = select(result.w, i, condition );
+    }
+    
+    //use founded or minimum(if not exists)
+    result.w = select(result.y, result.w, result.z );
+    getter->counters[result.w]++;
+    //always rewrite data
+    getter->data[result.w] = *element;
+}
+

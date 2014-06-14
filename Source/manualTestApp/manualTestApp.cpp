@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "GeneticTests/GeneticChecks.h"
+#include "GeneticTests/MFETestRunner.h"
 #include "TimeRun/CTimeCounter.h"
 #include <conio.h>
 #include "GeneticCommon/RandomImpl.h"
@@ -11,12 +12,13 @@
 static const char* genCheckFileName = "../GeneticTests/elitismTest.cl";
 static const char* genCheckFileNameLocal = "../GeneticTests/elitismTestLocal.cl";
 static const char* genCheckFileNameRandomized = "../GeneticTests/elitismTestRandomized.cl";
+static const char* mfeFileName = "../GeneticTests/mfeTest.cl";
 
 static const std::string counterElitismGlobal = "TrueElitismGlobal";
 static const std::string counterElitismLocal = "TrueElitismLocal";
 static const std::string sortTime = "SortTimeCPU";
 
-void checkIt(const char* fileName, size_t size, size_t count, const cl_float* data, cl_uint* out)
+void checkElitism(const char* fileName, size_t size, size_t count, const cl_float* data, cl_uint* out)
 {
 	GeneticChecks genCheck(fileName, size, count);
 	genCheck.prepareData(data);
@@ -29,7 +31,7 @@ void checkIt(const char* fileName, size_t size, size_t count, const cl_float* da
 	genCheck.getData(out);
 }
 
-void compareToTrue(size_t size, size_t count, const cl_float* data, const cl_uint* out, const cl_uint* trueOut)
+void compareElitismToTrue(size_t size, size_t count, const cl_float* data, const cl_uint* out, const cl_uint* trueOut)
 {
 	size_t cntTrue = 0;
 	cl_float worstTakenValue = 100500;
@@ -68,6 +70,58 @@ void compareToTrue(size_t size, size_t count, const cl_float* data, const cl_uin
 	std::cout << boost::format("\tDifference: %i") % diff << std::endl;
 }
 
+void compareMFE(size_t genSize, size_t checkCount, const cl_float* data, const cl_float* out, const cl_float* trueOut)
+{
+	size_t same = 0;
+	for (size_t i = 0; i<genSize; ++i)
+	{
+		std::map<float, int> hmap;
+		for (size_t j = 0; j < checkCount; ++j)
+		{
+			size_t index = (i + j) % genSize;
+			if (hmap.find(data[index]) != hmap.end()) {
+				hmap[data[index]]++;
+			}
+			else
+			{
+				hmap[data[index]] = 1;
+			}
+		}
+		float max = -100500.0f;
+		int maxCounter = 0;
+		for (auto t : hmap)
+		{
+			if (t.second > maxCounter)
+			{
+				maxCounter = t.second;
+				max = t.first;
+			}
+		}
+		if (hmap.find(out[i]) != hmap.end())
+		{
+			if (maxCounter == hmap[out[i]])
+				++same;
+		}
+	}
+
+	double percent = same*100.0 / genSize;
+	std::cout << boost::format("\tEquality percent: %.2f") % percent << "%" << std::endl;
+}
+
+void checkMFE(const char* fileName, size_t size, size_t checkCount, size_t mfeSize, const cl_float* data, cl_float* out)
+{
+	MFETestRunner runner(fileName, size, checkCount, mfeSize);
+	runner.prepareData(data);
+
+	std::stringstream ss;
+	ss << "Counter(" << fileName << boost::format("[%i, %i, %i]") % size % checkCount % mfeSize << ")";
+	CTimeCounter counter1(ss.str());
+	runner.run();
+	counter1.stop();
+
+	runner.getData(out);
+}
+
 static const size_t genSize = 1024;
 static const size_t eliteCount = 16;
 
@@ -76,17 +130,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	GetTimeManager().clean();
 
 	cl_float data[genSize];
-	cl_uint out[genSize];
+	cl_uint outInt[genSize];
+	cl_float outFloat[genSize];
+	cl_float outFloatTrue[genSize];
 	cl_uint outTrue[genSize];
 
 	CRandomImpl random;
 
 	for (size_t i = 0; i < genSize; ++i)
 	{
-		data[i] = random.nextUINT(60);
+		data[i] = random.nextUINT(10);
 	}
 
-	checkIt(genCheckFileName, genSize, eliteCount, data, outTrue);
+	/*checkIt(genCheckFileName, genSize, eliteCount, data, outTrue);
 	
 	checkIt(genCheckFileNameLocal, genSize, eliteCount, data, out);
 	std::cout << "Result for " << genCheckFileNameLocal << std::endl;
@@ -106,7 +162,42 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	CTimeCounter counter2(sortTime);
 	std::sort(floats.begin(), floats.end());
-	counter2.stop();
+	counter2.stop();*/
+	size_t checkCount = 16;
+	size_t mfeSize = 4;
+
+	CTimeCounter counterMFETrue(sortTime);
+	for (size_t i = 0; i<genSize; ++i)
+	{
+		std::map<float, int> hmap;
+		for (size_t j = 0; j < checkCount; ++j)
+		{
+			size_t index = (i + j) % genSize;
+			if (hmap.find(data[index]) != hmap.end()) {
+				hmap[data[index]]++;
+			}
+			else
+			{
+				hmap[data[index]] = 1;
+			}
+		}
+		float max = -100500.0f;
+		int maxCounter = 0;
+		for (auto t : hmap)
+		{
+			if (t.second > maxCounter)
+			{
+				maxCounter = t.second;
+				max = t.first;
+			}
+		}
+		outFloatTrue[i] = max;
+	}
+	counterMFETrue.stop();
+
+	checkMFE(mfeFileName, genSize, checkCount, mfeSize, data, outFloat);
+	std::cout << "Result for " << genCheckFileNameRandomized << std::endl;
+	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

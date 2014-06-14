@@ -9,6 +9,7 @@ typedef cl_float FITNES_TYPE;
 static const cl_uint MAX_OUTPUTS = 3;
 static const cl_uint STATES_NUMBER = 4;
 static const cl_uint MAX_TRANSITIONS = 5;
+static const cl_uint MFE_COUNTERS_SIZE = 8;
 
 
 
@@ -24,12 +25,19 @@ typedef struct tl_sequence
 	cl_uint values[MAX_OUTPUTS];
 }Sequence;
 
+typedef struct mfe_getter
+{
+	Sequence data[MFE_COUNTERS_SIZE];
+	uint counters[MFE_COUNTERS_SIZE];
+} mfe_Getter;
+
 typedef struct tl_transition
 {
-	cl_uint outputs[MAX_OUTPUTS];
-	cl_uint outputsCount;
-	cl_uint nextState;
-	cl_uint input;
+	mfe_Getter mfe;
+	uint outputs[MAX_OUTPUTS];
+	uint outputsCount;
+	uint nextState;
+	uint input;
 } Transition;
 
 typedef struct tl_transition_list

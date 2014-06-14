@@ -11,22 +11,21 @@
 
 TestBuildRunner::~TestBuildRunner()
 {
-	delete cachedResults;
 }
 
 TestBuildRunner::TestBuildRunner(const std::vector< std::string >& strings, Tools::Logger& log)
-:logger(log), m_size(128), cachedResults(0)
+:logger(log), m_size(128)
 {
 	logger << "[INIT] Initializing TestBuildRunner.\n";
 	setFromStrings(strings);
-	//bufSize = sizeof(AUTOMAT)* m_size;
+	
+	m_automatBuffer.resize(m_size);
+	m_cachedResultBuffer.resize(m_size);
+
 	globalRange = cl::NDRange(m_size);
 	localRange = cl::NDRange(cl::NullRange);
-	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
-	//stateSize = 16;//1 << statesCount;
-	initKernel(clFilePath, deviceType, &log);
 
-	cachedResults = new float[m_size];
+	initKernel(clFilePath, deviceType, &log);
 }
 
 void TestBuildRunner::setFromStrings(const std::vector< std::string >& strings)
@@ -80,20 +79,19 @@ std::string TestBuildRunner::getOptions() const
 
 void TestBuildRunner::initCLBuffers()
 {
-	std::string lastCreated = "no one created)";
 	try
 	{
-		//statesBufCL1 = cl::Buffer(context, CL_MEM_READ_ONLY, m_size*sizeof(AUTOMAT));
-		//lastCreated = "statesBufCL1)";
 		clConstSizesBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, 5 * sizeof(int));
-		lastCreated = "sizesBuf)";
-		clResultCacheBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(float));
-		lastCreated = "resultCache)";
+		clResultCacheBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(cl_float));
+
+		clTestInfoBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(TestInfo) * m_testCount);
+		clTestsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, getTestsSize());
+
+		clAutomatBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat)* m_size);
 	}
 	catch (cl::Error& err)
 	{
 		std::string msg = "Failed to init buffers(last was ";
-		msg.append(lastCreated);
 		throwDetailedFailed(msg, streamsdk::getOpenCLErrorCodeStr(err.err()), &logger);
 	}
 }
@@ -186,9 +184,15 @@ void TestBuildRunner::prepareData()
 	cl_uint sizes[5];
 	try
 	{
-		queue.enqueueWriteBuffer(clTestSizesBuffer, CL_FALSE, 0, getTestSizesSize(), getTestSizesPtr());
+		kernelGen.setArg(0, clAutomatBuffer);
+		kernelGen.setArg(1, clConstSizesBuffer);
+		kernelGen.setArg(2, clTestInfoBuffer);
+		kernelGen.setArg(3, clTestsBuffer);
+		kernelGen.setArg(4, clResultCacheBuffer);
+
+		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_FALSE, 0, getTestSizesSize(), getTestSizesPtr());
 		queue.enqueueWriteBuffer(clTestsBuffer, CL_FALSE, 0, getTestsBufferSize(), getTestsBufferPtr());
-		queue.enqueueWriteBuffer(clConstSizesBuffer, CL_FALSE, 0, 4 * 5, sizes);
+		queue.enqueueWriteBuffer(clConstSizesBuffer, CL_FALSE, 0, sizeof(cl_int) * constArraySize, sizes);
 	}
 	catch (cl::Error& error)
 	{
@@ -207,7 +211,7 @@ void TestBuildRunner::run()
 
 		queue.enqueueNDRangeKernel(kernelGen, cl::NullRange, globalRange, localRange);
 		queue.finish();
-		queue.enqueueReadBuffer(clResultCacheBuffer, CL_TRUE, 0, m_size*sizeof(float), cachedResults);
+		queue.enqueueReadBuffer(clResultCacheBuffer, CL_TRUE, 0, m_size*sizeof(float), m_cachedResultBuffer.data() );
 	}
 	catch (cl::Error& error)
 	{
@@ -224,6 +228,6 @@ void TestBuildRunner::getData(FITNES_TYPE* result) const
 {
 	for (size_t i = 0; i < m_size; ++i)
 	{
-		result[i] = cachedResults[i];
+		result[i] = m_cachedResultBuffer[i];
 	}
 }

@@ -1,6 +1,45 @@
 //transition list
 #include "GeneticTests/random.clh"
 
+typedef struct tl_sequence
+{
+    uint values[MAX_OUTPUTS];
+}Sequence;
+
+#define DATA_TYPE Sequence
+#define MFE_COUNTERS_SIZE 8
+
+uint equals(const DATA_TYPE* a, const DATA_TYPE* b)
+{
+    uint res = 1;
+    for (uint i=0; i<MAX_OUTPUTS; ++i)
+    {
+        res = select( res, 0, a->values[i] != b->values[i] );
+    }
+    return res;
+}
+
+uint equalsDiff(__local const DATA_TYPE* a, __global const DATA_TYPE* b)
+{
+    uint res = 1;
+    for (uint i=0; i<MAX_OUTPUTS; ++i)
+    {
+        res = select( res, 0, a->values[i] != b->values[i] );
+    }
+    return res;
+}
+
+void conditionalCopy( DATA_TYPE* a, const DATA_TYPE* b, uint c)
+{
+    for (uint i=0; i<MAX_OUTPUTS; ++i)
+    {
+        a->values[i] = select( a->values[i], b->values[i], c );
+    }
+}
+
+#define MFE_CONDITIONAL 1
+#include "GeneticTests/mfe.clh"
+
 typedef struct tl_test_size
 {
     uint inputLength;
@@ -8,13 +47,9 @@ typedef struct tl_test_size
     uint offset;
 } TestInfo;
 
-typedef struct tl_sequence
-{
-    uint values[MAX_OUTPUTS];
-}Sequence;
-
 typedef struct tl_transition
 {
+    mfe_Getter mfe;
     uint outputs[MAX_OUTPUTS];
     uint outputsCount;
     uint nextState;
@@ -199,6 +234,27 @@ uint crossover2(const TransitionListAutomat* mother, const TransitionListAutomat
 
 void clearLabels(TransitionListAutomat* aut)
 {
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        for (uint t=0; t<MAX_TRANSITIONS; ++t)
+        {
+            mfe_clear( &(aut->states[state].list[t].mfe) )
+        }
+    }
+}
+
+void labelByMostFrequent(Transition* t)
+{
+    uint2 pos = mfe_check( &(t->mfe) );
+    for (uint i=0; i<MAX_OUTPUTS; ++i)
+    {
+        t->outputs[i] = t->mfe.data[pos.x].values[i];
+    }
+}
+
+void addOutputSequence( const DATA_TYPE* sequence, Transition* t, uint on)
+{
+    mfe_incrementCond( &t->mfe, sequence, on );
 }
 
 void doLabelling(TransitionListAutomat* aut, const TestInfo* testInfo, const uint* tests)
@@ -217,29 +273,28 @@ void doLabelling(TransitionListAutomat* aut, const TestInfo* testInfo, const uin
             uint found = 0;
             for (uint t=0; t<MAX_TRANSITIONS; ++t)
             {
-                uint doIt = enableWrite && (t < aut->states[currentState].count) && (aut->states[currentState].transitionList[t].input == curInput[i]);
+                uint doIt = enableWrite && (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
                 Sequence sequence;
                 for (uint k=0; k<MAX_OUTPUTS; ++k)
                 {
                     uint nextOutput = select(MAX_TEST_OUTPUT+1, curOutput[pOutput], pOutput < lOutput);
-                    uint isNotEnd = k<aut->states[currentState].transitionList[t].outputsCount;
+                    uint isNotEnd = k<aut->states[currentState].list[t].outputsCount;
                     sequence.values[k] = select(0, nextOutput, isNotEnd && doIt);
                     pOutput = select(pOutput, pOutput+1, isNotEnd && doIt);
                 }
-                addOutputSequence(sequence, &(aut->states[currentState].transitionList[t]), doIt);
-                currentState = select( currentState, aut->states[currentState].transitionList[t].nextState, doIt);
+                addOutputSequence( &sequence, &(aut->states[currentState].list[t]), doIt);
+                currentState = select( currentState, aut->states[currentState].list[t].nextState, doIt);
                 found = select(0, 1, doIt);
             }
             enableWrite = select(enableWrite, 0, found==0);
         }
     }
     
-    for (uint i=0; i<MAX_TEST_INPUT; ++i)
+    for (uint state=0; state<STATES_NUMBER; ++state)
     {
-        uint found = 0;
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
-            labelByMostFrequent(&(aut->states[currentState].transitionList[t]));
+            labelByMostFrequent(&(aut->states[state].list[t]));
         }
     }
 }
@@ -258,17 +313,17 @@ uint transform( TransitionListAutomat* aut, const TestInfo* testInfo, const uint
         uint oldState = currentState;
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
-            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].transitionList[t].input == curInput[i]);
+            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
             found = select(found, 1, good);
             k = select(k, t, good);
-            currentState = select(currentState, aut->states[currentState].transitionList[t].nextState, good);
+            currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
         }
         broken = select(broken, 1, (found==0));
         
         for (uint t = 0; t<MAX_OUTPUTS; ++t)
         {
-            uint good = (t < aut->states[currentState].transitionList[k].outputsCount);
-            out[pOutput] = aut->states[currentState].transitionList[k].outputs[t];
+            uint good = (t < aut->states[currentState].list[k].outputsCount);
+            out[pOutput] = aut->states[currentState].list[k].outputs[t];
             pOutput = select(pOutput, pOutput + 1, good);
         }
     }

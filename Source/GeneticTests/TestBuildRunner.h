@@ -33,18 +33,20 @@ protected:
 	const void* getTestsBufferPtr() const;
 
 	size_t m_size, bufSize;
+	static const size_t constArraySize = 5;
 private:
 	void checkProgrmType(const std::string &source);
 
 	Tools::Logger& logger;
-	float* cachedResults;
+	std::vector<TransitionListAutomat> m_automatBuffer;
+	std::vector<cl_float> m_cachedResultBuffer;
 
 	cl_device_type deviceType;
 
-	cl::Buffer automatBuffer;
+	cl::Buffer clAutomatBuffer;
 	cl::Buffer clConstSizesBuffer;
 	cl::Buffer clResultCacheBuffer;
-	cl::Buffer clTestSizesBuffer, clTestsBuffer;
+	cl::Buffer clTestInfoBuffer, clTestsBuffer;
 
 	cl::NDRange globalRange;
 	cl::NDRange localRange;

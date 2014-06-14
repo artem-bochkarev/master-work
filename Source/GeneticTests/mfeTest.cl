@@ -27,7 +27,7 @@ __kernel void genetic_1d( __global const float* inputFloats, __global float* mos
     uint myGlobalId = get_global_id(0);
 	uint size = get_global_size(0);
     
-    __local mfeGetter getters[MAX_LOCAL_SIZE];
+    __local mfe_Getter getters[MAX_LOCAL_SIZE];
     
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
     {
@@ -37,9 +37,9 @@ __kernel void genetic_1d( __global const float* inputFloats, __global float* mos
     for (uint i=0; i<CHECK_COUNT; ++i)
     {
         uint pos = (myGlobalId + i) % size;
-        incrementLocal( &getters[myLocalId], &inputFloats[pos] );
+        mfe_incrementLocal( &getters[myLocalId], &inputFloats[pos] );
     }
     
-    uint2 res = checkLocal( &getters[myLocalId] );
+    uint2 res = mfe_checkLocal( &getters[myLocalId] );
     mostCommon[myGlobalId] = getters[myLocalId].data[res.x];
 }

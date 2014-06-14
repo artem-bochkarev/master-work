@@ -7,6 +7,7 @@
 #include <string>
 #include "TypeDefines.h"
 #include "GeneticCommon/KernelRunner.h"
+#include "TestsReader.h"
 
 class TestBuildRunner : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>, public KernelRunner
 {
@@ -26,15 +27,10 @@ protected:
 	void prepareData();
 	void getData(FITNES_TYPE* result) const;
 
-	size_t getTestSizesSize() const;
-	size_t getTestsBufferSize() const;
-
-	const void* getTestSizesPtr() const;
-	const void* getTestsBufferPtr() const;
-
 	size_t m_size, bufSize;
 	static const size_t constArraySize = 5;
 private:
+	TestsReader m_testReader;
 	void checkProgrmType(const std::string &source);
 
 	Tools::Logger& logger;

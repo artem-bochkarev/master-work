@@ -8,6 +8,7 @@
 #include <conio.h>
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/format.hpp>
+#include "GeneticTests/TestsReader.h"
 
 static const char* genCheckFileName = "../GeneticTests/elitismTest.cl";
 static const char* genCheckFileNameLocal = "../GeneticTests/elitismTestLocal.cl";
@@ -17,6 +18,10 @@ static const char* mfeFileName = "../GeneticTests/mfeTest.cl";
 static const std::string counterElitismGlobal = "TrueElitismGlobal";
 static const std::string counterElitismLocal = "TrueElitismLocal";
 static const std::string sortTime = "SortTimeCPU";
+
+static const std::string clockFile = "../GeneticTests/clock.xml";
+static const std::string liftFile = "../GeneticTests/lift.xml";
+
 
 void checkElitism(const char* fileName, size_t size, size_t count, const cl_float* data, cl_uint* out)
 {
@@ -163,7 +168,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	CTimeCounter counter2(sortTime);
 	std::sort(floats.begin(), floats.end());
 	counter2.stop();*/
-	size_t checkCount = 16;
+	/*size_t checkCount = 16;
 	size_t mfeSize = 4;
 
 	CTimeCounter counterMFETrue(sortTime);
@@ -197,7 +202,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	checkMFE(mfeFileName, genSize, checkCount, mfeSize, data, outFloat);
 	std::cout << "Result for " << genCheckFileNameRandomized << std::endl;
-	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);
+	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);*/
+
+	TestsReader testReader;
+	testReader.processFile(clockFile);
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

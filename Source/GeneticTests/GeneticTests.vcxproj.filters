@@ -27,6 +27,9 @@
     <ClInclude Include="MFETestRunner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestsReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestBuildRunner.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MFETestRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestsReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

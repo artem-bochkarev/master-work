@@ -24,69 +24,8 @@ TestBuildRunner::TestBuildRunner(const std::vector< std::string >& strings, Tool
 	localRange = cl::NDRange(cl::NullRange);
 	//automatSize = commonDataSize + pAntCommon->statesCount() * stateSize;
 	//stateSize = 16;//1 << statesCount;
-	try
-	{
-		logger << "[INIT] Trying to get specified device.\n";
+	initKernel(clFilePath, deviceType, &log);
 
-		cl_uint numPlatforms;
-		clGetPlatformIDs(0, 0, &numPlatforms);
-		cl_platform_id platforms[4];
-
-		clGetPlatformIDs(4, platforms, 0);
-		bool isCreated = false;
-		for (size_t i = 0; i < numPlatforms; ++i)
-		{
-			cl_context_properties contextProperties[] =
-			{
-				CL_CONTEXT_PLATFORM,
-				(cl_context_properties)platforms[i],
-				0
-			};
-			try
-			{
-				context = cl::Context(deviceType, contextProperties);
-				isCreated = true;
-			}
-			catch (cl::Error&)
-			{
-				//Tools::throwDetailedFailed("Failed to create TestBuildRunner", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
-			}
-			if (isCreated)
-				break;
-		}
-		if (!isCreated)
-			Tools::throwDetailedFailed("Failed to create TestBuildRunner", "No platform found for this request", &logger);
-
-		devices = context.getInfo<CL_CONTEXT_DEVICES>();
-		queue = cl::CommandQueue(context, devices[0]);
-		deviceInfo.setDeviceInfo(devices[0]());
-		std::string options = getOptions();//"-cl-opt-disable -g -s \"../CleverAnt3/genShortTables.cl\"";
-		//countRanges(options);
-		boost::filesystem::path source(clFilePath);
-
-		createProgram(source, options);
-		initCLBuffers();
-		logger << "[SUCCES] TestBuildRunner created.\n";
-	}
-	catch (cl::Error& error)
-	{
-		std::string msg = "Failed to create TestBuildRunner";
-		if (deviceType == CL_DEVICE_TYPE_CPU)
-			msg.append("(CPU): ");
-		else
-			msg.append("(GPU): ");
-		Tools::throwDetailedFailed(msg, streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
-	}
-	catch (std::runtime_error& err)
-	{
-		std::string msg = "Failed to create TestBuildRunner";
-		if (deviceType == CL_DEVICE_TYPE_CPU)
-			msg.append("(CPU): ");
-		else
-			msg.append("(GPU): ");
-
-		Tools::throwDetailedFailed(msg, err.what(), &logger);
-	}
 	cachedResults = new float[m_size];
 }
 
@@ -122,20 +61,6 @@ std::string TestBuildRunner::getInfo() const
 	return res;
 }
 
-void TestBuildRunner::checkProgrmType(const std::string &source)
-{
-	int pos = source.find("#type=");
-	if (pos == -1)
-	{
-		//if (automatType != FULL_TABLES)
-		Tools::throwFailed("Type hint doesn't specified", &logger);
-	}
-	else
-	{
-
-	}
-}
-
 std::string TestBuildRunner::getOptions() const
 {
 	std::string params = "";
@@ -149,58 +74,8 @@ std::string TestBuildRunner::getOptions() const
 		params.append(" -D __check_space=__global");
 	}
 
-	using namespace boost::filesystem;
-	path curPath = current_path();
-	if (exists(curPath / "GeneticTests"))
-	{
-		params.append(" -I ");
-		params.append(curPath.string());
-	}
-	else
-	{
-		curPath = curPath / "../";
-		if (exists(curPath / "GeneticTests"))
-		{
-			params.append(" -I ");
-			params.append(curPath.string());
-		}
-		else Tools::throwDetailedFailed("Can't compile openCL file", "Can't find folder GeneticTests with headers", &logger);
-	}
-
+	params.append(KernelRunner::getOptions());
 	return params;
-}
-
-void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
-{
-	// build the program from the source in the file
-	std::string input;
-	//Tools::StringProcessorSimple strProc(vals);
-	Tools::readFileToString(input, sourceFile, &logger);
-
-	//Tools::changeDefine(input, Tools::Define("STEPS_COUNT", boost::lexical_cast<std::string, size_t>(m_steps)));
-
-	checkProgrmType(input);
-
-	cl::Program::Sources source;
-	source.push_back(std::make_pair(input.c_str(), input.size()));
-	cl::Program program(context, source);
-
-	try { //compiling OpenCL source
-		cl_int res = program.build(devices, params.c_str());
-		logger << "[SUCCESS] Program compiled.\n";
-	}
-	catch (cl::Error) {
-		std::stringstream ss;
-		ss << program.getBuildInfo< CL_PROGRAM_BUILD_LOG >(devices[0]);
-		throwDetailedFailed("File couldn't be compiled", ss.str().c_str(), &logger);
-	}
-	try { //Trying to create OpenCL kernel
-		kernelGen = cl::Kernel(program, "genetic_1d");
-		logger << "[SUCCESS] Kernel created.\n";
-	}
-	catch (cl::Error& err) {
-		throwDetailedFailed("Failed to create kernel", streamsdk::getOpenCLErrorCodeStr(err.err()), &logger);
-	}
 }
 
 void TestBuildRunner::initCLBuffers()

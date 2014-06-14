@@ -1,4 +1,5 @@
 #pragma once
+#define __CL_ENABLE_EXCEPTIONS //enable excpetions
 #include "CL/cl.hpp"
 
 typedef cl_uint COUNTERS_TYPE;

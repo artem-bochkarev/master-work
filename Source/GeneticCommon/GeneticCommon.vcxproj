@@ -97,6 +97,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="KernelRunner.h" />
     <ClInclude Include="LaboratoryMulti.h" />
     <ClInclude Include="LaboratoryMulti.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -124,6 +125,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="CleverAntMapImpl.cpp" />
+    <ClCompile Include="KernelRunner.cpp" />
     <ClCompile Include="LabResultMulti.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -134,6 +136,9 @@
   <ItemGroup>
     <ProjectReference Include="..\GeneticAPI\GeneticAPI.vcxproj">
       <Project>{d3a5c576-bfcb-4550-a753-9b52ef7b06e6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SDKUtil\SDKUtil.vcxproj">
+      <Project>{12b84e62-d3d1-43de-81ed-9f97b593aec6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\TimeRun\TimeRun.vcxproj">
       <Project>{b9c14178-a21f-49a1-ac8c-c80f3543bbb7}</Project>

@@ -80,11 +80,8 @@
     <ClCompile Include="TestBuildRunner.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SDKUtil\SDKUtil.vcxproj">
-      <Project>{12b84e62-d3d1-43de-81ed-9f97b593aec6}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\TimeRun\TimeRun.vcxproj">
-      <Project>{b9c14178-a21f-49a1-ac8c-c80f3543bbb7}</Project>
+    <ProjectReference Include="..\GeneticCommon\GeneticCommon.vcxproj">
+      <Project>{cc1e3925-b43f-4ffe-802b-04d6c6a31472}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Tools\Tools.vcxproj">
       <Project>{c6c20a1d-c572-444c-8891-94341dc19f0b}</Project>

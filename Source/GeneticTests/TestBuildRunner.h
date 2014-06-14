@@ -6,8 +6,9 @@
 #include "Tools/Logger.h"
 #include <string>
 #include "TypeDefines.h"
+#include "GeneticCommon/KernelRunner.h"
 
-class TestBuildRunner : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>
+class TestBuildRunner : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>, public KernelRunner
 {
 public:
 	TestBuildRunner(const std::vector< std::string >& strings, Tools::Logger& log);
@@ -17,6 +18,10 @@ public:
 	virtual void run() override;
 
 protected:
+
+	virtual void initCLBuffers() override;
+	virtual std::string getOptions() const override;
+
 	void setFromStrings(const std::vector< std::string >& strings);
 	void prepareData();
 	void getData(FITNES_TYPE* result) const;
@@ -29,27 +34,18 @@ protected:
 
 	size_t m_size, bufSize;
 private:
-
-	std::string getOptions() const;
-	void initCLBuffers();
-	void createProgram(const boost::filesystem::path& source, const std::string& params);
 	void checkProgrmType(const std::string &source);
 
 	Tools::Logger& logger;
 	float* cachedResults;
 
 	cl_device_type deviceType;
-	streamsdk::SDKDeviceInfo deviceInfo;
 
 	cl::Buffer automatBuffer;
 	cl::Buffer clConstSizesBuffer;
 	cl::Buffer clResultCacheBuffer;
 	cl::Buffer clTestSizesBuffer, clTestsBuffer;
 
-	cl::Kernel kernelGen;
-	cl::Context context;
-	cl::CommandQueue queue;
-	std::vector<cl::Device> devices;
 	cl::NDRange globalRange;
 	cl::NDRange localRange;
 };

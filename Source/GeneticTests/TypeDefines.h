@@ -28,16 +28,16 @@ typedef struct tl_sequence
 typedef struct mfe_getter
 {
 	Sequence data[MFE_COUNTERS_SIZE];
-	uint counters[MFE_COUNTERS_SIZE];
+	cl_uint counters[MFE_COUNTERS_SIZE];
 } mfe_Getter;
 
 typedef struct tl_transition
 {
 	mfe_Getter mfe;
-	uint outputs[MAX_OUTPUTS];
-	uint outputsCount;
-	uint nextState;
-	uint input;
+	cl_uint outputs[MAX_OUTPUTS];
+	cl_uint outputsCount;
+	cl_uint nextState;
+	cl_uint input;
 } Transition;
 
 typedef struct tl_transition_list

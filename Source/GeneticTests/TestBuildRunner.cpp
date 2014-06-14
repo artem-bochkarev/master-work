@@ -84,8 +84,8 @@ void TestBuildRunner::initCLBuffers()
 		clConstSizesBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, 5 * sizeof(int));
 		clResultCacheBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(cl_float));
 
-		clTestInfoBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(TestInfo)* m_testReader.getTestsCount() );
-		clTestsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestsSize());
+		clTestInfoBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestInfosSize() );
+		clTestsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestsBufferSize());
 
 		clAutomatBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat)* m_size);
 	}
@@ -190,7 +190,7 @@ void TestBuildRunner::prepareData()
 		kernelGen.setArg(3, clTestsBuffer);
 		kernelGen.setArg(4, clResultCacheBuffer);
 
-		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_FALSE, 0, m_testReader.getTestSizesSize(), m_testReader.getTestSizesPtr());
+		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_FALSE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
 		queue.enqueueWriteBuffer(clTestsBuffer, CL_FALSE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
 		queue.enqueueWriteBuffer(clConstSizesBuffer, CL_FALSE, 0, sizeof(cl_int) * constArraySize, sizes);
 	}

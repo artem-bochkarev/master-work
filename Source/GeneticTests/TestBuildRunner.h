@@ -12,7 +12,7 @@
 class TestBuildRunner : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>, public KernelRunner
 {
 public:
-	TestBuildRunner(const std::vector< std::string >& strings, Tools::Logger& log);
+	TestBuildRunner(const std::string& clFileName, const std::string& xmlFileName, Tools::Logger& log);
 	virtual ~TestBuildRunner();
 
 	std::string getInfo() const;

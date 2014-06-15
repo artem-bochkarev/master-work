@@ -15,6 +15,9 @@ struct GeneticSettings
 	size_t timeBigMutation;
 	double mutationProbability;
 
+	size_t maxStateOutputCount;
+	size_t maxStateTransitions;
+
 	GeneticSettings();
 	void readSettings(const boost::property_tree::ptree& pt);
 };
@@ -44,11 +47,15 @@ class TestsReader
 
 	static void createMaps(const std::string& str, std::map<std::string, size_t>& from, std::map<size_t, std::string>& to);
 	static void readTests(const boost::property_tree::ptree& propertyTree, std::vector<Test>& vTests);
+
+	size_t m_maxTestInputLength, m_maxTestOutputLength;
 public:
 	TestsReader();
 	~TestsReader();
 	
 	void processFile(const std::string& fName);
+
+	const GeneticSettings& getGeneticSettings() const;
 
 	size_t getInputsCount() const;
 	size_t getOutputsCount() const;
@@ -60,5 +67,8 @@ public:
 	const void* getTestsBufferPtr() const;
 
 	size_t getTestsCount() const;
+
+	size_t getMaxTestInputLength() const;
+	size_t getMaxTestOutputLength() const;
 };
 

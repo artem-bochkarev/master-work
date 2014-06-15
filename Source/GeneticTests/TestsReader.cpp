@@ -20,6 +20,9 @@ void GeneticSettings::readSettings(const boost::property_tree::ptree& propertyTr
 	timeSmallMutation = propertyTree.get<size_t>("program.parameters.timeSmallMutation", 0);
 	timeBigMutation = propertyTree.get<size_t>("program.parameters.timeBigMutation", 0);
 	mutationProbability = propertyTree.get<double>("program.parameters.mutationProbability", 0.01);
+
+	maxStateOutputCount = propertyTree.get<size_t>("program.parameters.maxStateOutput", 3);
+	maxStateTransitions = propertyTree.get<size_t>("program.parameters.maxStateTransitions", 5);
 }
 
 Test::Test(const std::string& a, const std::string& b)
@@ -80,6 +83,9 @@ void TestsReader::readTests(const boost::property_tree::ptree& propertyTree, std
 void TestsReader::createTests()
 {
 	size_t needMem = 0;
+	size_t maxTestInputLength = 0;
+	size_t maxTestOutputLength = 0;
+
 	m_testInfos.resize(m_tests.size());
 	for (size_t i = 0; i < m_tests.size(); ++i)
 	{
@@ -87,14 +93,18 @@ void TestsReader::createTests()
 
 		size_t lenIn = m_tests[i].input.size();
 		m_testInfos[i].inputLength = lenIn;
+		maxTestInputLength = (maxTestInputLength < lenIn) ? lenIn : maxTestInputLength;
 		
 		size_t lenOut = m_tests[i].output.size();
 		m_testInfos[i].outputLength = lenOut;
+		maxTestOutputLength = (maxTestOutputLength < lenOut) ? lenOut : maxTestOutputLength;
 
 		size_t k = (lenIn + lenOut) % 4;
 		k = (k > 0) ? 4 - k : 0;
 		needMem += (lenIn + lenOut + k);
 	}
+	m_maxTestInputLength = maxTestInputLength;
+	m_maxTestOutputLength = maxTestOutputLength;
 
 	m_testsBuffer.resize(needMem);
 	for (size_t i = 0; i < m_tests.size(); ++i)
@@ -138,6 +148,11 @@ void TestsReader::processFile(const std::string& fName)
 	createTests();
 }
 
+const GeneticSettings& TestsReader::getGeneticSettings() const
+{
+	return m_settings;
+}
+
 size_t TestsReader::getInputsCount() const
 {
 	return m_inputToNumber.size();
@@ -173,4 +188,14 @@ const void* TestsReader::getTestsBufferPtr() const
 size_t TestsReader::getTestsCount() const
 {
 	return m_tests.size();
+}
+
+size_t TestsReader::getMaxTestInputLength() const
+{
+	return m_maxTestInputLength;
+}
+
+size_t TestsReader::getMaxTestOutputLength() const
+{
+	return m_maxTestOutputLength;
 }

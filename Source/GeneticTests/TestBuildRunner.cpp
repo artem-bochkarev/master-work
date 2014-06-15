@@ -13,11 +13,15 @@ TestBuildRunner::~TestBuildRunner()
 {
 }
 
-TestBuildRunner::TestBuildRunner(const std::vector< std::string >& strings, Tools::Logger& log)
+TestBuildRunner::TestBuildRunner(const std::string& clFileName, const std::string& xmlFileName, Tools::Logger& log)
 :logger(log), m_size(128)
 {
 	logger << "[INIT] Initializing TestBuildRunner.\n";
-	setFromStrings(strings);
+	//setFromStrings(strings);
+
+
+	deviceType = CL_DEVICE_TYPE_CPU;
+	m_testReader.processFile(xmlFileName);
 	
 	m_automatBuffer.resize(m_size);
 	m_cachedResultBuffer.resize(m_size);
@@ -25,7 +29,7 @@ TestBuildRunner::TestBuildRunner(const std::vector< std::string >& strings, Tool
 	globalRange = cl::NDRange(m_size);
 	localRange = cl::NDRange(cl::NullRange);
 
-	initKernel(clFilePath, deviceType, &log);
+	initKernel(clFileName, deviceType, &log);
 }
 
 void TestBuildRunner::setFromStrings(const std::vector< std::string >& strings)

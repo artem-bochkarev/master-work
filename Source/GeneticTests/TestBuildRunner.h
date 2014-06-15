@@ -9,7 +9,7 @@
 #include "GeneticCommon/KernelRunner.h"
 #include "TestsReader.h"
 
-class TestBuildRunner : public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>, public KernelRunner
+class TestBuildRunner : /*public CGeneticAlgorithm<COUNTERS_TYPE, INPUT_TYPE>,*/ public KernelRunner
 {
 public:
 	TestBuildRunner(const std::string& clFileName, const std::string& xmlFileName, Tools::Logger& log);

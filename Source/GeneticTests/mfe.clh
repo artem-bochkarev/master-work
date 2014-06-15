@@ -4,7 +4,15 @@ typedef struct mfe_getter
     uint counters[MFE_COUNTERS_SIZE];
 } mfe_Getter;
 
-void mfe_clear(mfe_Getter* getter)
+void mfe_clear(__global mfe_Getter* getter)
+{
+    for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        getter->counters[i] = 0;
+    }
+}
+
+void mfe_clear_loc(__local mfe_Getter* getter)
 {
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
     {
@@ -13,7 +21,7 @@ void mfe_clear(mfe_Getter* getter)
 }
 
 //returns .x = most frequent elements index, .y worst frequent
-uint2 mfe_check(const mfe_Getter* getter)
+uint2 mfe_check(__global const mfe_Getter* getter)
 {
     uint2 result = 0;
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
@@ -25,7 +33,7 @@ uint2 mfe_check(const mfe_Getter* getter)
     return result;
 }
 
-uint2 mfe_checkLocal(__local const mfe_Getter* getter)
+uint2 mfe_check_loc(__local const mfe_Getter* getter)
 {
     uint2 result = 0;
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
@@ -37,7 +45,7 @@ uint2 mfe_checkLocal(__local const mfe_Getter* getter)
     return result;
 }
 
-void mfe_increment(mfe_Getter* getter, const DATA_TYPE* element)
+void mfe_increment(__global mfe_Getter* getter, __global const DATA_TYPE* element)
 {
     uint4 result = 0;
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
@@ -57,30 +65,7 @@ void mfe_increment(mfe_Getter* getter, const DATA_TYPE* element)
     getter->data[result.w] = *element;
 }
 
-#ifdef MFE_CONDITIONAL
-void mfe_incrementCond(mfe_Getter* getter, const DATA_TYPE* element, uint enabled)
-{
-    uint4 result = 0;
-    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
-    {
-        uint count = getter->counters[i];
-        result.x = select(result.x, i, (count > getter->counters[result.x]) );
-        result.y = select(result.y, i, (count < getter->counters[result.y]) );
-        uint condition = equals( &(getter->data[i]), element );
-        result.z = select(result.z, (uint)1, condition );
-        result.w = select(result.w, i, condition );
-    }
-    
-    //use founded or minimum(if not exists)
-    result.w = select(result.y, result.w, result.z );
-    getter->counters[result.w] = select(getter->counters[result.w], getter->counters[result.w] + 1, enabled);
-    //always rewrite data
-    //getter->data[result.w] = *element;
-    conditionalCopy( &getter->data[result.w], element, enabled);
-}
-#endif
-
-void mfe_incrementLocal(__local mfe_Getter* getter, __global const DATA_TYPE* element)
+void mfe_increment_loc(__local mfe_Getter* getter, __global const DATA_TYPE* element)
 {
     /*if (DEBUG_ME)
     {
@@ -103,7 +88,7 @@ void mfe_incrementLocal(__local mfe_Getter* getter, __global const DATA_TYPE* el
         uint count = getter->counters[i];
         result.x = select( result.x, i, ( count > getter->counters[result.x]) );
         result.y = select( result.y, i, ( count < getter->counters[result.y]) );
-        uint condition = equalsDiff( &(getter->data[i]), element );
+        uint condition = equals_lg( &(getter->data[i]), element );
         result.z = select(result.z, (uint)1, condition );
         result.w = select(result.w, i, condition );
     }
@@ -114,4 +99,48 @@ void mfe_incrementLocal(__local mfe_Getter* getter, __global const DATA_TYPE* el
     //always rewrite data
     getter->data[result.w] = *element;
 }
+
+#ifdef MFE_CONDITIONAL
+void mfe_incrementCond(__global mfe_Getter* getter, __global const DATA_TYPE* element, uint enabled)
+{
+    uint4 result = 0;
+    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]) );
+        result.y = select(result.y, i, (count < getter->counters[result.y]) );
+        uint condition = equals( &(getter->data[i]), element );
+        result.z = select(result.z, (uint)1, condition );
+        result.w = select(result.w, i, condition );
+    }
+    
+    //use founded or minimum(if not exists)
+    result.w = select(result.y, result.w, result.z );
+    getter->counters[result.w] = select(getter->counters[result.w], getter->counters[result.w] + 1, enabled);
+    //always rewrite data
+    //getter->data[result.w] = *element;
+    conditionalCopy( &getter->data[result.w], element, enabled);
+}
+
+void mfe_incrementCond_gp(__global mfe_Getter* getter, __private const DATA_TYPE* element, uint enabled)
+{
+    uint4 result = 0;
+    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]) );
+        result.y = select(result.y, i, (count < getter->counters[result.y]) );
+        uint condition = equals_gp( &(getter->data[i]), element );
+        result.z = select(result.z, (uint)1, condition );
+        result.w = select(result.w, i, condition );
+    }
+    
+    //use founded or minimum(if not exists)
+    result.w = select(result.y, result.w, result.z );
+    getter->counters[result.w] = select(getter->counters[result.w], getter->counters[result.w] + 1, enabled);
+    //always rewrite data
+    //getter->data[result.w] = *element;
+    conditionalCopy_gp( &getter->data[result.w], element, enabled);
+}
+#endif
 

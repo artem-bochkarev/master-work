@@ -8,7 +8,7 @@
 #include <conio.h>
 #include "GeneticCommon/RandomImpl.h"
 #include <boost/format.hpp>
-#include "GeneticTests/TestsReader.h"
+#include "GeneticTests/TestBuildRunner.h"
 
 static const char* genCheckFileName = "../GeneticTests/elitismTest.cl";
 static const char* genCheckFileNameLocal = "../GeneticTests/elitismTestLocal.cl";
@@ -21,6 +21,7 @@ static const std::string sortTime = "SortTimeCPU";
 
 static const std::string clockFile = "../GeneticTests/clock.xml";
 static const std::string liftFile = "../GeneticTests/lift.xml";
+static const std::string scenariosBuildFile = "../GeneticTests/scenariosBuild.cl";
 
 
 void checkElitism(const char* fileName, size_t size, size_t count, const cl_float* data, cl_uint* out)
@@ -204,8 +205,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "Result for " << genCheckFileNameRandomized << std::endl;
 	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);*/
 
-	TestsReader testReader;
-	testReader.processFile(clockFile);
+	Tools::Logger logger;
+
+	TestBuildRunner testBuildRunner(scenariosBuildFile, clockFile, logger);
+	//testReader.processFile(clockFile);
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

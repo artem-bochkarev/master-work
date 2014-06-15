@@ -206,9 +206,46 @@ int _tmain(int argc, _TCHAR* argv[])
 	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);*/
 
 	Tools::Logger logger;
-
+	
 	TestBuildRunner testBuildRunner(scenariosBuildFile, clockFile, logger);
-	//testReader.processFile(clockFile);
+	std::vector<cl_float> resultsCL(testBuildRunner.getGeneticSettings().populationSize);
+	std::vector<cl_float> resultsCPP(testBuildRunner.getGeneticSettings().populationSize);
+	testBuildRunner.prepareData();
+	std::vector<TransitionListAutomat> tmp = testBuildRunner.getStartAutomats();
+	TestBuildRunner::compareLabelling(tmp[0], testBuildRunner.getCurrentAutomats()[0], testBuildRunner.getTestReader());
+
+	CTimeCounter counterCLRun("OpenCL: labelling + calcFitness");
+	testBuildRunner.run();
+	counterCLRun.stop();
+	testBuildRunner.getData(resultsCL.data());
+
+	CTimeCounter counterCPPLabelling("C++: labelling + calcFitness");
+	TestBuildRunner::doLabelling(tmp, testBuildRunner.getTestReader());
+	for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
+	{
+		resultsCPP[i] = TestBuildRunner::calcFitness(tmp[i], testBuildRunner.getTestReader());
+	}
+	counterCPPLabelling.stop();
+
+	int sum = 0;
+	int sum2 = 0;
+	int diff = 0;
+	int diffFitn;
+	for (size_t i = 0; i<testBuildRunner.getGeneticSettings().populationSize; ++i)
+	{
+		int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
+		sum += k;
+		if (k != 0)
+			diff++;
+		if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.1f)
+			diffFitn++;
+	}
+	double c1 = sum;
+	c1 /= testBuildRunner.getGeneticSettings().populationSize;
+	double c2 = sum;
+	c2 /= diff;
+	std::cout << boost::format("Not the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
+	std::cout << boost::format("Not the same by Fitness=%i") % diffFitn << std::endl;
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

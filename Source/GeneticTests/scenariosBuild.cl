@@ -10,7 +10,11 @@
 
 #define MUTATION_THRESHOLD 15
 
+#define MFE_COUNTERS_SIZE 4
+
 #include "GeneticTests/transitionList.clh"
+
+#define DEBUG_ME (get_global_id(0)==0)
 
 float distSame(uint outSize, const uint* out, uint testSize, __constant const uint* testOut)
 {
@@ -33,7 +37,8 @@ float distHamm(uint outSize, const uint* out, uint testSize, __constant const ui
         dist = select(dist, dist + 1.0f, notSame);
     }
     dist += max(outSize, testSize) - min(outSize, testSize);
-    return dist;
+    float len = (float)max(outSize, testSize);
+    return dist/len;
 }
 
 float calcFitness(__global TransitionListAutomat* aut, __constant const TestInfo* testInfo, __constant const uint* tests)
@@ -55,18 +60,26 @@ float calcFitness(__global TransitionListAutomat* aut, __constant const TestInfo
 
 uint geneticAlgorithmElitismTrueGlobal( __global TransitionListAutomat* automats, __constant const TestInfo* testInfo, __constant const uint* tests, __global float* fr, uint rand)
 {
-    __global TransitionListAutomat* me = automats + get_global_id(0)*sizeof(TransitionListAutomat);
+    __global TransitionListAutomat* me = automats + get_global_id(0);
+    clearLabels(me);
     doLabelling(me, testInfo, tests);
     float myFR = calcFitness(me, testInfo, tests);
     fr[get_global_id(0)] = myFR;
-    barrier( CLK_GLOBAL_MEM_FENCE );
+    //barrier( CLK_GLOBAL_MEM_FENCE );
     return rand;
 }
 
-__kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __constant const uint* constSizes,
+__kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __global const uint* srandBuffer,
                          __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache )
 {
-	uint srand = constSizes[0];
+    if (DEBUG_ME)
+    {
+        printf("OpenCL :: sizeof(TransitionListAutomat=%i)\n", sizeof(TransitionListAutomat));
+        printf("OpenCL :: sizeof(TestInfo=%i)\n", sizeof(TestInfo));
+    }
+    //barrier( CLK_GLOBAL_MEM_FENCE );
+    
+	uint srand = srandBuffer[get_global_id(0)];
     uint rand = nextUINT( srand+(srand*get_global_id(0)) );
     rand = geneticAlgorithmElitismTrueGlobal( autBuf1, testInfo, tests, resultCache, rand);
 }

@@ -7,7 +7,6 @@ typedef struct tl_sequence
 }Sequence;
 
 #define DATA_TYPE Sequence
-#define MFE_COUNTERS_SIZE 8
 
 uint equals(__global const DATA_TYPE* a, __global const DATA_TYPE* b)
 {
@@ -82,6 +81,7 @@ typedef struct tl_transition
     uint outputsCount;
     uint nextState;
     uint input;
+    uint obviousBest;
 } Transition;
 
 typedef struct tl_transition_list
@@ -286,7 +286,7 @@ void labelByMostFrequent(__global Transition* t)
 
 void addOutputSequence( __private const DATA_TYPE* sequence, __global Transition* t, uint on)
 {
-    mfe_incrementCond_gp( &t->mfe, sequence, on );
+    mfe_incrementCond_gp( &(t->mfe), sequence, on );
 }
 
 void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo* testInfo, __constant const uint* tests)
@@ -309,7 +309,7 @@ void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo
                 Sequence sequence;
                 for (uint k=0; k<MAX_OUTPUTS; ++k)
                 {
-                    uint nextOutput = select((uint)MAX_TEST_OUTPUT+1, curOutput[pOutput], pOutput < lOutput);
+                    uint nextOutput = select((uint)OUTPUTS_NUMBER, curOutput[pOutput], pOutput < lOutput);
                     uint isNotEnd = k<aut->states[currentState].list[t].outputsCount;
                     sequence.values[k] = select((uint)0, nextOutput, isNotEnd && doIt);
                     pOutput = select(pOutput, pOutput+1, isNotEnd && doIt);

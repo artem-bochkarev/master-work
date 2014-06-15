@@ -2,7 +2,7 @@
          xsi:noNamespaceSchemaLocation = "resources/program.xsd">
 
     <parameters>
-        <populationSize>2000</populationSize>
+        <populationSize>2048</populationSize>
         <desiredFitness>0.0086</desiredFitness>
         <stateNumber>4</stateNumber>
         <partStay>0.1</partStay>

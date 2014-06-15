@@ -3,24 +3,6 @@
 #include <map>
 #include <vector>
 #include "TypeDefines.h"
-#include <boost/property_tree/ptree.hpp>
-
-struct GeneticSettings
-{
-	size_t populationSize;
-	double desiredFitness;
-	size_t stateNumber;
-	double partStay;
-	size_t timeSmallMutation;
-	size_t timeBigMutation;
-	double mutationProbability;
-
-	size_t maxStateOutputCount;
-	size_t maxStateTransitions;
-
-	GeneticSettings();
-	void readSettings(const boost::property_tree::ptree& pt);
-};
 
 struct Test
 {
@@ -62,6 +44,9 @@ public:
 
 	size_t getTestInfosSize() const;
 	size_t getTestsBufferSize() const;
+
+	const std::vector<TestInfo>& getTestInfos() const;
+	const std::vector<cl_uint>& getTestsBuffer() const;
 
 	const void* getTestInfosPtr() const;
 	const void* getTestsBufferPtr() const;

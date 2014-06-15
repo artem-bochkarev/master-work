@@ -199,3 +199,13 @@ size_t TestsReader::getMaxTestOutputLength() const
 {
 	return m_maxTestOutputLength;
 }
+
+const std::vector<TestInfo>& TestsReader::getTestInfos() const
+{
+	return m_testInfos;
+}
+
+const std::vector<cl_uint>& TestsReader::getTestsBuffer() const
+{
+	return m_testsBuffer;
+}

@@ -8,6 +8,10 @@
 #include "Tools/StringProcessor.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
+#include <boost/format.hpp>
+#include <algorithm>
+
+#include "GeneticCommon/RandomImpl.h"
 
 TestBuildRunner::~TestBuildRunner()
 {
@@ -22,14 +26,56 @@ TestBuildRunner::TestBuildRunner(const std::string& clFileName, const std::strin
 
 	deviceType = CL_DEVICE_TYPE_CPU;
 	m_testReader.processFile(xmlFileName);
+	m_size = m_testReader.getGeneticSettings().populationSize;
 	
 	m_automatBuffer.resize(m_size);
 	m_cachedResultBuffer.resize(m_size);
+	m_srandsBuffer.resize(m_size);
 
 	globalRange = cl::NDRange(m_size);
 	localRange = cl::NDRange(cl::NullRange);
 
 	initKernel(clFileName, deviceType, &log);
+}
+
+void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
+{
+	// build the program from the source in the file
+	std::string input;
+	//Tools::StringProcessorSimple strProc(vals);
+	Tools::readFileToString(input, sourceFile);
+
+	Tools::changeDefine(input, Tools::Define("MAX_TEST_INPUT", 
+		boost::lexical_cast<std::string, size_t>(m_testReader.getMaxTestInputLength())));
+
+	Tools::changeDefine(input, Tools::Define("MAX_TEST_OUTPUT",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getMaxTestOutputLength())));
+
+	Tools::changeDefine(input, Tools::Define("TESTS_NUMBER",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getTestsCount())));
+
+
+	Tools::changeDefine(input, Tools::Define("MAX_OUTPUTS",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getGeneticSettings().maxStateOutputCount)));
+
+	Tools::changeDefine(input, Tools::Define("STATES_NUMBER",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getGeneticSettings().stateNumber)));
+
+	Tools::changeDefine(input, Tools::Define("MAX_TRANSITIONS",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getGeneticSettings().maxStateTransitions)));
+
+	Tools::changeDefine(input, Tools::Define("INPUTS_NUMBER",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getInputsCount())));
+
+	Tools::changeDefine(input, Tools::Define("OUTPUTS_NUMBER",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getOutputsCount())));
+
+
+	size_t mutationProb1024 = m_testReader.getGeneticSettings().mutationProbability * 1024;
+	Tools::changeDefine(input, Tools::Define("MUTATION_THRESHOLD",
+		boost::lexical_cast<std::string, size_t>(mutationProb1024)));
+
+	createProgramFromString(input, params);
 }
 
 void TestBuildRunner::setFromStrings(const std::vector< std::string >& strings)
@@ -76,6 +122,10 @@ std::string TestBuildRunner::getOptions() const
 	{
 		params.append(" -D __check_space=__global");
 	}
+#ifdef _DEBUG
+	params.append(" -cl-opt-disable");
+	// " -g -s \"../CleverAnt3/genShortTables.cl\"
+#endif
 
 	params.append(KernelRunner::getOptions());
 	return params;
@@ -85,13 +135,16 @@ void TestBuildRunner::initCLBuffers()
 {
 	try
 	{
-		clConstSizesBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, 5 * sizeof(int));
+		clSrandsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_size * sizeof(cl_uint));
 		clResultCacheBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * sizeof(cl_float));
 
 		clTestInfoBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestInfosSize() );
 		clTestsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestsBufferSize());
 
-		clAutomatBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat)* m_size);
+		clAutomatBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat) * m_size);
+
+		std::cout << boost::format("C++ :: sizeof(TransitionListAutomat)=%i") % sizeof(TransitionListAutomat) << std::endl;
+		std::cout << boost::format("C++ :: sizeof(TestInfo)=%i") % sizeof(TestInfo) << std::endl;
 	}
 	catch (cl::Error& err)
 	{
@@ -100,103 +153,28 @@ void TestBuildRunner::initCLBuffers()
 	}
 }
 
-/*void TestBuildRunner::setMaps(std::vector<CMapPtr> maps)
-{
-	CCleverAnt3Fitnes::setMaps(maps);
-
-	mapSize = getMap(0)->getSizeInts();
-	mapCL = cl::Buffer(context, CL_MEM_READ_ONLY, mapSize * 4);
-	mapsBuffer = new int[mapSize * m_size];
-	int* oneMap = new int[mapSize];
-	getMap(0)->toIntBuffer(oneMap);
-
-	mapBufCL = cl::Buffer(context, CL_MEM_READ_WRITE, m_size * mapSize * sizeof(int));
-	mapBufConst = cl::Buffer(context, CL_MEM_READ_ONLY, m_size * mapSize * sizeof(int));
-	for (size_t i = 0; i < m_size; ++i)
-	{
-		memcpy(mapsBuffer + i*mapSize, oneMap, mapSize*sizeof(int));
-	}
-
-	AUTOMAT aut;
-
-	//__kernel void genetic_2d(__global uint* individs, __global const uint* constSizes,
-	//__global int* mapBuffer, __constant int* maps, __global float* resultCache)
-	try
-	{
-		queue.enqueueWriteBuffer(mapBufConst, CL_FALSE, 0, m_size * mapSize * sizeof(int), mapsBuffer);
-		kernelGen.setArg(0, statesBufCL1);
-		kernelGen.setArg(1, sizesBuf);
-		kernelGen.setArg(2, mapBufCL);
-		kernelGen.setArg(3, mapCL);
-		kernelGen.setArg(4, resultCache);
-
-		//not used now, just compatibility
-		size_t sizes[5];
-		sizes[0] = STATES_COUNT;
-		sizes[1] = 1 << STATES_COUNT;
-		if (sizeof(AUTOMAT) % 4 != 0)
-			Tools::throwFailed("sizeof(AUTOMAT) % 4 != 0", 0);
-		sizes[2] = sizeof(AUTOMAT) / 4;
-
-		sizes[3] = aut.getBufferOffset();
-		sizes[4] = mapSize;
-
-		queue.enqueueWriteBuffer(sizesBuf, CL_FALSE, 0, 5 * 4, sizes);
-		queue.finish();
-	}
-	catch (cl::Error& error)
-	{
-		delete[] oneMap;
-		Tools::throwDetailedFailed("[FAILED] to set arguments", streamsdk::getOpenCLErrorCodeStr(error.err()), &logger);
-	}
-	delete[] oneMap;
-}
-
-void TestBuildRunner::fitnes(const std::vector<AUTOMAT>& individs, std::vector<ANT_FITNES_TYPE>& result)
-{
-	/*CCleverAnt3FitnesCPU fitCPU(m_steps);
-	fitCPU.setMaps(maps);
-	fitCPU.fitnes(&individs[0]);*/
-
-	//m_size = individs.size();
-/*	std::string counterName = perfFitnesFunctionCL_CPU;
-	if (deviceType == CL_DEVICE_TYPE_GPU)
-		counterName = perfFitnesFunctionCL_GPU;
-	CTimeCounter counter(counterName);
-	if (m_size != individs.size())
-		Tools::throwFailed("Different sizes!!!", &logger);
-	prepareData(individs.data());
-	run();
-	getData(result.data());
-}
-
-void TestBuildRunner::fitnes(const AUTOMAT* individs, ANT_FITNES_TYPE* result)
-{
-	//if (m_size != individs.size())
-	//	Tools::throwFailed("Different sizes!!!", &logger);
-	std::string counterName = perfFitnesFunctionCL_CPU;
-	if (deviceType == CL_DEVICE_TYPE_GPU)
-		counterName = perfFitnesFunctionCL_GPU;
-	CTimeCounter counter(counterName);
-	prepareData(individs);
-	run();
-	getData(result);
-}*/
-
 void TestBuildRunner::prepareData()
 {
-	cl_uint sizes[5];
+	CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	for (size_t i = 0; i < m_size; ++i)
+	{
+		uint sr = random.nextUINT() * random.nextUINT() - i * random.nextUINT();
+		m_srandsBuffer[i] = sr;
+	}
+	prepareFirstGeneration();
+
 	try
 	{
 		kernelGen.setArg(0, clAutomatBuffer);
-		kernelGen.setArg(1, clConstSizesBuffer);
+		kernelGen.setArg(1, clSrandsBuffer);
 		kernelGen.setArg(2, clTestInfoBuffer);
 		kernelGen.setArg(3, clTestsBuffer);
 		kernelGen.setArg(4, clResultCacheBuffer);
 
 		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_FALSE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
 		queue.enqueueWriteBuffer(clTestsBuffer, CL_FALSE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
-		queue.enqueueWriteBuffer(clConstSizesBuffer, CL_FALSE, 0, sizeof(cl_int) * constArraySize, sizes);
+		queue.enqueueWriteBuffer(clSrandsBuffer, CL_FALSE, 0, sizeof(cl_int) * constArraySize, m_srandsBuffer.data());
+		queue.enqueueWriteBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
 	}
 	catch (cl::Error& error)
 	{
@@ -215,7 +193,9 @@ void TestBuildRunner::run()
 
 		queue.enqueueNDRangeKernel(kernelGen, cl::NullRange, globalRange, localRange);
 		queue.finish();
-		queue.enqueueReadBuffer(clResultCacheBuffer, CL_TRUE, 0, m_size*sizeof(float), m_cachedResultBuffer.data() );
+		queue.enqueueReadBuffer(clResultCacheBuffer, CL_FALSE, 0, m_size*sizeof(cl_float), m_cachedResultBuffer.data() );
+		queue.enqueueReadBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat)* m_size, m_automatBuffer.data());
+		queue.finish();
 	}
 	catch (cl::Error& error)
 	{
@@ -234,4 +214,237 @@ void TestBuildRunner::getData(FITNES_TYPE* result) const
 	{
 		result[i] = m_cachedResultBuffer[i];
 	}
+}
+
+const GeneticSettings& TestBuildRunner::getGeneticSettings() const
+{
+	return m_testReader.getGeneticSettings();
+}
+
+const TestsReader& TestBuildRunner::getTestReader() const
+{
+	return m_testReader;
+}
+
+int TestBuildRunner::compareLabelling(const TransitionListAutomat& a, const TransitionListAutomat& b, const TestsReader& testReader)
+{
+	BOOST_ASSERT(a.firstState == b.firstState);
+	int different = 0;
+	for (size_t state = 0; state < testReader.getGeneticSettings().stateNumber; ++state)
+	{
+		BOOST_ASSERT(a.states[state].count == b.states[state].count);
+		for (size_t t = 0; t < a.states[state].count; ++t)
+		{
+			BOOST_ASSERT(a.states[state].list[t].input == b.states[state].list[t].input);
+			BOOST_ASSERT(a.states[state].list[t].outputsCount == b.states[state].list[t].outputsCount);
+			BOOST_ASSERT(a.states[state].list[t].nextState == b.states[state].list[t].nextState);
+			
+			if ((a.states[state].list[t].obviousBest == 0) && (b.states[state].list[t].obviousBest == 0))
+			{
+				for (size_t k = 0; k < a.states[state].list[t].outputsCount; ++k)
+				{
+					if (a.states[state].list[t].outputs[k] != b.states[state].list[t].outputs[k])
+						++different;
+				}
+			}
+		}
+	}
+	return different;
+}
+
+void TestBuildRunner::transform(const TransitionListAutomat& automat, std::vector<int>& result, size_t testNumber, 
+	const TestsReader& testReader)
+{
+	result.clear();
+	int currentState = automat.firstState;
+	for (size_t i = 0; i < testReader.getTestInfos()[testNumber].inputLength; ++i)
+	{
+		int s = testReader.getTestsBuffer()[testReader.getTestInfos()[testNumber].offset + i];
+		bool found = false;
+		for (size_t t = 0; t < automat.states[currentState].count; ++t) 
+		{
+			if (automat.states[currentState].list[t].input == s) 
+			{
+				for (size_t j = 0; j < automat.states[currentState].list[t].outputsCount; ++j)
+				{
+					result.push_back(automat.states[currentState].list[t].outputs[j]);
+				}
+				currentState = automat.states[currentState].list[t].nextState;
+				found = true;
+				break;
+			}
+		}
+		if (!found) 
+		{
+			result.clear();
+			return;
+		}
+	}
+}
+
+float TestBuildRunner::hammDist(const std::vector<int>& a, const std::vector<int>& b)
+{
+	float dist = 0.0;
+	for (size_t i = 0; i < (std::min)(a.size(), b.size()); ++i)
+	{
+		if (a[i] != b[i])
+			dist += 1.0;
+	}
+	dist += (std::max)(a.size(), b.size()) - (std::min)(a.size(), b.size());
+	dist /= (std::max)(a.size(), b.size());
+	return dist;
+}
+
+float TestBuildRunner::calcFitness(const TransitionListAutomat& automat, const TestsReader& testReader)
+{
+	float pSum = 0.0f;
+	for (size_t test = 0; test < testReader.getTestsCount(); ++test) 
+	{
+		std::vector<int> output;
+		transform(automat, output, test, testReader);
+		std::vector<int> answer(testReader.getTestInfos()[test].outputLength);
+		for (size_t i = 0; i < testReader.getTestInfos()[test].outputLength; ++i)
+			answer[i] = testReader.getTestsBuffer()[testReader.getTestInfos()[test].offset +
+				testReader.getTestInfos()[test].inputLength + i];
+		
+		double t;
+		if (output.size() == 0) 
+		{
+			t = 1;
+		}
+		else 
+		{
+			t = hammDist(output, answer);
+		}
+		pSum += 1 - t;
+	}
+	return pSum;
+}
+
+void TestBuildRunner::doLabelling(std::vector<TransitionListAutomat>& automats, const TestsReader& testReader)
+{
+	for (TransitionListAutomat& aut : automats)
+	{
+		std::map<int, std::map<int, std::map<Sequence, int, seq_less> > > stateTransitionSequnceCounter;
+		for (const TestInfo& test : testReader.getTestInfos())
+		{
+			int currentState = aut.firstState;
+
+			int pOutput = 0;
+			for (size_t i = 0; i < test.inputLength; ++i) 
+			{
+				int s = testReader.getTestsBuffer()[test.offset + i];
+				boolean found = false;
+				for (size_t t = 0; t < aut.states[currentState].count; ++t)
+				{
+					if (aut.states[currentState].list[t].input == s)
+					{
+						Sequence sequence;
+						for (int j = 0; j < aut.states[currentState].list[t].outputsCount; j++) 
+						{
+							if (pOutput < test.outputLength) 
+							{
+								sequence.values[j] = testReader.getTestsBuffer()[test.offset + test.inputLength + pOutput];
+								++pOutput;
+							}
+							else 
+							{
+								//wtf!?
+								sequence.values[j] = testReader.getOutputsCount();
+							}
+						}
+						
+						stateTransitionSequnceCounter[currentState][t][sequence]++;
+						//t.addOutputSequence(new Sequence(sequence));
+						currentState = aut.states[currentState].list[t].nextState;
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					break;
+				}
+			}
+		}
+		for (size_t state = 0; state < testReader.getGeneticSettings().stateNumber; ++state)
+		{
+			for (size_t t = 0; t < aut.states[state].count; ++t)
+			{
+				int c = 0;
+				Sequence best;
+				int same = 0;
+				for (auto v : stateTransitionSequnceCounter[state][t])
+				{
+					if (v.second == c)
+					{
+						++same;
+					}
+					if (v.second > c)
+					{
+						best = v.first;
+						c = v.second;
+						same = 0;
+					}
+				}
+				for (size_t k = 0; k < aut.states[state].list[t].outputsCount; ++k)
+				{
+					if (c > 0)
+						aut.states[state].list[t].outputs[k] = best.values[k];
+					else
+						aut.states[state].list[t].outputs[k] = 0;
+				}
+				aut.states[state].list[t].obviousBest = 0;
+				if ((same > 0) || (c==0))
+					aut.states[state].list[t].obviousBest = 1;
+			}
+		}
+	}
+}
+
+void TestBuildRunner::prepareFirstGeneration()
+{
+	CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	int inputsCnt = m_testReader.getInputsCount();
+	int outputsCnt = m_testReader.getOutputsCount();
+	for (size_t ind = 0; ind < m_size; ++ind)
+	{
+		for (int i = 0; i < getGeneticSettings().stateNumber; i++)
+		{
+			std::vector<int> p(inputsCnt);
+			for (int j = 0; j < inputsCnt; j++)
+			{
+				p[j] = j;
+			}
+			for (int j = inputsCnt - 1; j >= 1; j--)
+			{
+				int k = random.nextINT(j);
+				int t = p[j];
+				p[j] = p[k];
+				p[k] = t;
+			}
+
+			int degree = random.nextINT(outputsCnt + 1);
+			m_automatBuffer[ind].states[i].count = degree;
+
+			for (int j = 0; j < degree; j++)
+			{
+				m_automatBuffer[ind].states[i].list[j].input = p[j];
+				m_automatBuffer[ind].states[i].list[j].outputsCount = 1;
+				m_automatBuffer[ind].states[i].list[j].nextState = random.nextINT(getGeneticSettings().stateNumber);
+				m_automatBuffer[ind].states[i].list[j].obviousBest = 0;
+			}
+		}
+		m_automatBuffer[ind].firstState = random.nextINT(getGeneticSettings().stateNumber);
+	}
+	m_automatInitialBuffer = m_automatBuffer;
+}
+
+const std::vector<TransitionListAutomat> TestBuildRunner::getCurrentAutomats() const
+{
+	return m_automatBuffer;
+}
+
+const std::vector<TransitionListAutomat> TestBuildRunner::getStartAutomats() const
+{
+	return m_automatInitialBuffer;
 }

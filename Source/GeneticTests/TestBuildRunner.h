@@ -19,7 +19,7 @@ public:
 	virtual void run() override;
 
 	void prepareData();
-	void getData(FITNES_TYPE* result) const;
+	void getData(FITNES_TYPE* result);
 
 	const GeneticSettings& getGeneticSettings() const;
 	const TestsReader& getTestReader() const;

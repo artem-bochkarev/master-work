@@ -24,7 +24,7 @@ TestBuildRunner::TestBuildRunner(const std::string& clFileName, const std::strin
 	//setFromStrings(strings);
 
 
-	deviceType = CL_DEVICE_TYPE_CPU;
+	deviceType = CL_DEVICE_TYPE_GPU;
 	m_testReader.processFile(xmlFileName);
 	m_size = m_testReader.getGeneticSettings().populationSize;
 	
@@ -155,7 +155,8 @@ void TestBuildRunner::initCLBuffers()
 
 void TestBuildRunner::prepareData()
 {
-	CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	//CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	CRandomImpl random(100500);
 	for (size_t i = 0; i < m_size; ++i)
 	{
 		uint sr = random.nextUINT() * random.nextUINT() - i * random.nextUINT();
@@ -171,10 +172,10 @@ void TestBuildRunner::prepareData()
 		kernelGen.setArg(3, clTestsBuffer);
 		kernelGen.setArg(4, clResultCacheBuffer);
 
-		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_FALSE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
-		queue.enqueueWriteBuffer(clTestsBuffer, CL_FALSE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
-		queue.enqueueWriteBuffer(clSrandsBuffer, CL_FALSE, 0, sizeof(cl_int) * constArraySize, m_srandsBuffer.data());
-		queue.enqueueWriteBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
+		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_TRUE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
+		queue.enqueueWriteBuffer(clTestsBuffer, CL_TRUE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
+		queue.enqueueWriteBuffer(clSrandsBuffer, CL_TRUE, 0, sizeof(cl_int) * constArraySize, m_srandsBuffer.data());
+		queue.enqueueWriteBuffer(clAutomatBuffer, CL_TRUE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
 	}
 	catch (cl::Error& error)
 	{
@@ -193,9 +194,7 @@ void TestBuildRunner::run()
 
 		queue.enqueueNDRangeKernel(kernelGen, cl::NullRange, globalRange, localRange);
 		queue.finish();
-		queue.enqueueReadBuffer(clResultCacheBuffer, CL_FALSE, 0, m_size*sizeof(cl_float), m_cachedResultBuffer.data() );
-		queue.enqueueReadBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat)* m_size, m_automatBuffer.data());
-		queue.finish();
+		
 	}
 	catch (cl::Error& error)
 	{
@@ -208,8 +207,11 @@ void TestBuildRunner::run()
 	}
 }
 
-void TestBuildRunner::getData(FITNES_TYPE* result) const
+void TestBuildRunner::getData(FITNES_TYPE* result)
 {
+	queue.enqueueReadBuffer(clResultCacheBuffer, CL_FALSE, 0, m_size*sizeof(cl_float), m_cachedResultBuffer.data());
+	queue.enqueueReadBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat)* m_size, m_automatBuffer.data());
+	queue.finish();
 	for (size_t i = 0; i < m_size; ++i)
 	{
 		result[i] = m_cachedResultBuffer[i];
@@ -420,7 +422,8 @@ void TestBuildRunner::doLabelling(std::vector<TransitionListAutomat>& automats, 
 
 void TestBuildRunner::prepareFirstGeneration()
 {
-	CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	//CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	CRandomImpl random(100500);
 	int inputsCnt = m_testReader.getInputsCount();
 	int outputsCnt = m_testReader.getOutputsCount();
 	for (size_t ind = 0; ind < m_size; ++ind)

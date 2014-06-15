@@ -346,19 +346,21 @@ uint transform( __global TransitionListAutomat* aut, __constant const TestInfo* 
         uint oldState = currentState;
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
-            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
+            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]) && (i < lInput);
             found = select(found, (uint)1, good);
             k = select(k, t, good);
             currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
         }
         broken = select(broken, (uint)1, (found==0));
         lenBeforeBroken = select(lenBeforeBroken, pOutput, !broken);
+		currentState = select(currentState, oldState, broken );
         
         for (uint t = 0; t<MAX_OUTPUTS; ++t)
         {
             uint good = (t < aut->states[currentState].list[k].outputsCount);
             out[pOutput] = aut->states[currentState].list[k].outputs[t];
             pOutput = select(pOutput, pOutput + 1, good);
+			pOutput = select(pOutput, (uint)MAX_TEST_OUTPUT-1, pOutput>=MAX_TEST_OUTPUT);
         }
     }
     //pOutput = select(pOutput, (uint)0xFFFFFFFF, broken);

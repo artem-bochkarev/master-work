@@ -48,7 +48,6 @@ float calcFitness(__global TransitionListAutomat* aut, __constant const TestInfo
     {
         const uint lInput = testInfo[test].inputLength;
         const uint lOutput = testInfo[test].outputLength;
-        __constant const uint* curInput = tests + testInfo[test].offset;
         __constant const uint* curOutput = tests + testInfo[test].offset + lInput;
         uint tmpOutput[MAX_TEST_OUTPUT];
         uint size = transform( aut, testInfo, tests, test, tmpOutput );
@@ -79,7 +78,7 @@ __kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __global cons
     }*/
     //barrier( CLK_GLOBAL_MEM_FENCE );
     
-	uint srand = srandBuffer[get_global_id(0)];
+    uint srand = srandBuffer[get_global_id(0)];
     uint rand = nextUINT( srand+(srand*get_global_id(0)) );
     rand = geneticAlgorithmElitismTrueGlobal( autBuf1, testInfo, tests, resultCache, rand);
 }

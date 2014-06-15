@@ -230,15 +230,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	int sum = 0;
 	int sum2 = 0;
 	int diff = 0;
-	int diffFitn;
+	int diffFitn = 0;
+	int notNullres = 0;
 	for (size_t i = 0; i<testBuildRunner.getGeneticSettings().populationSize; ++i)
 	{
 		int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
 		sum += k;
 		if (k != 0)
 			diff++;
-		if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.1f)
+		if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
 			diffFitn++;
+		if (resultsCPP[i] > 0.0001f)
+			notNullres++;
 	}
 	double c1 = sum;
 	c1 /= testBuildRunner.getGeneticSettings().populationSize;
@@ -246,6 +249,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	c2 /= diff;
 	std::cout << boost::format("Not the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
 	std::cout << boost::format("Not the same by Fitness=%i") % diffFitn << std::endl;
+	std::cout << boost::format("Not null results count=%i") % notNullres << std::endl;
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

@@ -28,6 +28,7 @@ public:
 	const std::vector<TransitionListAutomat> getStartAutomats() const;
 
 	static int compareLabelling(const TransitionListAutomat& a, const TransitionListAutomat& b, const TestsReader& testReader);
+	static void clearLabels(TransitionListAutomat& automat, const TestsReader& testReader);
 	static void doLabelling(std::vector<TransitionListAutomat>& automats, const TestsReader& testReader);
 	static float calcFitness(const TransitionListAutomat& automat, const TestsReader& testReader);
 	static void transform(const TransitionListAutomat& automat, std::vector<int>& result, size_t testNumber, const TestsReader& testReader);

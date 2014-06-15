@@ -72,11 +72,11 @@ uint geneticAlgorithmElitismTrueGlobal( __global TransitionListAutomat* automats
 __kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __global const uint* srandBuffer,
                          __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache )
 {
-    if (DEBUG_ME)
+    /*if (DEBUG_ME)
     {
         printf("OpenCL :: sizeof(TransitionListAutomat=%i)\n", sizeof(TransitionListAutomat));
         printf("OpenCL :: sizeof(TestInfo=%i)\n", sizeof(TestInfo));
-    }
+    }*/
     //barrier( CLK_GLOBAL_MEM_FENCE );
     
 	uint srand = srandBuffer[get_global_id(0)];

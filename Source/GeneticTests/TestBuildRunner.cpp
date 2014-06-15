@@ -276,9 +276,11 @@ void TestBuildRunner::transform(const TransitionListAutomat& automat, std::vecto
 		}
 		if (!found) 
 		{
-			result.clear();
+			//result.clear();
 			return;
 		}
+		size_t k = 0;
+		++k;
 	}
 }
 
@@ -318,13 +320,28 @@ float TestBuildRunner::calcFitness(const TransitionListAutomat& automat, const T
 		}
 		pSum += 1 - t;
 	}
-	return pSum;
+	return pSum/testReader.getTestsCount();
+}
+
+void TestBuildRunner::clearLabels(TransitionListAutomat& aut, const TestsReader& testReader)
+{
+	for (size_t state = 0; state < testReader.getGeneticSettings().stateNumber; ++state)
+	{
+		for (size_t t = 0; t < testReader.getGeneticSettings().maxStateTransitions; ++t)
+		{
+			for (size_t i = 0; i < testReader.getGeneticSettings().maxStateOutputCount; ++i)
+			{
+				aut.states[state].list[t].outputs[i] = 0;
+			}
+		}
+	}
 }
 
 void TestBuildRunner::doLabelling(std::vector<TransitionListAutomat>& automats, const TestsReader& testReader)
 {
 	for (TransitionListAutomat& aut : automats)
 	{
+		clearLabels(aut, testReader);
 		std::map<int, std::map<int, std::map<Sequence, int, seq_less> > > stateTransitionSequnceCounter;
 		for (const TestInfo& test : testReader.getTestInfos())
 		{

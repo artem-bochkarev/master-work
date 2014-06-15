@@ -338,6 +338,7 @@ uint transform( __global TransitionListAutomat* aut, __constant const TestInfo* 
     uint currentState = aut->firstState;
     uint pOutput = 0;
     uint broken = 0;
+    uint lenBeforeBroken = 0;
     for (uint i=0; i<MAX_TEST_INPUT; ++i)
     {
         uint found = 0;
@@ -351,6 +352,7 @@ uint transform( __global TransitionListAutomat* aut, __constant const TestInfo* 
             currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
         }
         broken = select(broken, (uint)1, (found==0));
+        lenBeforeBroken = select(lenBeforeBroken, pOutput, !broken);
         
         for (uint t = 0; t<MAX_OUTPUTS; ++t)
         {
@@ -359,6 +361,7 @@ uint transform( __global TransitionListAutomat* aut, __constant const TestInfo* 
             pOutput = select(pOutput, pOutput + 1, good);
         }
     }
-    pOutput = select(pOutput, (uint)0xFFFFFFFF, broken);
+    //pOutput = select(pOutput, (uint)0xFFFFFFFF, broken);
+    pOutput = select(pOutput, lenBeforeBroken, broken);
     return pOutput;
 }

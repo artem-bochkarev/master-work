@@ -271,11 +271,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::vector<cl_float> resultsCPP(testBuildRunner.getGeneticSettings().populationSize);
 	testBuildRunner.prepareData();
 
-	for (size_t i = 0; i<10; ++i)
+	size_t steps = 100;
+	CTimeCounter counterCLRun("ManyGenerations");
+	for (size_t i = 0; i<steps; ++i)
 	{
 		testBuildRunner.run();
 		//TestBuildRunner::compareLabelling(tmp[0], testBuildRunner.getCurrentAutomats()[0], testBuildRunner.getTestReader());
-		testBuildRunner.getData(resultsCL.data());
+		/*testBuildRunner.getData(resultsCL.data());
 		std::vector<TransitionListAutomat> tmp = testBuildRunner.getCurrentAutomats();
 
 		TestBuildRunner::doLabelling(tmp, testBuildRunner.getTestReader());
@@ -298,7 +300,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		double fitnessDiff = 0.0;
 
 		for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
-		{
+		{*/
 			/*int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
 			if (k < 0)
 			{
@@ -313,7 +315,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				diff++;
 			}*/
 
-			if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
+			/*if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
 			{
 				diffFitn++;
 				fitnessDiff += std::abs(resultsCL[i] - resultsCPP[i]);
@@ -338,8 +340,35 @@ int _tmain(int argc, _TCHAR* argv[])
 		//std::cout << boost::format("\tNot the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
 		std::cout << boost::format("\tNot the same by Fitness=%i") % diffFitn << std::endl;
 		std::cout << boost::format("\tFitness absolute difference=%.4f") % fitnessDiff << std::endl;
-		std::cout << boost::format("\tNot null results count=%i") % notNullres << std::endl;
+		std::cout << boost::format("\tNot null results count=%i") % notNullres << std::endl;*/
 	}
+	counterCLRun.stop();
+
+	testBuildRunner.getData(resultsCL.data());
+	int bestFitnessCL = 0;
+	double sumFitnessCL = 0.0;
+	for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
+	{
+		/*if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
+		{
+		diffFitn++;
+		fitnessDiff += std::abs(resultsCL[i] - resultsCPP[i]);
+		}
+
+		sumFitnessCPP += resultsCPP[i];
+		if (resultsCPP[i] > resultsCPP[bestFitnessCPP])
+		bestFitnessCPP = i;
+		*/
+		sumFitnessCL += resultsCL[i];
+		if (resultsCL[i] > resultsCL[bestFitnessCL])
+			bestFitnessCL = i;
+
+		/*if (resultsCPP[i] > 0.0001f)
+		notNullres++;*/
+	}
+
+	std::cout << "Step: " << steps << " Generations:" << 2*steps << std::endl;;
+	std::cout << boost::format("\tOpenCL: best=%.4f   avg=%.4f") % resultsCL[bestFitnessCL] % (sumFitnessCL / testBuildRunner.getGeneticSettings().populationSize) << std::endl;
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

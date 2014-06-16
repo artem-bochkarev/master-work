@@ -15,6 +15,8 @@
 #define GLOBAL_SIZE 1024
 #define GO_VALUE 16
 
+#define TOURNAMENTS_COUNT 8
+
 #include "GeneticTests/transitionList.clh"
 
 #define DEBUG_ME (get_global_id(0)==0)
@@ -70,14 +72,15 @@ void countFitnessAll( __global TransitionListAutomat* automats, __constant const
     fr[myGlobalId] = myFR;
 }
 
-uint nextGenerationElitismTrueGlobal(__global TransitionListAutomat* automats, __constant const TestInfo* testInfo, __constant const uint* tests, __global float* fr, uint rand)
+uint nextGenerationElitismTrueGlobal( __global TransitionListAutomat* automats, __global TransitionListAutomat* newAutomats, __constant const TestInfo* testInfo, __constant const uint* tests, __global float* fr, uint rand)
 {
     countFitnessAll(automats, testInfo, tests, fr);
     barrier( CLK_GLOBAL_MEM_FENCE );
 
-    __global TransitionListAutomat* me = automats + get_global_id(0);
-    uint greater = 0;
     uint myGlobalId = get_global_id(0);
+    __global TransitionListAutomat* me = automats + myGlobalId;
+    uint greater = 0;
+    
     for (uint i=0; i<GLOBAL_SIZE; ++i)
     {
         uint isGreater = select(fr[myGlobalId] < fr[i], myGlobalId >= i, fr[myGlobalId] == fr[i]);
@@ -86,20 +89,40 @@ uint nextGenerationElitismTrueGlobal(__global TransitionListAutomat* automats, _
     uint take = (greater <= GO_VALUE);
     if (!take)
     {
-        rand = mutateMe( me, rand);
+        uint ids[TOURNAMENTS_COUNT];
+        uint first = 0;
+        uint second = 0;
+        for (uint i=0; i<TOURNAMENTS_COUNT; ++i)
+        {
+            ids[i] = rand % GLOBAL_SIZE;
+            rand = nextUINT(rand);
+            second = select(second, first, fr[ids[i]] > fr[ids[first]]);
+            first = select(first, i, fr[ids[i]] > fr[ids[first]]);
+        }
+        uint motherId = ids[first];
+        uint fatherId = ids[second];
+        __global TransitionListAutomat* mother = automats + motherId;
+        __global TransitionListAutomat* father = automats + fatherId;
+        rand = crossover1(mother, father, newAutomats + myGlobalId, rand);
+        rand = mutateMe( newAutomats + myGlobalId, rand );
+    }else
+    {
+        copyTListAutomat(newAutomats + myGlobalId, me);
     }
     return rand;
 }
 
-uint geneticAlgorithmElitismTrueGlobal( __global TransitionListAutomat* automats, __constant const TestInfo* testInfo, __constant const uint* tests, __global float* fr, uint rand)
+uint geneticAlgorithmElitismTrueGlobal( __global TransitionListAutomat* automats1, __global TransitionListAutomat* automats2, __constant const TestInfo* testInfo, __constant const uint* tests, __global float* fr, uint rand)
 {
-    __global TransitionListAutomat* me = automats + get_global_id(0);
-    rand = nextGenerationElitismTrueGlobal( automats, testInfo, tests, fr, rand );
+    //__global TransitionListAutomat* me = automats1 + get_global_id(0);
+    rand = nextGenerationElitismTrueGlobal( automats1, automats2, testInfo, tests, fr, rand );
+    rand = nextGenerationElitismTrueGlobal( automats2, automats1, testInfo, tests, fr, rand );
+    countFitnessAll(automats1, testInfo, tests, fr);
     return rand;
 }
 
 __kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __global const uint* srandBuffer,
-                         __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache )
+                         __constant const TestInfo* testInfo, __constant const uint* tests, __global float* resultCache, __global TransitionListAutomat* autBuf2 )
 {
     /*if (DEBUG_ME)
     {
@@ -110,5 +133,5 @@ __kernel void genetic_1d( __global TransitionListAutomat* autBuf1, __global cons
     
     uint srand = srandBuffer[get_global_id(0)];
     uint rand = nextUINT( srand );
-    rand = geneticAlgorithmElitismTrueGlobal( autBuf1, testInfo, tests, resultCache, rand);
+    rand = geneticAlgorithmElitismTrueGlobal( autBuf1, autBuf2, testInfo, tests, resultCache, rand);
 }

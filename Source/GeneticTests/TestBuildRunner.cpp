@@ -155,7 +155,8 @@ void TestBuildRunner::initCLBuffers()
 		clTestInfoBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestInfosSize() );
 		clTestsBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, m_testReader.getTestsBufferSize());
 
-		clAutomatBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat) * m_size);
+		clAutomatBuffer1 = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat) * m_size);
+		clAutomatBuffer2 = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TransitionListAutomat)* m_size);
 
 		std::cout << boost::format("C++ :: sizeof(TransitionListAutomat)=%i") % sizeof(TransitionListAutomat) << std::endl;
 		std::cout << boost::format("C++ :: sizeof(TestInfo)=%i") % sizeof(TestInfo) << std::endl;
@@ -180,16 +181,17 @@ void TestBuildRunner::prepareData()
 
 	try
 	{
-		kernelGen.setArg(0, clAutomatBuffer);
+		kernelGen.setArg(0, clAutomatBuffer1);
 		kernelGen.setArg(1, clSrandsBuffer);
 		kernelGen.setArg(2, clTestInfoBuffer);
 		kernelGen.setArg(3, clTestsBuffer);
 		kernelGen.setArg(4, clResultCacheBuffer);
+		kernelGen.setArg(5, clAutomatBuffer2);
 
 		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_TRUE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
 		queue.enqueueWriteBuffer(clTestsBuffer, CL_TRUE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
 		queue.enqueueWriteBuffer(clSrandsBuffer, CL_TRUE, 0, sizeof(cl_uint) * m_size, m_srandsBuffer.data());
-		queue.enqueueWriteBuffer(clAutomatBuffer, CL_TRUE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
+		queue.enqueueWriteBuffer(clAutomatBuffer1, CL_TRUE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
 	}
 	catch (cl::Error& error)
 	{
@@ -224,7 +226,7 @@ void TestBuildRunner::run()
 void TestBuildRunner::getData(FITNES_TYPE* result)
 {
 	queue.enqueueReadBuffer(clResultCacheBuffer, CL_FALSE, 0, m_size*sizeof(cl_float), m_cachedResultBuffer.data());
-	queue.enqueueReadBuffer(clAutomatBuffer, CL_FALSE, 0, sizeof(TransitionListAutomat)* m_size, m_automatBuffer.data());
+	queue.enqueueReadBuffer(clAutomatBuffer1, CL_FALSE, 0, sizeof(TransitionListAutomat)* m_size, m_automatBuffer.data());
 	queue.finish();
 	for (size_t i = 0; i < m_size; ++i)
 	{

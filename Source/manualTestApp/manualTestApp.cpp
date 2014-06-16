@@ -149,7 +149,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	/*checkIt(genCheckFileName, genSize, eliteCount, data, outTrue);
-	
+
 	checkIt(genCheckFileNameLocal, genSize, eliteCount, data, out);
 	std::cout << "Result for " << genCheckFileNameLocal << std::endl;
 	compareToTrue(genSize, eliteCount, data, out, outTrue);
@@ -158,12 +158,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "Result for " << genCheckFileNameRandomized << std::endl;
 	compareToTrue(genSize, eliteCount, data, out, outTrue);
 
-	
+
 
 	std::vector<float> floats(genSize);
 	for (int i = 0; i < genSize; ++i)
 	{
-		floats[i] = data[i];
+	floats[i] = data[i];
 	}
 
 	CTimeCounter counter2(sortTime);
@@ -175,29 +175,29 @@ int _tmain(int argc, _TCHAR* argv[])
 	CTimeCounter counterMFETrue(sortTime);
 	for (size_t i = 0; i<genSize; ++i)
 	{
-		std::map<float, int> hmap;
-		for (size_t j = 0; j < checkCount; ++j)
-		{
-			size_t index = (i + j) % genSize;
-			if (hmap.find(data[index]) != hmap.end()) {
-				hmap[data[index]]++;
-			}
-			else
-			{
-				hmap[data[index]] = 1;
-			}
-		}
-		float max = -100500.0f;
-		int maxCounter = 0;
-		for (auto t : hmap)
-		{
-			if (t.second > maxCounter)
-			{
-				maxCounter = t.second;
-				max = t.first;
-			}
-		}
-		outFloatTrue[i] = max;
+	std::map<float, int> hmap;
+	for (size_t j = 0; j < checkCount; ++j)
+	{
+	size_t index = (i + j) % genSize;
+	if (hmap.find(data[index]) != hmap.end()) {
+	hmap[data[index]]++;
+	}
+	else
+	{
+	hmap[data[index]] = 1;
+	}
+	}
+	float max = -100500.0f;
+	int maxCounter = 0;
+	for (auto t : hmap)
+	{
+	if (t.second > maxCounter)
+	{
+	maxCounter = t.second;
+	max = t.first;
+	}
+	}
+	outFloatTrue[i] = max;
 	}
 	counterMFETrue.stop();
 
@@ -206,15 +206,15 @@ int _tmain(int argc, _TCHAR* argv[])
 	compareMFE(genSize, checkCount, data, outFloat, outFloatTrue);*/
 
 	Tools::Logger logger;
-	
-	TestBuildRunner testBuildRunner(scenariosBuildFile, clockFile, logger);
+
+	/*TestBuildRunner testBuildRunner(scenariosBuildFile, clockFile, logger);
 	std::vector<cl_float> resultsCL(testBuildRunner.getGeneticSettings().populationSize);
 	std::vector<cl_float> resultsCPP(testBuildRunner.getGeneticSettings().populationSize);
 	testBuildRunner.prepareData();
 	std::vector<TransitionListAutomat> tmp = testBuildRunner.getStartAutomats();
 	TestBuildRunner::compareLabelling(tmp[0], testBuildRunner.getCurrentAutomats()[0], testBuildRunner.getTestReader());
 
-	CTimeCounter counterCLRun("OpenCL: labelling + calcFitness");
+	CTimeCounter counterCLRun("OpenCL: labelling + calcFitness + newGen(calc, fitness)");
 	testBuildRunner.run();
 	counterCLRun.stop();
 	testBuildRunner.getData(resultsCL.data());
@@ -234,7 +234,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int notNullres = 0;
 	int differentAutomats = 0;
 
-	for (size_t i = 0; i<testBuildRunner.getGeneticSettings().populationSize; ++i)
+	for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
 	{
 		int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
 		if (k < 0)
@@ -260,10 +260,86 @@ int _tmain(int argc, _TCHAR* argv[])
 	double c2 = sum;
 	c2 /= diff;
 
-	std::cout << boost::format("Not the same by Transitions=%i") % differentAutomats << std::endl;
-	std::cout << boost::format("Not the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
-	std::cout << boost::format("Not the same by Fitness=%i") % diffFitn << std::endl;
-	std::cout << boost::format("Not null results count=%i") % notNullres << std::endl;
+	std::cout << boost::format("\tNot the same by Transitions=%i") % differentAutomats << std::endl;
+	std::cout << boost::format("\tNot the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
+	std::cout << boost::format("\tNot the same by Fitness=%i") % diffFitn << std::endl;
+	std::cout << boost::format("\tNot null results count=%i") % notNullres << std::endl;
+	*/
+
+	TestBuildRunner testBuildRunner(scenariosBuildFile, clockFile, logger);
+	std::vector<cl_float> resultsCL(testBuildRunner.getGeneticSettings().populationSize);
+	std::vector<cl_float> resultsCPP(testBuildRunner.getGeneticSettings().populationSize);
+	testBuildRunner.prepareData();
+
+	for (size_t i = 0; i<10; ++i)
+	{
+		testBuildRunner.run();
+		//TestBuildRunner::compareLabelling(tmp[0], testBuildRunner.getCurrentAutomats()[0], testBuildRunner.getTestReader());
+		testBuildRunner.getData(resultsCL.data());
+		std::vector<TransitionListAutomat> tmp = testBuildRunner.getCurrentAutomats();
+
+		TestBuildRunner::doLabelling(tmp, testBuildRunner.getTestReader());
+		for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
+		{
+			resultsCPP[i] = TestBuildRunner::calcFitness(tmp[i], testBuildRunner.getTestReader());
+		}
+
+		int sum = 0;
+		int sum2 = 0;
+		int diff = 0;
+		int diffFitn = 0;
+		int notNullres = 0;
+		int differentAutomats = 0;
+
+		int bestFitnessCPP = 0;
+		double sumFitnessCPP = 0.0;
+		int bestFitnessCL = 0;
+		double sumFitnessCL = 0.0;
+		double fitnessDiff = 0.0;
+
+		for (size_t i = 0; i < testBuildRunner.getGeneticSettings().populationSize; ++i)
+		{
+			/*int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
+			if (k < 0)
+			{
+				++differentAutomats;
+				sum += std::abs(k) - 1;
+				if (k<-1)
+					diff++;
+			}
+			else if (k > 0)
+			{
+				sum += k;
+				diff++;
+			}*/
+
+			if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
+			{
+				diffFitn++;
+				fitnessDiff += std::abs(resultsCL[i] - resultsCPP[i]);
+			}
+				
+			sumFitnessCPP += resultsCPP[i];
+			if (resultsCPP[i] > resultsCPP[bestFitnessCPP])
+				bestFitnessCPP = i;
+
+			sumFitnessCL += resultsCL[i];
+			if (resultsCL[i] > resultsCL[bestFitnessCL])
+				bestFitnessCL = i;
+
+			if (resultsCPP[i] > 0.0001f)
+				notNullres++;
+		}
+
+		std::cout << "Step: " << i << std::endl;;
+		std::cout << boost::format("\tCPP   : best=%.4f   avg=%.4f") % resultsCPP[bestFitnessCPP] % (sumFitnessCPP / testBuildRunner.getGeneticSettings().populationSize) << std::endl;
+		std::cout << boost::format("\tOpenCL: best=%.4f   avg=%.4f") % resultsCL[bestFitnessCL] % (sumFitnessCL / testBuildRunner.getGeneticSettings().populationSize) << std::endl;
+		//std::cout << boost::format("\tNot the same by Transitions=%i") % differentAutomats << std::endl;
+		//std::cout << boost::format("\tNot the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
+		std::cout << boost::format("\tNot the same by Fitness=%i") % diffFitn << std::endl;
+		std::cout << boost::format("\tFitness absolute difference=%.4f") % fitnessDiff << std::endl;
+		std::cout << boost::format("\tNot null results count=%i") % notNullres << std::endl;
+	}
 
 	for (std::map<std::string, TimerData>::value_type val : GetTimeManager().getTimers())
 	{

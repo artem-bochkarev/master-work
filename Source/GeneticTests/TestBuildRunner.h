@@ -57,7 +57,7 @@ private:
 
 	cl_device_type deviceType;
 
-	cl::Buffer clAutomatBuffer;
+	cl::Buffer clAutomatBuffer1, clAutomatBuffer2;
 	cl::Buffer clSrandsBuffer;
 	cl::Buffer clResultCacheBuffer;
 	cl::Buffer clTestInfoBuffer, clTestsBuffer;

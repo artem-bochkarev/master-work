@@ -12,7 +12,7 @@
     -->
 
     <parameters>
-        <populationSize>2000</populationSize>
+        <populationSize>2048</populationSize>
         <desiredFitness>0.0075</desiredFitness>
         <stateNumber>6</stateNumber>
         <partStay>0.1</partStay>

@@ -71,9 +71,23 @@ void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, c
 		boost::lexical_cast<std::string, size_t>(m_testReader.getOutputsCount())));
 
 
+	size_t mutationProb256 = m_testReader.getGeneticSettings().mutationProbability * 256;
+	Tools::changeDefine(input, Tools::Define("MUTATION_THRESHOLD_256",
+		boost::lexical_cast<std::string, size_t>(mutationProb256)));
+
 	size_t mutationProb1024 = m_testReader.getGeneticSettings().mutationProbability * 1024;
-	Tools::changeDefine(input, Tools::Define("MUTATION_THRESHOLD",
+	Tools::changeDefine(input, Tools::Define("MUTATION_THRESHOLD_1024",
 		boost::lexical_cast<std::string, size_t>(mutationProb1024)));
+
+	Tools::changeDefine(input, Tools::Define("MAX_LOCAL_SIZE",
+		boost::lexical_cast<std::string, size_t>(256)));
+
+	Tools::changeDefine(input, Tools::Define("GLOBAL_SIZE",
+		boost::lexical_cast<std::string, size_t>(m_testReader.getGeneticSettings().populationSize)));
+
+	size_t gv = m_testReader.getGeneticSettings().partStay * m_testReader.getGeneticSettings().populationSize;
+	Tools::changeDefine(input, Tools::Define("GO_VALUE",
+		boost::lexical_cast<std::string, size_t>(gv)));
 
 	createProgramFromString(input, params);
 }
@@ -155,8 +169,8 @@ void TestBuildRunner::initCLBuffers()
 
 void TestBuildRunner::prepareData()
 {
-	//CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
-	CRandomImpl random(100500);
+	CRandomImpl random(boost::chrono::system_clock::now().time_since_epoch().count());
+	//CRandomImpl random(100500);
 	for (size_t i = 0; i < m_size; ++i)
 	{
 		uint sr = random.nextUINT() * random.nextUINT() - i * random.nextUINT();
@@ -174,7 +188,7 @@ void TestBuildRunner::prepareData()
 
 		queue.enqueueWriteBuffer(clTestInfoBuffer, CL_TRUE, 0, m_testReader.getTestInfosSize(), m_testReader.getTestInfosPtr());
 		queue.enqueueWriteBuffer(clTestsBuffer, CL_TRUE, 0, m_testReader.getTestsBufferSize(), m_testReader.getTestsBufferPtr());
-		queue.enqueueWriteBuffer(clSrandsBuffer, CL_TRUE, 0, sizeof(cl_int) * constArraySize, m_srandsBuffer.data());
+		queue.enqueueWriteBuffer(clSrandsBuffer, CL_TRUE, 0, sizeof(cl_uint) * m_size, m_srandsBuffer.data());
 		queue.enqueueWriteBuffer(clAutomatBuffer, CL_TRUE, 0, sizeof(TransitionListAutomat) * m_size, m_automatInitialBuffer.data());
 	}
 	catch (cl::Error& error)
@@ -230,16 +244,33 @@ const TestsReader& TestBuildRunner::getTestReader() const
 
 int TestBuildRunner::compareLabelling(const TransitionListAutomat& a, const TransitionListAutomat& b, const TestsReader& testReader)
 {
+	bool sameAutomats = true;
+	sameAutomats = (a.firstState != b.firstState) ? false : sameAutomats;
+
+/*#ifdef _DEBUG
 	BOOST_ASSERT(a.firstState == b.firstState);
+#endif*/
+
 	int different = 0;
 	for (size_t state = 0; state < testReader.getGeneticSettings().stateNumber; ++state)
 	{
+		sameAutomats = (a.states[state].count != b.states[state].count) ? false : sameAutomats;
+
+/*#ifdef _DEBUG
 		BOOST_ASSERT(a.states[state].count == b.states[state].count);
+#endif*/
+
 		for (size_t t = 0; t < a.states[state].count; ++t)
 		{
+			sameAutomats = (a.states[state].list[t].input != b.states[state].list[t].input) ? false : sameAutomats;
+			sameAutomats = (a.states[state].list[t].outputsCount != b.states[state].list[t].outputsCount) ? false : sameAutomats;
+			sameAutomats = (a.states[state].list[t].nextState != b.states[state].list[t].nextState) ? false : sameAutomats;
+
+/*#ifdef _DEBUG
 			BOOST_ASSERT(a.states[state].list[t].input == b.states[state].list[t].input);
 			BOOST_ASSERT(a.states[state].list[t].outputsCount == b.states[state].list[t].outputsCount);
 			BOOST_ASSERT(a.states[state].list[t].nextState == b.states[state].list[t].nextState);
+#endif*/
 			
 			if ((a.states[state].list[t].obviousBest == 0) && (b.states[state].list[t].obviousBest == 0))
 			{
@@ -251,6 +282,8 @@ int TestBuildRunner::compareLabelling(const TransitionListAutomat& a, const Tran
 			}
 		}
 	}
+	if (!sameAutomats)
+		different = -different - 1;
 	return different;
 }
 

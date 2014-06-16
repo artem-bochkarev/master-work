@@ -35,13 +35,13 @@ uint getValue1024(uint rand, uint mod)
 //probability is in interval = 0 - 255 
 uint randomProb256(uint rand, uint probability)
 {
-    uint byte = (rand & 0x0000FF00) >> 8;
+    uint byte = (rand & 0x00FF0000) >> 16;
     return select(0, 1, probability > byte);
 }
 
 //probability is in interval = 0 - 1023 
 uint randomProb1024(uint rand, uint probability)
 {
-    uint byte = (rand & 0x0003FF00) >> 8;
+    uint byte = (rand & 0x03FF0000) >> 16;
     return select(0, 1, probability > byte);
 }

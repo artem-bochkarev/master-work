@@ -232,12 +232,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	int diff = 0;
 	int diffFitn = 0;
 	int notNullres = 0;
+	int differentAutomats = 0;
+
 	for (size_t i = 0; i<testBuildRunner.getGeneticSettings().populationSize; ++i)
 	{
 		int k = TestBuildRunner::compareLabelling(tmp[i], testBuildRunner.getCurrentAutomats()[i], testBuildRunner.getTestReader());
-		sum += k;
-		if (k != 0)
+		if (k < 0)
+		{
+			++differentAutomats;
+			sum += std::abs(k) - 1;
+			if (k<-1)
+				diff++;
+		}
+		else if (k > 0)
+		{
+			sum += k;
 			diff++;
+		}
+
 		if (std::abs(resultsCL[i] - resultsCPP[i]) > 0.0001f)
 			diffFitn++;
 		if (resultsCPP[i] > 0.0001f)
@@ -247,6 +259,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	c1 /= testBuildRunner.getGeneticSettings().populationSize;
 	double c2 = sum;
 	c2 /= diff;
+
+	std::cout << boost::format("Not the same by Transitions=%i") % differentAutomats << std::endl;
 	std::cout << boost::format("Not the same by Labels=%i \n avgDiff=%.2f \n avgDiff2=%.2f") % diff % c1 % c2 << std::endl;
 	std::cout << boost::format("Not the same by Fitness=%i") % diffFitn << std::endl;
 	std::cout << boost::format("Not null results count=%i") % notNullres << std::endl;

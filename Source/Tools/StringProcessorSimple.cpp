@@ -54,6 +54,10 @@ void Tools::changeDefine(std::string& text, const Define& def)
 			text = firstPart + toFind + " " + def.second + "\n" + secondPart;
 		}
 	}
+	else
+	{
+		text = toFind + " " + def.second +"\n" + text;
+	}
 }
 
 std::string Tools::splitToManyLines(const std::string& text, const std::set<char>& separators, size_t prefLength)

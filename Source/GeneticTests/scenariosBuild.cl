@@ -16,6 +16,43 @@
 
 #define DEBUG_ME (get_global_id(0)==0)
 
+uint transform2( __global TransitionListAutomat* aut, __constant const TestInfo* testInfo, __constant const uint* tests, uint test, uint* out)
+{
+    const uint lInput = testInfo[test].inputLength;
+    __constant const uint* curInput = tests + testInfo[test].offset;
+    uint currentState = aut->firstState;
+    uint pOutput = 0;
+    uint broken = 0;
+    uint lenBeforeBroken = 0;
+    for (uint i=0; i<lInput; ++i)
+    {
+        uint found = 0;
+        uint k = 0;
+        uint oldState = currentState;
+        for (uint t=0; t<MAX_TRANSITIONS; ++t)
+        {
+            uint good = (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
+            found = select(found, (uint)1, good);
+            k = select(k, t, good);
+            currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
+        }
+        broken = select(broken, (uint)1, (found==0));
+        
+        for (uint x = 0; x<MAX_OUTPUTS; ++x)
+        {
+            uint outCount = aut->states[oldState].list[k].outputsCount;
+            uint good1 = (x < outCount);
+            out[pOutput] = aut->states[oldState].list[k].outputs[x];
+            pOutput = select(pOutput, pOutput + 1, good1);
+			pOutput = select(pOutput, (uint)MAX_TEST_OUTPUT-1, pOutput>=MAX_TEST_OUTPUT);
+        }
+        lenBeforeBroken = select(lenBeforeBroken, pOutput, !broken);
+    }
+    //pOutput = select(pOutput, (uint)0xFFFFFFFF, broken);
+    pOutput = select(pOutput, lenBeforeBroken, broken);
+    return pOutput;
+}
+
 float distSame(uint outSize, const uint* out, uint testSize, __constant const uint* testOut)
 {
     uint equal = (outSize == testSize);
@@ -50,7 +87,7 @@ float calcFitness(__global TransitionListAutomat* aut, __constant const TestInfo
         const uint lOutput = testInfo[test].outputLength;
         __constant const uint* curOutput = tests + testInfo[test].offset + lInput;
         uint tmpOutput[MAX_TEST_OUTPUT];
-        uint size = transform( aut, testInfo, tests, test, tmpOutput );
+        uint size = transform2( aut, testInfo, tests, test, tmpOutput );
         float t = select( 1.0f, distHamm(size, tmpOutput, lOutput, curOutput), size!=0xFFFFFFFF);
         pSum += 1.0 - t;
     }

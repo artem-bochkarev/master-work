@@ -352,16 +352,15 @@ uint transform( __global TransitionListAutomat* aut, __constant const TestInfo* 
             currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
         }
         broken = select(broken, (uint)1, (found==0));
-        lenBeforeBroken = select(lenBeforeBroken, pOutput, !broken);
-		currentState = select(currentState, oldState, broken );
         
         for (uint t = 0; t<MAX_OUTPUTS; ++t)
         {
-            uint good = (t < aut->states[currentState].list[k].outputsCount);
-            out[pOutput] = aut->states[currentState].list[k].outputs[t];
+            uint good = (t < aut->states[oldState].list[k].outputsCount) && (!broken);
+            out[pOutput] = aut->states[oldState].list[k].outputs[t];
             pOutput = select(pOutput, pOutput + 1, good);
 			pOutput = select(pOutput, (uint)MAX_TEST_OUTPUT-1, pOutput>=MAX_TEST_OUTPUT);
         }
+        lenBeforeBroken = select(lenBeforeBroken, pOutput, !broken);
     }
     //pOutput = select(pOutput, (uint)0xFFFFFFFF, broken);
     pOutput = select(pOutput, lenBeforeBroken, broken);

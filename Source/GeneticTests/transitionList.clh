@@ -199,6 +199,7 @@ uint mutateMe(__global TransitionListAutomat* input, uint rand)
     
     for (uint state=0; state<STATES_NUMBER; ++state)
     {
+        #pragma unroll
         for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
         {
             rand = mutateTransition(&(input->states[state].list[transition]), rand);
@@ -269,6 +270,7 @@ void clearLabels(__global TransitionListAutomat* aut)
 {
     for (uint state=0; state<STATES_NUMBER; ++state)
     {
+        #pragma unroll
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
             mfe_clear( &(aut->states[state].list[t].mfe) );
@@ -279,6 +281,7 @@ void clearLabels(__global TransitionListAutomat* aut)
 void labelByMostFrequent(__global Transition* t)
 {
     uint2 pos = mfe_check( &(t->mfe) );
+    #pragma unroll
     for (uint i=0; i<MAX_OUTPUTS; ++i)
     {
         t->outputs[i] = t->mfe.data[pos.x].values[i];
@@ -301,17 +304,18 @@ void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo
         uint currentState = aut->firstState;
         uint pOutput = 0;
         uint enableWrite = 1;
-        for (uint i=0; i<MAX_TEST_INPUT; ++i)
+        for (uint i=0; i<lInput; ++i)
         {
             uint found = 0;
             for (uint t=0; t<MAX_TRANSITIONS; ++t)
             {
                 uint doIt = enableWrite && (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
                 Sequence sequence;
+                
                 for (uint k=0; k<MAX_OUTPUTS; ++k)
                 {
                     uint nextOutput = select((uint)OUTPUTS_NUMBER, curOutput[pOutput], pOutput < lOutput);
-                    uint isNotEnd = k<aut->states[currentState].list[t].outputsCount;
+                    uint isNotEnd = k < aut->states[currentState].list[t].outputsCount;
                     sequence.values[k] = select((uint)0, nextOutput, isNotEnd && doIt);
                     pOutput = select(pOutput, pOutput+1, isNotEnd && doIt);
                 }
@@ -325,6 +329,7 @@ void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo
     
     for (uint state=0; state<STATES_NUMBER; ++state)
     {
+        #pragma unroll
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
             labelByMostFrequent(&(aut->states[state].list[t]));
@@ -345,6 +350,7 @@ uint transform2( __global TransitionListAutomat* aut, __constant const TestInfo*
         uint found = 0;
         uint k = 0;
         uint oldState = currentState;
+        
         for (uint t=0; t<MAX_TRANSITIONS; ++t)
         {
             uint good = (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
@@ -353,6 +359,7 @@ uint transform2( __global TransitionListAutomat* aut, __constant const TestInfo*
             currentState = select(currentState, aut->states[currentState].list[t].nextState, good);
         }
         broken = select(broken, (uint)1, (found==0));
+        
         
         for (uint x = 0; x<MAX_OUTPUTS; ++x)
         {

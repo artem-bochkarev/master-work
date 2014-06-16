@@ -37,7 +37,7 @@ public:
 protected:
 	void prepareFirstGeneration();
 	
-	virtual void createProgram(const boost::filesystem::path& source, const std::string& params) override;
+	virtual void createProgram(const boost::filesystem::path& source, const std::string& params, Tools::Logger* log) override;
 	virtual void initCLBuffers() override;
 	virtual std::string getOptions() const override;
 

@@ -6,6 +6,7 @@ typedef struct mfe_getter
 
 void mfe_clear(__global mfe_Getter* getter)
 {
+    #pragma unroll
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
     {
         getter->counters[i] = 0;
@@ -14,6 +15,7 @@ void mfe_clear(__global mfe_Getter* getter)
 
 void mfe_clear_loc(__local mfe_Getter* getter)
 {
+    #pragma unroll
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
     {
         getter->counters[i] = 0;
@@ -24,6 +26,7 @@ void mfe_clear_loc(__local mfe_Getter* getter)
 uint2 mfe_check(__global const mfe_Getter* getter)
 {
     uint2 result = 0;
+    #pragma unroll
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];
@@ -36,6 +39,7 @@ uint2 mfe_check(__global const mfe_Getter* getter)
 uint2 mfe_check_loc(__local const mfe_Getter* getter)
 {
     uint2 result = 0;
+    #pragma unroll
     for (uint i=1; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];
@@ -48,6 +52,7 @@ uint2 mfe_check_loc(__local const mfe_Getter* getter)
 void mfe_increment(__global mfe_Getter* getter, __global const DATA_TYPE* element)
 {
     uint4 result = 0;
+    #pragma unroll
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];
@@ -83,6 +88,7 @@ void mfe_increment_loc(__local mfe_Getter* getter, __global const DATA_TYPE* ele
         printf("\n------------------------\n");
     }*/
     uint4 result = 0;
+    #pragma unroll
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];
@@ -104,6 +110,7 @@ void mfe_increment_loc(__local mfe_Getter* getter, __global const DATA_TYPE* ele
 void mfe_incrementCond(__global mfe_Getter* getter, __global const DATA_TYPE* element, uint enabled)
 {
     uint4 result = 0;
+    #pragma unroll
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];
@@ -125,6 +132,7 @@ void mfe_incrementCond(__global mfe_Getter* getter, __global const DATA_TYPE* el
 void mfe_incrementCond_gp(__global mfe_Getter* getter, __private const DATA_TYPE* element, uint enabled)
 {
     uint4 result = 0;
+    #pragma unroll
     for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
     {
         uint count = getter->counters[i];

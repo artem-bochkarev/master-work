@@ -16,11 +16,11 @@ public:
 
 protected:
 	void initKernel(const std::string& filename, cl_device_type devType, Tools::Logger* logger = 0);
-	void createProgramFromString(const std::string& input, const std::string& params);
+	void createProgramFromString(const std::string& input, const std::string& params, Tools::Logger* log);
 
 	virtual std::string getOptions() const;
 	virtual void initCLBuffers() = 0;
-	virtual void createProgram(const boost::filesystem::path& source, const std::string& params);
+	virtual void createProgram(const boost::filesystem::path& source, const std::string& params, Tools::Logger* log);
 
 	cl::Kernel kernelGen;
 	cl::Context context;

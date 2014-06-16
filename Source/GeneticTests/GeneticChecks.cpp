@@ -25,7 +25,7 @@ GeneticChecks::GeneticChecks(const char* genCheckFileName, size_t size, size_t e
 	cachedResults = new cl_float[m_size];
 }
 
-void GeneticChecks::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
+void GeneticChecks::createProgram(const boost::filesystem::path& sourceFile, const std::string& params, Tools::Logger* log)
 {
 	// build the program from the source in the file
 	std::string input;
@@ -34,7 +34,7 @@ void GeneticChecks::createProgram(const boost::filesystem::path& sourceFile, con
 
 	Tools::changeDefine(input, Tools::Define("GLOBAL_SIZE", boost::lexical_cast<std::string, size_t>(m_size)));
 	Tools::changeDefine(input, Tools::Define("GO_VALUE", boost::lexical_cast<std::string, size_t>(eliteCount)));
-	createProgramFromString(input, params);
+	createProgramFromString(input, params, log);
 }
 
 void GeneticChecks::initCLBuffers()

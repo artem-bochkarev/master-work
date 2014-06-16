@@ -25,7 +25,7 @@ MFETestRunner::MFETestRunner(const char* genCheckFileName, size_t size, size_t c
 	cachedResults = new cl_float[m_size];
 }
 
-void MFETestRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
+void MFETestRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params, Tools::Logger* log)
 {
 	// build the program from the source in the file
 	std::string input;
@@ -36,7 +36,7 @@ void MFETestRunner::createProgram(const boost::filesystem::path& sourceFile, con
 	//Tools::changeDefine(input, Tools::Define("CHECK_COUNT", boost::lexical_cast<std::string, size_t>(m_checkElements)));
 	//Tools::changeDefine(input, Tools::Define("MFE_COUNTERS_SIZE", boost::lexical_cast<std::string, size_t>(m_mfeSize)));
 
-	createProgramFromString(input, params);
+	createProgramFromString(input, params, log);
 }
 
 void MFETestRunner::initCLBuffers()

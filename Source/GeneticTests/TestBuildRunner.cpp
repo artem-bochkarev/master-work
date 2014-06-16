@@ -38,7 +38,7 @@ TestBuildRunner::TestBuildRunner(const std::string& clFileName, const std::strin
 	initKernel(clFileName, deviceType, &log);
 }
 
-void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params)
+void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, const std::string& params, Tools::Logger* log)
 {
 	// build the program from the source in the file
 	std::string input;
@@ -89,7 +89,7 @@ void TestBuildRunner::createProgram(const boost::filesystem::path& sourceFile, c
 	Tools::changeDefine(input, Tools::Define("GO_VALUE",
 		boost::lexical_cast<std::string, size_t>(gv)));
 
-	createProgramFromString(input, params);
+	createProgramFromString(input, params, log);
 }
 
 void TestBuildRunner::setFromStrings(const std::vector< std::string >& strings)
@@ -136,10 +136,12 @@ std::string TestBuildRunner::getOptions() const
 	{
 		params.append(" -D __check_space=__global");
 	}
-#ifdef _DEBUG
+
+	//params.append(" -cl-opt-disable");
+/*#ifdef _DEBUG
 	params.append(" -cl-opt-disable");
 	// " -g -s \"../CleverAnt3/genShortTables.cl\"
-#endif
+#endif*/
 
 	params.append(KernelRunner::getOptions());
 	return params;

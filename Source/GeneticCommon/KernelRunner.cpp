@@ -44,7 +44,7 @@ void KernelRunner::initKernel(const std::string& filename, cl_device_type device
 		//countRanges(options);
 		boost::filesystem::path source(filename);
 
-		createProgram(source, options);
+		createProgram(source, options, logger);
 		initCLBuffers();
 	}
 	catch (cl::Error& error)
@@ -101,17 +101,17 @@ std::string KernelRunner::getOptions() const
 	return params;
 }
 
-void KernelRunner::createProgram(const boost::filesystem::path& source, const std::string& params)
+void KernelRunner::createProgram(const boost::filesystem::path& source, const std::string& params, Tools::Logger* log)
 {
 	// build the program from the source in the file
 	std::string input;
 	//Tools::StringProcessorSimple strProc(vals);
 	Tools::readFileToString(input, source);
 
-	createProgramFromString(input, params);
+	createProgramFromString(input, params, log);
 }
 
-void KernelRunner::createProgramFromString(const std::string& input, const std::string& params)
+void KernelRunner::createProgramFromString(const std::string& input, const std::string& params, Tools::Logger* log)
 {
 	cl::Program::Sources source;
 	source.push_back(std::make_pair(input.c_str(), input.size()));
@@ -124,13 +124,13 @@ void KernelRunner::createProgramFromString(const std::string& input, const std::
 		std::stringstream ss;
 		ss << program.getBuildInfo< CL_PROGRAM_BUILD_LOG >(devices[0]);
 		std::cerr << ss.str() << std::endl;
-		Tools::throwDetailedFailed("File couldn't be compiled", ss.str().c_str(), 0);
+		Tools::throwDetailedFailed("File couldn't be compiled", ss.str().c_str(), log);
 	}
 	try { //Trying to create OpenCL kernel
 		kernelGen = cl::Kernel(program, "genetic_1d");
 	}
 	catch (cl::Error& err) {
-		Tools::throwDetailedFailed("Failed to create kernel", streamsdk::getOpenCLErrorCodeStr(err.err()), 0);
+		Tools::throwDetailedFailed("Failed to create kernel", streamsdk::getOpenCLErrorCodeStr(err.err()), log);
 	}
 }
 

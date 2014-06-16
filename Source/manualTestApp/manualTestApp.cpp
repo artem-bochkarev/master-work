@@ -271,7 +271,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::vector<cl_float> resultsCPP(testBuildRunner.getGeneticSettings().populationSize);
 	testBuildRunner.prepareData();
 
-	size_t steps = 100;
+	size_t steps = 10;
 	CTimeCounter counterCLRun("ManyGenerations");
 	for (size_t i = 0; i<steps; ++i)
 	{
@@ -341,6 +341,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::cout << boost::format("\tNot the same by Fitness=%i") % diffFitn << std::endl;
 		std::cout << boost::format("\tFitness absolute difference=%.4f") % fitnessDiff << std::endl;
 		std::cout << boost::format("\tNot null results count=%i") % notNullres << std::endl;*/
+		std::cout << "Step: " << 10*i << std::endl;
+		//std::cout << "Step: " << 2*i + 1 << std::endl;
 	}
 	counterCLRun.stop();
 

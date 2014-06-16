@@ -19,7 +19,7 @@ protected:
 private:
 
 	virtual void initCLBuffers() override;
-	virtual void createProgram(const boost::filesystem::path& source, const std::string& params) override;
+	virtual void createProgram(const boost::filesystem::path& source, const std::string& params, Tools::Logger* log) override;
 
 	float* cachedResults;
 

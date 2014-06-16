@@ -29,7 +29,7 @@ void KernelRunner::initKernel(const std::string& filename, cl_device_type device
 			}
 			catch (cl::Error& error)
 			{
-				Tools::throwDetailedFailed("Failed to create GeneticChecks", streamsdk::getOpenCLErrorCodeStr(error.err()), logger);
+				//Tools::throwDetailedFailed("Failed to create GeneticChecks", streamsdk::getOpenCLErrorCodeStr(error.err()), logger);
 			}
 			if (isCreated)
 				break;
@@ -49,7 +49,7 @@ void KernelRunner::initKernel(const std::string& filename, cl_device_type device
 	}
 	catch (cl::Error& error)
 	{
-		std::string msg = "Failed to create GeneticChecks";
+		std::string msg = "Failed to create Kernel";
 		if (deviceType == CL_DEVICE_TYPE_CPU)
 			msg.append("(CPU): ");
 		else
@@ -58,7 +58,7 @@ void KernelRunner::initKernel(const std::string& filename, cl_device_type device
 	}
 	catch (std::runtime_error& err)
 	{
-		std::string msg = "Failed to create GeneticChecks";
+		std::string msg = "Failed to create Kernel";
 		if (deviceType == CL_DEVICE_TYPE_CPU)
 			msg.append("(CPU): ");
 		else

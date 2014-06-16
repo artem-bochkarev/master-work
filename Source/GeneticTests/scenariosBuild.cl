@@ -19,40 +19,6 @@
 
 #define DEBUG_ME (get_global_id(0)==0)
 
-uint mutateMe(__global TransitionListAutomat* input, uint rand)
-{
-    uint condition = randomProb1024( rand, MUTATION_THRESHOLD_1024); rand = nextUINT(rand);
-    input->firstState = select( input->firstState, getValue1024(rand, STATES_NUMBER), condition);
-    rand = nextUINT(rand);
-    
-    for (uint state=0; state<STATES_NUMBER; ++state)
-    {
-        for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
-        {
-            rand = mutateTransition(&(input->states[state].list[transition]), rand);
-        }
-    }
-    /*for (uint state=0; state<STATES_NUMBER; ++state)
-    {
-        uint enabledAll = randomProb256(rand, MUTATION_THRESHOLD); rand = nextUINT(rand);
-        uint who = randomBool(rand); rand = nextUINT(rand);
-        uint enabledDelete = (who==0) && enabledAll && (input->states[state].count > 0);
-        uint enabledAdd = (who==1) && enabledAll && (input->states[state].count < MAX_TRANSITIONS);
-        rand = deleteTransition(&(input->states[state]), rand, enabledDelete );
-        rand = addTransition(&(input->states[state]), rand, enabledAdd );
-        
-        removeDuplicates(&(input->states[state]));
-    }*/
-    return rand;
-}
-
-uint mutate(__global TransitionListAutomat* result, __global const TransitionListAutomat* input, uint rand)
-{
-    copyTListAutomat(result, input);
-    rand = mutateMe(result, rand);
-    return rand;
-}
-
 float distSame(uint outSize, const uint* out, uint testSize, __constant const uint* testOut)
 {
     uint equal = (outSize == testSize);

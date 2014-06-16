@@ -143,29 +143,30 @@ uint mutateTransition(__global Transition* t, uint rand)
     return rand;
 }
 
-uint deleteTransition(__global TransitionList* tl, uint rand, uint enableWrite)
+uint addTransition(__global TransitionList* tl, uint rand, uint enableWrite)
 {
-    uint toDel = rand % tl->count;
+    tl->list[tl->count].nextState = select(tl->list[tl->count].nextState, getValue1024(rand, STATES_NUMBER), enableWrite);
     rand = nextUINT(rand);
-    tl->count--;
-    tl->list[toDel].nextState = tl->list[tl->count].nextState;
-    tl->list[toDel].input = tl->list[tl->count].input;
-    tl->list[toDel].outputsCount = tl->list[tl->count].outputsCount;
+    
+    tl->list[tl->count].input = select(tl->list[tl->count].input, getValue1024(rand, INPUTS_NUMBER), enableWrite);
+    rand = nextUINT(rand);
+    
+    tl->list[tl->count].outputsCount = select( tl->list[tl->count].outputsCount, getValue1024(rand, MAX_OUTPUTS), enableWrite);
+    rand = nextUINT(rand);
+
+    tl->count = select(tl->count, tl->count + 1, enableWrite);
+
     return rand;
 }
 
-uint addTransition(__global TransitionList* tl, uint rand, uint enableWrite)
+uint deleteTransition(__global TransitionList* tl, uint rand, uint enableWrite)
 {
-    tl->list[tl->count].nextState = getValue1024(rand, STATES_NUMBER);
+    uint toDel = select((uint)0, rand % tl->count, tl->count > 1);
     rand = nextUINT(rand);
-    
-    tl->list[tl->count].input = getValue1024(rand, INPUTS_NUMBER);
-    rand = nextUINT(rand);
-    
-    tl->list[tl->count].outputsCount = getValue1024(rand, MAX_OUTPUTS);
-    rand = nextUINT(rand);
-    tl->count++;
-    
+    tl->count = select(tl->count, tl->count - 1, enableWrite);
+    tl->list[toDel].nextState = select(tl->list[toDel].nextState, tl->list[tl->count].nextState, enableWrite);
+    tl->list[toDel].input = select( tl->list[toDel].input, tl->list[tl->count].input, enableWrite );
+    tl->list[toDel].outputsCount = select( tl->list[toDel].outputsCount, tl->list[tl->count].outputsCount, enableWrite );
     return rand;
 }
 
@@ -188,6 +189,40 @@ void removeDuplicates(__global TransitionList* tl)
         writePos = select(writePos, writePos+1, valid && condition);
     }
     tl->count = writePos;
+}
+
+uint mutateMe(__global TransitionListAutomat* input, uint rand)
+{
+    uint condition = randomProb1024( rand, MUTATION_THRESHOLD_1024); rand = nextUINT(rand);
+    input->firstState = select( input->firstState, getValue1024(rand, STATES_NUMBER), condition);
+    rand = nextUINT(rand);
+    
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        for (uint transition=0; transition<MAX_TRANSITIONS; ++transition)
+        {
+            rand = mutateTransition(&(input->states[state].list[transition]), rand);
+        }
+    }
+    for (uint state=0; state<STATES_NUMBER; ++state)
+    {
+        uint enabledAll = randomProb1024(rand, MUTATION_THRESHOLD_1024); rand = nextUINT(rand);
+        uint who = randomBool(rand); rand = nextUINT(rand);
+        uint enabledDelete = (who==0) && enabledAll && (input->states[state].count > 0);
+        uint enabledAdd = (who==1) && enabledAll && (input->states[state].count < MAX_TRANSITIONS);
+        rand = deleteTransition(&(input->states[state]), rand, enabledDelete );
+        rand = addTransition(&(input->states[state]), rand, enabledAdd );
+        
+        removeDuplicates(&(input->states[state]));
+    }
+    return rand;
+}
+
+uint mutate(__global TransitionListAutomat* result, __global const TransitionListAutomat* input, uint rand)
+{
+    copyTListAutomat(result, input);
+    rand = mutateMe(result, rand);
+    return rand;
 }
 
 uint crossover1(__global const TransitionListAutomat* mother, __global const TransitionListAutomat* father, 

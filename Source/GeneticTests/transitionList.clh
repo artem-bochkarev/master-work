@@ -64,6 +64,14 @@ void conditionalCopy_gp( __global DATA_TYPE* a, __private const DATA_TYPE* b, ui
     }
 }
 
+void conditionalCopy_pp( __private DATA_TYPE* a, __private const DATA_TYPE* b, uint c)
+{
+    for (uint i=0; i<MAX_OUTPUTS; ++i)
+    {
+        a->values[i] = select( a->values[i], b->values[i], c );
+    }
+}
+
 #define MFE_CONDITIONAL 1
 #include "GeneticTests/mfe.clh"
 
@@ -246,6 +254,17 @@ uint crossover1(__global const TransitionListAutomat* mother, __global const Tra
             uint fromWho = randomBool(rand);
             rand = nextUINT(rand);
             
+            /*if (fromWho)
+            {
+                child->states[state].list[t].nextState = father->states[state].list[fatherT].nextState;
+                child->states[state].list[t].outputsCount = father->states[state].list[fatherT].outputsCount;
+                child->states[state].list[t].input = father->states[state].list[fatherT].input;
+            }else
+            {
+                child->states[state].list[t].nextState = father->states[state].list[motherT].nextState;
+                child->states[state].list[t].outputsCount = father->states[state].list[motherT].outputsCount;
+                child->states[state].list[t].input = father->states[state].list[motherT].input;
+            }*/
             child->states[state].list[t].nextState = select(mother->states[state].list[motherT].nextState,
                 father->states[state].list[fatherT].nextState, fromWho);
 					
@@ -293,8 +312,14 @@ void addOutputSequence( __private const DATA_TYPE* sequence, __global Transition
     mfe_incrementCond_gp( &(t->mfe), sequence, on );
 }
 
+void addOutputSequence_pp( __private const DATA_TYPE* sequence, __private Transition* t, uint on)
+{
+    mfe_incrementCond_pp( &(t->mfe), sequence, on );
+}
+
 void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo* testInfo, __constant const uint* tests)
 {
+    Transition currentTransition;
     for (uint test=0; test<TESTS_NUMBER; ++test)
     {
         const uint lInput = testInfo[test].inputLength;
@@ -309,18 +334,22 @@ void doLabelling( __global TransitionListAutomat* aut, __constant const TestInfo
             uint found = 0;
             for (uint t=0; t<MAX_TRANSITIONS; ++t)
             {
-                uint doIt = enableWrite && (t < aut->states[currentState].count) && (aut->states[currentState].list[t].input == curInput[i]);
+                currentTransition = aut->states[currentState].list[t];
+                
+                uint doIt = enableWrite && (t < aut->states[currentState].count) && (currentTransition.input == curInput[i]);
                 Sequence sequence;
                 
                 for (uint k=0; k<MAX_OUTPUTS; ++k)
                 {
                     uint nextOutput = select((uint)OUTPUTS_NUMBER, curOutput[pOutput], pOutput < lOutput);
-                    uint isNotEnd = k < aut->states[currentState].list[t].outputsCount;
+                    uint isNotEnd = k < currentTransition.outputsCount;
                     sequence.values[k] = select((uint)0, nextOutput, isNotEnd && doIt);
                     pOutput = select(pOutput, pOutput+1, isNotEnd && doIt);
                 }
                 addOutputSequence( &sequence, &(aut->states[currentState].list[t]), doIt);
-                currentState = select( currentState, aut->states[currentState].list[t].nextState, doIt);
+                //addOutputSequence_pp( &sequence, &(currentTransition), doIt);
+                //aut->states[currentState].list[t] = currentTransition;
+                currentState = select( currentState, currentTransition.nextState, doIt);
                 found = select((uint)0, (uint)1, doIt);
             }
             enableWrite = select(enableWrite, (uint)0, (found==0));

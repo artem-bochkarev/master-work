@@ -150,5 +150,27 @@ void mfe_incrementCond_gp(__global mfe_Getter* getter, __private const DATA_TYPE
     //getter->data[result.w] = *element;
     conditionalCopy_gp( &getter->data[result.w], element, enabled);
 }
+
+void mfe_incrementCond_pp(__private mfe_Getter* getter, __private const DATA_TYPE* element, uint enabled)
+{
+    uint4 result = 0;
+    #pragma unroll
+    for (uint i=0; i<MFE_COUNTERS_SIZE; ++i)
+    {
+        uint count = getter->counters[i];
+        result.x = select(result.x, i, (count > getter->counters[result.x]) );
+        result.y = select(result.y, i, (count < getter->counters[result.y]) );
+        uint condition = equals_gp( &(getter->data[i]), element );
+        result.z = select(result.z, (uint)1, condition );
+        result.w = select(result.w, i, condition );
+    }
+    
+    //use founded or minimum(if not exists)
+    result.w = select(result.y, result.w, result.z );
+    getter->counters[result.w] = select(getter->counters[result.w], getter->counters[result.w] + 1, enabled);
+    //always rewrite data
+    //getter->data[result.w] = *element;
+    conditionalCopy_pp( &getter->data[result.w], element, enabled);
+}
 #endif
 

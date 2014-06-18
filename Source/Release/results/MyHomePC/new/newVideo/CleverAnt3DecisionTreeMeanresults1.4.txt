@@ -1,0 +1,254 @@
+VERSION=1.0
+TIME=10
+mean test on "auto_generated"
+size=3072, type=CPU, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 3072, Steps on map = 200
+    mean=126.00  deviation=0.71 good=99.44%
+Fitnes function CL on CPU avg. speed=62.527
+Fitnes function CL on CPU(only kernel time) avg. speed=139.807
+Next generation function avg. speed=12.516
+Next generation(no fitnes) avg. speed=15.652
+
+mean test on "auto_generated"
+size=5120, type=CPU, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 5120, Steps on map = 200
+    mean=75.25  deviation=0.43 good=99.42%
+Fitnes function CL on CPU avg. speed=37.668
+Fitnes function CL on CPU(only kernel time) avg. speed=83.473
+Next generation function avg. speed=7.470
+Next generation(no fitnes) avg. speed=9.320
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 16384, Steps on map = 200
+    mean=23.75  deviation=0.43 good=98.18%
+Fitnes function CL on CPU avg. speed=11.864
+Fitnes function CL on CPU(only kernel time) avg. speed=26.561
+Next generation function avg. speed=2.303
+Next generation(no fitnes) avg. speed=2.858
+
+mean test on "auto_generated"
+size=3072, type=GPU, steps=200
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 3072, Steps on map = 200
+    mean=97.75  deviation=0.83 good=99.15%
+Fitnes function CL on GPU avg. speed=29.505
+Fitnes function CL on GPU(only kernel time) avg. speed=47.509
+Next generation function avg. speed=9.701
+Next generation(no fitnes) avg. speed=14.458
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=200
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 200
+    mean=67.00  deviation=0.00 good=100.00%
+Fitnes function CL on GPU avg. speed=24.85
+Fitnes function CL on GPU(only kernel time) avg. speed=47.508
+Next generation function avg. speed=6.615
+Next generation(no fitnes) avg. speed=9.123
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=200
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 200
+    mean=24.00  deviation=0.00 good=100.00%
+Fitnes function CL on GPU avg. speed=15.11
+Fitnes function CL on GPU(only kernel time) avg. speed=32.115
+Next generation function avg. speed=2.354
+Next generation(no fitnes) avg. speed=2.792
+
+mean test on "auto_generated"
+size=3072, type=BOTH, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 3072, Steps on map = 200
+    mean=130.00  deviation=1.22 good=99.06%
+Fitnes function CL on CPU avg. speed=129.344
+Fitnes function CL on CPU(only kernel time) avg. speed=454.453
+Fitnes function CL on GPU avg. speed=79.347
+Fitnes function CL on GPU(only kernel time) avg. speed=157.978
+Fitnes function CPU+GPU avg. speed=76.161
+Next generation function avg. speed=12.898
+Next generation(no fitnes) avg. speed=15.530
+
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 200
+    mean=77.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=78.906
+Fitnes function CL on CPU(only kernel time) avg. speed=275.448
+Fitnes function CL on GPU avg. speed=44.282
+Fitnes function CL on GPU(only kernel time) avg. speed=93.389
+Fitnes function CPU+GPU avg. speed=43.301
+Next generation function avg. speed=7.638
+Next generation(no fitnes) avg. speed=9.276
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=200
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 200
+    mean=26.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=25.182
+Fitnes function CL on CPU(only kernel time) avg. speed=93.878
+Fitnes function CL on GPU avg. speed=22.907
+Fitnes function CL on GPU(only kernel time) avg. speed=84.104
+Fitnes function CPU+GPU avg. speed=22.169
+Next generation function avg. speed=2.531
+Next generation(no fitnes) avg. speed=2.858
+
+mean test on "auto_generated"
+size=3072, type=NoCL, steps=200
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 3072, Steps on map = 200
+    mean=101.25  deviation=0.43 good=99.57%
+Fitnes function no CL avg. speed=30.601
+Next generation function avg. speed=10.83
+Next generation(no fitnes) avg. speed=15.42
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=200
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 200
+    mean=61.50  deviation=0.50 good=99.19%
+Fitnes function no CL avg. speed=18.918
+Next generation function avg. speed=6.113
+Next generation(no fitnes) avg. speed=9.33
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=200
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 200
+    mean=19.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=5.485
+Next generation function avg. speed=1.861
+Next generation(no fitnes) avg. speed=2.818
+
+mean test on "auto_generated"
+size=3072, type=CPU, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 3072, Steps on map = 1000
+    mean=97.50  deviation=0.87 good=99.11%
+Fitnes function CL on CPU avg. speed=26.830
+Fitnes function CL on CPU(only kernel time) avg. speed=35.127
+Next generation function avg. speed=9.665
+Next generation(no fitnes) avg. speed=15.111
+
+mean test on "auto_generated"
+size=5120, type=CPU, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 5120, Steps on map = 1000
+    mean=61.00  deviation=0.71 good=98.84%
+Fitnes function CL on CPU avg. speed=17.997
+Fitnes function CL on CPU(only kernel time) avg. speed=24.392
+Next generation function avg. speed=6.65
+Next generation(no fitnes) avg. speed=9.152
+
+mean test on "auto_generated"
+size=16384, type=CPU, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor           ,
+Size of generation = 16384, Steps on map = 1000
+    mean=18.25  deviation=0.43 good=97.63%
+Fitnes function CL on CPU avg. speed=4.933
+Fitnes function CL on CPU(only kernel time) avg. speed=6.412
+Next generation function avg. speed=1.795
+Next generation(no fitnes) avg. speed=2.823
+
+mean test on "auto_generated"
+size=3072, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 3072, Steps on map = 1000
+    mean=107.00  deviation=0.71 good=99.34%
+Fitnes function CL on GPU avg. speed=36.66
+Fitnes function CL on GPU(only kernel time) avg. speed=49.577
+Next generation function avg. speed=10.593
+Next generation(no fitnes) avg. speed=15.1
+
+mean test on "auto_generated"
+size=5120, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 1000
+    mean=59.25  deviation=0.43 good=99.27%
+Fitnes function CL on GPU avg. speed=20.140
+Fitnes function CL on GPU(only kernel time) avg. speed=26.446
+Next generation function avg. speed=5.850
+Next generation(no fitnes) avg. speed=8.246
+
+mean test on "auto_generated"
+size=16384, type=GPU, steps=1000
+Clever ant 3 standard, OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 1000
+    mean=18.00  deviation=0.00 good=100.00%
+Fitnes function CL on GPU avg. speed=5.296
+Fitnes function CL on GPU(only kernel time) avg. speed=6.504
+Next generation function avg. speed=1.776
+Next generation(no fitnes) avg. speed=2.673
+
+mean test on "auto_generated"
+size=3072, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 3072, Steps on map = 1000
+    mean=129.25  deviation=1.48 good=98.86%
+Fitnes function CL on CPU avg. speed=131.422
+Fitnes function CL on CPU(only kernel time) avg. speed=472.723
+Fitnes function CL on GPU avg. speed=80.762
+Fitnes function CL on GPU(only kernel time) avg. speed=163.328
+Fitnes function CPU+GPU avg. speed=77.184
+Next generation function avg. speed=12.820
+Next generation(no fitnes) avg. speed=15.377
+
+mean test on "auto_generated"
+size=5120, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 5120, Steps on map = 1000
+    mean=76.25  deviation=0.43 good=99.43%
+Fitnes function CL on CPU avg. speed=79.528
+Fitnes function CL on CPU(only kernel time) avg. speed=277.783
+Fitnes function CL on GPU avg. speed=44.268
+Fitnes function CL on GPU(only kernel time) avg. speed=92.803
+Fitnes function CPU+GPU avg. speed=43.289
+Next generation function avg. speed=7.552
+Next generation(no fitnes) avg. speed=9.150
+
+mean test on "auto_generated"
+size=16384, type=BOTH, steps=1000
+Clever ant 3 standard, OpenCL on CPU, AuthenticAMD: AMD FX(tm)-8320 Eight-Core Processor            + OpenCL on GPU, Advanced Micro Devices, Inc.: Pitcairn,
+Size of generation = 16384, Steps on map = 1000
+    mean=26.00  deviation=0.00 good=100.00%
+Fitnes function CL on CPU avg. speed=25.159
+Fitnes function CL on CPU(only kernel time) avg. speed=93.500
+Fitnes function CL on GPU avg. speed=21.909
+Fitnes function CL on GPU(only kernel time) avg. speed=74.462
+Fitnes function CPU+GPU avg. speed=21.237
+Next generation function avg. speed=2.503
+Next generation(no fitnes) avg. speed=2.837
+
+mean test on "auto_generated"
+size=3072, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 3072, Steps on map = 1000
+    mean=53.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=8.159
+Next generation function avg. speed=5.251
+Next generation(no fitnes) avg. speed=14.740
+
+mean test on "auto_generated"
+size=5120, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 5120, Steps on map = 1000
+    mean=33.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=5.29
+Next generation function avg. speed=3.232
+Next generation(no fitnes) avg. speed=9.45
+
+mean test on "auto_generated"
+size=16384, type=NoCL, steps=1000
+Clever ant 3 standard, C++ on CPU,
+Size of generation = 16384, Steps on map = 1000
+    mean=11.00  deviation=0.00 good=100.00%
+Fitnes function no CL avg. speed=1.599
+Next generation function avg. speed=1.14
+Next generation(no fitnes) avg. speed=2.775
+
